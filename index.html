@@ -201,6 +201,10 @@
           </button>
           
           <input id="pwaCopyTitleInput" type="hidden" value="">
+          <button onclick="bypassPwaGateAndOpenItem()" type="button" class="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-2 border border-white/15 transition-all cursor-pointer">
+            <svg class="w-4 h-4 shrink-0 text-brandRed" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <span>تماشا و دانلود مستقیم در مرورگر</span>
+          </button>
         </div>
       </div>
 
@@ -641,11 +645,37 @@
         </div>
         <div id="rowHistory" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
+            <section id="rowTopRatedMoviesSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('top_rated_movies', 'برترین فیلم‌های تاریخ سینما (IMDb Adjusted)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              برترین فیلم‌های تاریخ سینما (IMDb Adjusted)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('top_rated_movies', 'برترین فیلم‌های تاریخ سینما (IMDb Adjusted)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowTopRatedMovies" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowTopRatedSeriesSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('top_rated_series', 'برترین سریال‌های تاریخ تلویزیون')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              برترین سریال‌های تاریخ تلویزیون
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('top_rated_series', 'برترین سریال‌های تاریخ تلویزیون')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowTopRatedSeries" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
       <section id="rowTop250Section" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('top250', '۲۵۰ فیلم برتر تاریخ سینما')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              ۲۵۰ فیلم برتر تاریخ سینما (IMDb بالای ۸)
+              ۲۵۰ فیلم برتر تاریخ سینما
             </h2>
           </button>
           <button type="button" onclick="openCatalogWithCollection('top250', '۲۵۰ فیلم برتر تاریخ سینما')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
@@ -654,14 +684,79 @@
         </div>
         <div id="rowTop250" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
+      <section id="rowPopularMoviesSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('popular_movies', 'محبوب‌ترین فیلم‌های روز')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              محبوب‌ترین فیلم‌های روز
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('popular_movies', 'محبوب‌ترین فیلم‌های روز')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowPopularMovies" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowPopularSeriesSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('popular_series', 'محبوب‌ترین سریال‌های روز')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              محبوب‌ترین سریال‌های روز
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('popular_series', 'محبوب‌ترین سریال‌های روز')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowPopularSeries" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowCurrentlyAiringSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('currently_airing', 'سریال‌های در حال پخش و فعال (۲۰۲۴-۲۰۲۶)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              سریال‌های در حال پخش و فعال (۲۰۲۴-۲۰۲۶)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('currently_airing', 'سریال‌های در حال پخش و فعال (۲۰۲۴-۲۰۲۶)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowCurrentlyAiring" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowRecentlyReleasedSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('recently_released', 'جدیدترین فیلم‌های منتشر شده (۲۰۲۴-۲۰۲۶)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              جدیدترین فیلم‌های منتشر شده (۲۰۲۴-۲۰۲۶)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('recently_released', 'جدیدترین فیلم‌های منتشر شده (۲۰۲۴-۲۰۲۶)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowRecentlyReleased" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowLatest2026Section" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('latest_2026', 'تازه‌ترین عناوین افزوده شده')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              تازه‌ترین عناوین افزوده شده
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('latest_2026', 'تازه‌ترین عناوین افزوده شده')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowLatest2026" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
       <section id="rowNolanSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('nolan', 'شاهکارهای کریستوفر نولان')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('nolan', 'شاهکارهای کریستوفر نولان (Christopher Nolan)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
               شاهکارهای کریستوفر نولان (Christopher Nolan)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('nolan', 'شاهکارهای کریستوفر نولان')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('nolan', 'شاهکارهای کریستوفر نولان (Christopher Nolan)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
@@ -669,12 +764,12 @@
       </section>
       <section id="rowScorseseSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('scorsese', 'آثار ماندگار مارتین اسکورسیزی')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('scorsese', 'آثار ماندگار مارتین اسکورسیزی (Martin Scorsese)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
               آثار ماندگار مارتین اسکورسیزی (Martin Scorsese)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('scorsese', 'آثار ماندگار مارتین اسکورسیزی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('scorsese', 'آثار ماندگار مارتین اسکورسیزی (Martin Scorsese)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
@@ -682,12 +777,12 @@
       </section>
       <section id="rowTarantinoSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('tarantino', 'سینمای کوئنتین تارانتینو')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('tarantino', 'سینمای کوئنتین تارانتینو (Quentin Tarantino)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              سینمای جنون‌آمیز کوئنتین تارانتینو (Quentin Tarantino)
+              سینمای کوئنتین تارانتینو (Quentin Tarantino)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('tarantino', 'سینمای کوئنتین تارانتینو')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('tarantino', 'سینمای کوئنتین تارانتینو (Quentin Tarantino)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
@@ -695,77 +790,220 @@
       </section>
       <section id="rowFincherSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('fincher', 'سینمای دیوید فینچر')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('fincher', 'سینمای دیوید فینچر (David Fincher)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              سینمای رازآلود و دارک دیوید فینچر (David Fincher)
+              سینمای دیوید فینچر (David Fincher)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('fincher', 'سینمای دیوید فینچر')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('fincher', 'سینمای دیوید فینچر (David Fincher)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
         <div id="rowFincher" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowLotrSection" class="transition-all duration-300">
+      <section id="rowVilleneuveSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('lotr', 'دنیای حماسی ارباب حلقه‌ها و هابیت')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('villeneuve', 'جهان سینمایی دنی ویلنوو (Denis Villeneuve)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              دنیای حماسی ارباب حلقه‌ها و هابیت
+              جهان سینمایی دنی ویلنوو (Denis Villeneuve)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('lotr', 'دنیای حماسی ارباب حلقه‌ها و هابیت')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('villeneuve', 'جهان سینمایی دنی ویلنوو (Denis Villeneuve)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowLotr" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowVilleneuve" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowBatmanSection" class="transition-all duration-300">
+      <section id="rowSpielbergSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('batman', 'جهان سینمایی بتمن و گاتهام')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('spielberg', 'شاهکارهای استیون اسپیلبرگ (Steven Spielberg)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              جهان سینمایی بتمن و شوالیه‌های گاتهام
+              شاهکارهای استیون اسپیلبرگ (Steven Spielberg)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('batman', 'جهان سینمایی بتمن و گاتهام')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('spielberg', 'شاهکارهای استیون اسپیلبرگ (Steven Spielberg)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowBatman" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowSpielberg" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowHarryPotterSection" class="transition-all duration-300">
+      <section id="rowDicaprioSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('harrypotter', 'دنیای جادویی هری پاتر')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('dicaprio', 'فیلم‌های برتر لئوناردو دی‌کاپریو (Leonardo DiCaprio)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              دنیای جادویی هری پاتر و جانوران شگفت‌انگیز
+              فیلم‌های برتر لئوناردو دی‌کاپریو (Leonardo DiCaprio)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('harrypotter', 'دنیای جادویی هری پاتر')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('dicaprio', 'فیلم‌های برتر لئوناردو دی‌کاپریو (Leonardo DiCaprio)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowHarryPotter" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowDicaprio" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowKeanuSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('keanu', 'فیلم‌های برتر کیانو ریوز (Keanu Reeves)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              فیلم‌های برتر کیانو ریوز (Keanu Reeves)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('keanu', 'فیلم‌های برتر کیانو ریوز (Keanu Reeves)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowKeanu" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowTomHardySection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('tom_hardy', 'فیلم‌های برتر تام هاردی (Tom Hardy)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              فیلم‌های برتر تام هاردی (Tom Hardy)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('tom_hardy', 'فیلم‌های برتر تام هاردی (Tom Hardy)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowTomHardy" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowCillianSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('cillian', 'آثار برگزیده کیلین مورفی (Cillian Murphy)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              آثار برگزیده کیلین مورفی (Cillian Murphy)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('cillian', 'آثار برگزیده کیلین مورفی (Cillian Murphy)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowCillian" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowPacinoDeNiroSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('pacino_deniro', 'آثار آل پاچینو و رابرت دنیرو (Al Pacino & Robert De Niro)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              آثار آل پاچینو و رابرت دنیرو (Al Pacino & Robert De Niro)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('pacino_deniro', 'آثار آل پاچینو و رابرت دنیرو (Al Pacino & Robert De Niro)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowPacinoDeNiro" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
       <section id="rowMarvelSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('marvel', 'دنیای سینمایی مارول و اونجرز')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('marvel', 'دنیای سینمایی مارول و اونجرز (Marvel Cinematic Universe)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              دنیای سینمایی مارول و اونجرز (MCU)
+              دنیای سینمایی مارول و اونجرز (Marvel Cinematic Universe)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('marvel', 'دنیای سینمایی مارول و اونجرز')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('marvel', 'دنیای سینمایی مارول و اونجرز (Marvel Cinematic Universe)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
         <div id="rowMarvel" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowGhibliSection" class="transition-all duration-300">
+      <section id="rowBatmanSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('ghibli', 'شاهکارهای استودیو جیبلی')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('batman', 'جهان سینمایی بتمن و گاتهام (Batman Universe)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              شاهکارهای هایائو میازاکی و استودیو جیبلی
+              جهان سینمایی بتمن و گاتهام (Batman Universe)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('ghibli', 'شاهکارهای استودیو جیبلی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('batman', 'جهان سینمایی بتمن و گاتهام (Batman Universe)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowBatman" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowLotrSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('lotr', 'دنیای حماسی ارباب حلقه‌ها و هابیت (Middle-earth)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              دنیای حماسی ارباب حلقه‌ها و هابیت (Middle-earth)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('lotr', 'دنیای حماسی ارباب حلقه‌ها و هابیت (Middle-earth)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowLotr" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowHarryPotterSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('harrypotter', 'دنیای جادویی هری پاتر و هاگوارتز (Harry Potter)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              دنیای جادویی هری پاتر و هاگوارتز (Harry Potter)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('harrypotter', 'دنیای جادویی هری پاتر و هاگوارتز (Harry Potter)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowHarryPotter" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowStarWarsSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('starwars', 'دنیای حماسی جنگ ستارگان (Star Wars)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              دنیای حماسی جنگ ستارگان (Star Wars)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('starwars', 'دنیای حماسی جنگ ستارگان (Star Wars)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowStarWars" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowFastFuriousSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('fastfurious', 'مجموعه فیلم‌های سریع و خشن (Fast & Furious)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              مجموعه فیلم‌های سریع و خشن (Fast & Furious)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('fastfurious', 'مجموعه فیلم‌های سریع و خشن (Fast & Furious)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowFastFurious" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowMissionImpossibleSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('missionimpossible', 'مجموعه ماموریت غیرممکن (Mission: Impossible)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              مجموعه ماموریت غیرممکن (Mission: Impossible)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('missionimpossible', 'مجموعه ماموریت غیرممکن (Mission: Impossible)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowMissionImpossible" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowJamesBondSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('jamesbond', 'مجموعه فیلم‌های جیمز باند ۰۰۷ (James Bond 007)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              مجموعه فیلم‌های جیمز باند ۰۰۷ (James Bond 007)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('jamesbond', 'مجموعه فیلم‌های جیمز باند ۰۰۷ (James Bond 007)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowJamesBond" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowGhibliSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('ghibli', 'شاهکارهای استودیو جیبلی (Studio Ghibli)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              شاهکارهای استودیو جیبلی (Studio Ghibli)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('ghibli', 'شاهکارهای استودیو جیبلی (Studio Ghibli)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
@@ -784,83 +1022,44 @@
         </div>
         <div id="rowAnimationHits" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowScifiSection" class="transition-all duration-300">
+      <section id="rowAnimeSeriesSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('scifi', 'برترین فیلم‌های علمی تخیلی')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('anime_series', 'محبوب‌ترین انیمه‌های سریالی جهان')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              برترین فیلم‌های علمی تخیلی و سفر در زمان
+              محبوب‌ترین انیمه‌های سریالی جهان
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('scifi', 'برترین فیلم‌های علمی تخیلی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('anime_series', 'محبوب‌ترین انیمه‌های سریالی جهان')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowScifi" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowAnimeSeries" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowHorrorSection" class="transition-all duration-300">
+      <section id="rowAnimeMoviesSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('horror', 'ترسناک‌ترین فیلم‌های سینما')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('anime_movies', 'برترین فیلم‌های سینمایی انیمه')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              ترسناک‌ترین و دلهره‌آورترین فیلم‌های سینما
+              برترین فیلم‌های سینمایی انیمه
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('horror', 'ترسناک‌ترین فیلم‌های سینما')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('anime_movies', 'برترین فیلم‌های سینمایی انیمه')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowHorror" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowAnimeMovies" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowKdramaSection" class="transition-all duration-300">
+      <section id="rowOscarWinnersSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('kdrama', 'شاهکارهای سینمای کره جنوبی')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('oscar_winners', 'فیلم‌های برنده جایزه اسکار')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              شاهکارهای سینمای کره جنوبی و کی‌دراما
+              فیلم‌های برنده جایزه اسکار
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('kdrama', 'شاهکارهای سینمای کره جنوبی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('oscar_winners', 'فیلم‌های برنده جایزه اسکار')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowKdrama" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowMiniseriesSection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('miniseries', 'برترین مینی‌سریال‌های شاهکار')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              برترین مینی‌سریال‌های شاهکار تاریخ
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('miniseries', 'برترین مینی‌سریال‌های شاهکار')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowMiniseries" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowTopSeriesSection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('top_series', 'برترین سریال‌های تاریخ تلویزیون')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              برترین سریال‌های تاریخ تلویزیون
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('top_series', 'برترین سریال‌های تاریخ تلویزیون')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowTopSeries" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowMafiaSection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('mafia', 'سینمای مافیایی و گانگستری')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              سینمای مافیایی و گانگستری ماندگار
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('mafia', 'سینمای مافیایی و گانگستری')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowMafia" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowOscarWinners" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
       <section id="rowMindbendingSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
@@ -875,161 +1074,57 @@
         </div>
         <div id="rowMindbending" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowActionHitsSection" class="transition-all duration-300">
+      <section id="rowMafiaSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('action_hits', 'مهیج‌ترین فیلم‌های اکشن')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('mafia', 'سینمای مافیایی و گانگستری')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              مهیج‌ترین فیلم‌های اکشن و تعقیب و گریز
+              سینمای مافیایی و گانگستری
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('action_hits', 'مهیج‌ترین فیلم‌های اکشن')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('mafia', 'سینمای مافیایی و گانگستری')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowActionHits" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowMafia" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
       <section id="rowMysterySection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('mystery', 'فیلم‌های کارآگاهی و معمایی')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('mystery', 'فیلم‌های کارآگاهی، جنایی و معمایی')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              فیلم‌های کارآگاهی، معمایی و گره‌گشایی
+              فیلم‌های کارآگاهی، جنایی و معمایی
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('mystery', 'فیلم‌های کارآگاهی و معمایی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('mystery', 'فیلم‌های کارآگاهی، جنایی و معمایی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
         <div id="rowMystery" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowOscarWinnersSection" class="transition-all duration-300">
+      <section id="rowScifiSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('oscar_winners', 'برگزیده فیلم‌های برنده جایزه اسکار')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('scifi', 'برترین فیلم‌های علمی تخیلی (Sci-Fi)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              برگزیده فیلم‌های برنده جایزه اسکار
+              برترین فیلم‌های علمی تخیلی (Sci-Fi)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('oscar_winners', 'برگزیده فیلم‌های برنده جایزه اسکار')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('scifi', 'برترین فیلم‌های علمی تخیلی (Sci-Fi)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowOscarWinners" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowScifi" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowDramaClassicsSection" class="transition-all duration-300">
+      <section id="rowHorrorSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('drama_classics', 'شاهکارهای درام کلاسیک')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('horror', 'ترسناک‌ترین فیلم‌های سینما (Horror)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              شاهکارهای درام، عمیق و تأثیرگذار سینما
+              ترسناک‌ترین فیلم‌های سینما (Horror)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('drama_classics', 'شاهکارهای درام کلاسیک')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('horror', 'ترسناک‌ترین فیلم‌های سینما (Horror)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowDramaClassics" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowDicaprioSection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('dicaprio', 'فیلم‌های برتر لئوناردو دی‌کاپریو')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              فیلم‌های برتر لئوناردو دی‌کاپریو (Leonardo DiCaprio)
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('dicaprio', 'فیلم‌های برتر لئوناردو دی‌کاپریو')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowDicaprio" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowKeanuSection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('keanu', 'فیلم‌های برتر کیانو ریوز')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              فیلم‌های برتر کیانو ریوز (Keanu Reeves)
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('keanu', 'فیلم‌های برتر کیانو ریوز')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowKeanu" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowTomHardySection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('tom_hardy', 'فیلم‌های برتر تام هاردی')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              فیلم‌های برتر تام هاردی (Tom Hardy)
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('tom_hardy', 'فیلم‌های برتر تام هاردی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowTomHardy" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowCillianSection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('cillian', 'آثار برگزیده کیلین مورفی')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              آثار برگزیده کیلین مورفی (Cillian Murphy)
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('cillian', 'آثار برگزیده کیلین مورفی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowCillian" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowPacinoDeNiroSection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('pacino_deniro', 'آثار آل پاچینو و رابرت دنیرو')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              آثار طلایی آل پاچینو و رابرت دنیرو
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('pacino_deniro', 'آثار آل پاچینو و رابرت دنیرو')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowPacinoDeNiro" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowDubbedSection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('dubbed', 'جدیدترین عناوین دوبله اختصاصی پارسی')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              جدیدترین عناوین دوبله اختصاصی پارسی
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('dubbed', 'جدیدترین عناوین دوبله اختصاصی پارسی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowDubbed" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowLatest2026Section" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('latest_2026', 'جدیدترین آثار سال ۲۰۲۵ و ۲۰۲۶')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              جدیدترین آثار سال ۲۰۲۶ و ۲۰۲۵
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('latest_2026', 'جدیدترین آثار سال ۲۰۲۵ و ۲۰۲۶')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowLatest2026" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
-      </section>
-      <section id="rowAnimeSeriesSection" class="transition-all duration-300">
-        <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('anime_series', 'محبوب‌ترین انیمه‌های سریالی جهان')" class="group cursor-pointer text-right">
-            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              محبوب‌ترین انیمه‌های سریالی جهان
-            </h2>
-          </button>
-          <button type="button" onclick="openCatalogWithCollection('anime_series', 'محبوب‌ترین انیمه‌های سریالی جهان')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
-            مشاهده همه
-          </button>
-        </div>
-        <div id="rowAnimeSeries" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowHorror" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
       <section id="rowWarEpicsSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
@@ -1044,6 +1139,32 @@
         </div>
         <div id="rowWarEpics" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
+      <section id="rowRomanceClassicsSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('romance_classics', 'عاشقانه‌های ماندگار تاریخ سینما')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              عاشقانه‌های ماندگار تاریخ سینما
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('romance_classics', 'عاشقانه‌های ماندگار تاریخ سینما')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowRomanceClassics" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowActionHitsSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('action_hits', 'مهیج‌ترین فیلم‌های اکشن و هیجان‌انگیز')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              مهیج‌ترین فیلم‌های اکشن و هیجان‌انگیز
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('action_hits', 'مهیج‌ترین فیلم‌های اکشن و هیجان‌انگیز')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowActionHits" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
       <section id="rowComedyHitsSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('comedy_hits', 'کمدی‌های خنده‌دار و سرگرم‌کننده')" class="group cursor-pointer text-right">
@@ -1057,18 +1178,70 @@
         </div>
         <div id="rowComedyHits" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowRomanceClassicsSection" class="transition-all duration-300">
+      <section id="rowKdramaSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
-          <button type="button" onclick="openCatalogWithCollection('romance_classics', 'عاشقانه‌های ماندگار تاریخ سینما')" class="group cursor-pointer text-right">
+          <button type="button" onclick="openCatalogWithCollection('kdrama', 'شاهکارهای سینما و سریال کره جنوبی (K-Drama)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
-              عاشقانه‌های ماندگار تاریخ سینما
+              شاهکارهای سینما و سریال کره جنوبی (K-Drama)
             </h2>
           </button>
-          <button type="button" onclick="openCatalogWithCollection('romance_classics', 'عاشقانه‌های ماندگار تاریخ سینما')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+          <button type="button" onclick="openCatalogWithCollection('kdrama', 'شاهکارهای سینما و سریال کره جنوبی (K-Drama)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
             مشاهده همه
           </button>
         </div>
-        <div id="rowRomanceClassics" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+        <div id="rowKdrama" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowMiniseriesSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('miniseries', 'برترین مینی‌سریال‌های شاهکار')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              برترین مینی‌سریال‌های شاهکار
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('miniseries', 'برترین مینی‌سریال‌های شاهکار')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowMiniseries" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowDubbedSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('dubbed', 'جدیدترین عناوین دوبله اختصاصی پارسی')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              جدیدترین عناوین دوبله اختصاصی پارسی
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('dubbed', 'جدیدترین عناوین دوبله اختصاصی پارسی')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowDubbed" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowCultClassicsSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('cult_classics', 'فیلم‌های کالت و شاهکارهای مهجور (Cult Classics)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              فیلم‌های کالت و شاهکارهای مهجور (Cult Classics)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('cult_classics', 'فیلم‌های کالت و شاهکارهای مهجور (Cult Classics)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowCultClassics" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
+      </section>
+      <section id="rowBlockbustersSection" class="transition-all duration-300">
+        <div class="px-4 flex items-center justify-between mb-2.5">
+          <button type="button" onclick="openCatalogWithCollection('blockbusters', 'بلاک‌باسترهای مدرن سینما (۲۰۲۰-۲۰۲۶)')" class="group cursor-pointer text-right">
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
+              بلاک‌باسترهای مدرن سینما (۲۰۲۰-۲۰۲۶)
+            </h2>
+          </button>
+          <button type="button" onclick="openCatalogWithCollection('blockbusters', 'بلاک‌باسترهای مدرن سینما (۲۰۲۰-۲۰۲۶)')" class="text-xs text-gray-400 hover:text-white transition font-medium cursor-pointer">
+            مشاهده همه
+          </button>
+        </div>
+        <div id="rowBlockbusters" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
       <section id="rowActorsSection" class="transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
@@ -1447,6 +1620,12 @@
           <button onclick="handleBookmarkAction()" id="detailBookmarkBtn" type="button" aria-label="افزودن به نشان‌ها" class="w-10 h-10 rounded-2xl bg-white/5 hover:bg-brandRed border border-white/10 flex items-center justify-center text-white transition duration-200">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <!-- Copy Deep Link Button -->
+          <button onclick="copyCurrentShareLink()" type="button" aria-label="کپی لینک" title="کپی لینک اثر" class="w-10 h-10 rounded-2xl bg-white/5 hover:bg-brandRed border border-white/10 flex items-center justify-center text-white transition duration-200">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
             </svg>
           </button>
           <!-- Share Deep Link Button -->
@@ -2226,17 +2405,22 @@
 
     async function fetchSharedItemPreview(slug) {
       if (!slug) return;
-      let item = (allItems || []).find(i => i.slug === slug);
+      let item = itemDetailsCache.get(slug) || (allItems || []).find(i => i.slug === slug) || homeShowcaseMap.get(slug);
       if (!item) {
         try {
-          const res = await fetch(`${PHP_API}content&slug=${encodeURIComponent(slug)}`);
-          if (res.ok) {
-            const data = await res.json();
-            if (data && (data.slug || data.title_fa)) item = data;
+          if (typeof loadItemFromShard === 'function') {
+            item = await loadItemFromShard(slug);
           }
         } catch(e) {}
       }
+      if (!item) {
+        try {
+          const res = await fetch(`data/details/${encodeURIComponent(slug)}.json`);
+          if (res.ok) item = await res.json();
+        } catch(e) {}
+      }
       if (item) {
+        itemDetailsCache.set(slug, item);
         populatePwaSharedPreview(item);
       }
     }
@@ -2540,39 +2724,44 @@
       gate.classList.remove('hidden');
     }
 
+    window.bypassPwaGateAndOpenItem = function() {
+      const gate = document.getElementById('pwaAppGate');
+      if (gate) gate.classList.add('hidden');
+      localStorage.setItem('mewvi_web_preview_bypassed', 'true');
+      const params = new URLSearchParams(window.location.search);
+      const hashSlug = window.location.hash.startsWith('#item/') ? decodeURIComponent(window.location.hash.replace('#item/', '')) : null;
+      const slug = params.get('item') || params.get('watch') || params.get('series') || params.get('movie') || hashSlug || localStorage.getItem('pending_pwa_item');
+      if (slug) {
+        handleCardClick(slug);
+      }
+    };
+
     window.copySharedTitleForSearch = function() {
       const input = document.getElementById('pwaCopyTitleInput');
       const btnText = document.getElementById('pwaCopyBtnText');
-      const title = input ? input.value : '';
-      if (title) {
-        const onSuccess = () => {
-          if (btnText) {
-            btnText.innerHTML = 'نام اثر کپی شد!';
-            setTimeout(() => {
-              if (btnText) btnText.innerHTML = 'کپی نام اثر برای جستجو';
-            }, 3000);
-          }
-          if (window.TermitoonStream && window.TermitoonStream.showToast) {
-            TermitoonStream.showToast('نام اثر کپی شد! وارد وب‌اپ شده و در سرچ پیست کنید.');
-          }
-        };
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(title).then(onSuccess).catch(() => {
-            input.type = 'text';
-            input.select();
-            document.execCommand('copy');
-            input.type = 'hidden';
-            onSuccess();
-          });
-        } else {
-          input.type = 'text';
-          input.select();
-          document.execCommand('copy');
-          input.type = 'hidden';
-          onSuccess();
-        }
+      const params = new URLSearchParams(window.location.search);
+      const hashSlug = window.location.hash.startsWith('#item/') ? decodeURIComponent(window.location.hash.replace('#item/', '')) : null;
+      const targetSlug = params.get('item') || params.get('watch') || hashSlug || localStorage.getItem('pending_pwa_item');
+      let title = (input && input.value) ? input.value : '';
+      if (!title && targetSlug) {
+        const item = itemDetailsCache.get(targetSlug) || (allItems || []).find(i => i.slug === targetSlug) || homeShowcaseMap.get(targetSlug);
+        title = item?.title_fa || item?.title_en || targetSlug;
       }
+      if (!title) title = 'Mewvi Cinema';
+
+      const onSuccess = () => {
+        if (btnText) {
+          btnText.innerHTML = 'نام اثر کپی شد!';
+          setTimeout(() => {
+            if (btnText) btnText.innerHTML = 'کپی نام اثر برای جستجو';
+          }, 3000);
+        }
+        if (window.TermitoonStream && window.TermitoonStream.showToast) {
+          TermitoonStream.showToast('نام اثر کپی شد! وارد وب‌اپ شده و در سرچ پیست کنید.');
+        }
+      };
+      copyTextToClipboard(title, 'نام اثر کپی شد!', title);
+      onSuccess();
     };
 
     window.installPwa = async function() {
@@ -2668,14 +2857,15 @@
     // INITIALIZATION & DATA LOADING (SERVER-AUTHORITATIVE)
     // =========================================================================
     async function init() {
-      try { checkPwaGate(); } catch(e) {}
       try { checkInAppBrowser(); } catch(e) {}
-      // Non-blocking auth & actors catalog load in background
+      try { checkPwaGate(); } catch(e) {}
       checkAuthSession().catch(() => {});
       loadActorsCatalogAsync().catch(() => {});
       try {
         setupEvents();
-        await loadAllItems();
+        await loadInstantHomeShowcase();
+        handleUrlParameters();
+        loadFullCatalogInBackground().catch(() => {});
       } catch(err) {
         console.error('App init error:', err);
       }
@@ -2740,10 +2930,6 @@
       const watchSlug = params.get('item') || params.get('watch') || params.get('series') || params.get('movie') || hashSlug || localStorage.getItem('pending_pwa_item');
 
       if (watchSlug) {
-        if (!isPwaStandalone() && localStorage.getItem('mewvi_web_preview_bypassed') !== 'true') {
-          try { localStorage.setItem('pending_pwa_item', watchSlug); } catch(e) {}
-          return;
-        }
         try { localStorage.removeItem('pending_pwa_item'); } catch(e) {}
         handleCardClick(watchSlug);
       } else if (cat) {
@@ -3045,39 +3231,52 @@
       }
 
       const rowMap = {
+        rowTopRatedMovies: showcase.top_rated_movies,
+        rowTopRatedSeries: showcase.top_rated_series,
         rowTop250: showcase.top250,
+        rowPopularMovies: showcase.popular_movies,
+        rowPopularSeries: showcase.popular_series,
+        rowCurrentlyAiring: showcase.currently_airing,
+        rowRecentlyReleased: showcase.recently_released,
+        rowLatest2026: showcase.latest_2026,
         rowNolan: showcase.nolan,
         rowScorsese: showcase.scorsese,
         rowTarantino: showcase.tarantino,
         rowFincher: showcase.fincher,
-        rowLotr: showcase.lotr,
-        rowBatman: showcase.batman,
-        rowHarryPotter: showcase.harrypotter,
-        rowMarvel: showcase.marvel,
-        rowGhibli: showcase.ghibli,
-        rowScifi: showcase.scifi,
-        rowHorror: showcase.horror,
-        rowKdrama: showcase.kdrama,
-        rowMiniseries: showcase.miniseries,
-        rowTopSeries: showcase.top_series,
-        rowMafia: showcase.mafia,
-        rowMindbending: showcase.mindbending,
-        rowActionHits: showcase.action_hits,
-        rowMystery: showcase.mystery,
-        rowOscarWinners: showcase.oscar_winners,
-        rowDramaClassics: showcase.drama_classics,
-        rowAnimationHits: showcase.animation_hits,
+        rowVilleneuve: showcase.villeneuve,
+        rowSpielberg: showcase.spielberg,
         rowDicaprio: showcase.dicaprio,
         rowKeanu: showcase.keanu,
         rowTomHardy: showcase.tom_hardy,
         rowCillian: showcase.cillian,
         rowPacinoDeNiro: showcase.pacino_deniro,
-        rowDubbed: showcase.dubbed,
-        rowLatest2026: showcase.latest_2026,
+        rowMarvel: showcase.marvel,
+        rowBatman: showcase.batman,
+        rowLotr: showcase.lotr,
+        rowHarryPotter: showcase.harrypotter,
+        rowStarWars: showcase.starwars,
+        rowFastFurious: showcase.fastfurious,
+        rowMissionImpossible: showcase.missionimpossible,
+        rowJamesBond: showcase.jamesbond,
+        rowGhibli: showcase.ghibli,
+        rowAnimationHits: showcase.animation_hits,
         rowAnimeSeries: showcase.anime_series,
+        rowAnimeMovies: showcase.anime_movies,
+        rowOscarWinners: showcase.oscar_winners,
+        rowMindbending: showcase.mindbending,
+        rowMafia: showcase.mafia,
+        rowMystery: showcase.mystery,
+        rowScifi: showcase.scifi,
+        rowHorror: showcase.horror,
         rowWarEpics: showcase.war_epics,
+        rowRomanceClassics: showcase.romance_classics,
+        rowActionHits: showcase.action_hits,
         rowComedyHits: showcase.comedy_hits,
-        rowRomanceClassics: showcase.romance_classics
+        rowKdrama: showcase.kdrama,
+        rowMiniseries: showcase.miniseries,
+        rowDubbed: showcase.dubbed,
+        rowCultClassics: showcase.cult_classics,
+        rowBlockbusters: showcase.blockbusters
       };
 
       const entries = Object.entries(rowMap);
@@ -4733,25 +4932,42 @@
       renderItemCast(item, 'detail');
       renderItemRelated(item, 'detail');
 
-      // BUTTON 1: تماشای آنلاین (Direct VLC Stream Launch with App Store Fallback)
-      btnWatchPrimary.onclick = () => {
-        const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
-        const streamUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video_480 || episode?.video || item.video_720 || item.video_1080 || item.video || (item.download_links?.[0]?.url);
+      // BUTTON 1: تماشای آنلاین (پخش مستقیم در مرورگر یا VLC)
+      btnWatchPrimary.onclick = async () => {
+        let v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
+        let streamUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video_480 || episode?.video || item.video_720 || item.video_1080 || item.video || (item.download_links?.[0]?.url);
+        
+        if (!streamUrl && item.slug) {
+          TermitoonStream.showToast('در حال بارگذاری لینک‌های پخش...');
+          const full = await fetchItemDetail(item.slug);
+          if (full) {
+            Object.assign(item, full);
+            populateVariantSelector(item, episode);
+            v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
+            streamUrl = v?.url || item.video_720 || item.video_1080 || item.video || (item.download_links?.[0]?.url);
+          }
+        }
+        
         const title = episode ? `${item.title_fa || item.title_en} - ${episode.title}` : (item.title_fa || item.title_en);
         const label = v ? `${title} (${v.label})` : `${title} (کیفیت مستقیم)`;
+        if (!streamUrl) {
+          TermitoonStream.showToast('لینکی برای پخش این عنوان یافت نشد.');
+          return;
+        }
         handleWatchOnlineWithUrl(streamUrl, label);
       };
 
-      // BUTTON 2: دانلود مستقیم (بدون منوی اضافه - مستقیم به Documents در آیفون و دانلودمنیجر در اندروید)
-      btnDownloadSecondary.onclick = () => {
-        const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
-        const dlUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video_480 || episode?.video || item.video_720 || item.video_1080 || item.video || (item.download_links?.[0]?.url);
-        const title = episode ? `${item.title_fa || item.title_en} - ${episode.title}` : (item.title_fa || item.title_en);
-        if (!dlUrl) {
-          TermitoonStream.showToast('لینکی برای دانلود این عنوان ثبت نشده است.');
-          return;
+      // BUTTON 2: دانلود فایل (باز کردن پنجره جامع دانلود)
+      btnDownloadSecondary.onclick = async () => {
+        if ((!item.download_links || item.download_links.length === 0) && item.slug) {
+          TermitoonStream.showToast('در حال بارگذاری مشخصات دانلود...');
+          const full = await fetchItemDetail(item.slug);
+          if (full) {
+            Object.assign(item, full);
+            populateVariantSelector(item, episode);
+          }
         }
-        handleDirectSmartDownload(dlUrl, title);
+        openDownloadModal(item, episode);
       };
     }
 
@@ -4829,15 +5045,25 @@
       pendingVlcStreamUrl = streamUrl;
       pendingVlcStreamTitle = title;
 
-      TermitoonStream.openInVLC(streamUrl, title);
-      TermitoonStream.showToast('در حال انتقال مستقیم به VLC Media Player...');
+      const ua = navigator.userAgent || '';
+      const platform = navigator.platform || '';
+      const maxTouchPoints = navigator.maxTouchPoints || 0;
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(ua) || (platform === 'MacIntel' && maxTouchPoints > 1);
 
-      if (vlcFallbackCheckTimer) clearTimeout(vlcFallbackCheckTimer);
-      vlcFallbackCheckTimer = setTimeout(() => {
-        if (document.visibilityState === 'visible') {
-          openVlcFallbackModal();
-        }
-      }, 1800);
+      if (isMobile) {
+        TermitoonStream.openInVLC(streamUrl, title);
+        TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
+
+        if (vlcFallbackCheckTimer) clearTimeout(vlcFallbackCheckTimer);
+        vlcFallbackCheckTimer = setTimeout(() => {
+          if (document.visibilityState === 'visible') {
+            openDesktopVlcModal(streamUrl, title);
+          }
+        }, 1800);
+      } else {
+        // Desktop / Laptop: Play directly inside high-performance Web Player!
+        openPlayerModal(streamUrl, title);
+      }
     };
 
     window.handleWatchOnline = function(item, episode = null) {
@@ -6123,27 +6349,60 @@
       TermitoonStream.showToast('تاریخچه بازدید با موفقیت پاک شد.');
     };
 
-    // Social Deep Link Share (Optimized for Android/iOS PWA launch & sharing)
+    function copyTextToClipboard(text, successMsg, fallbackMsg) {
+      if (!text) return;
+      const doToast = () => {
+        if (window.TermitoonStream && window.TermitoonStream.showToast) {
+          TermitoonStream.showToast(successMsg || 'لینک کپی شد.');
+        }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(doToast).catch(() => {
+          fallbackClipboardExec(text);
+          doToast();
+        });
+      } else {
+        fallbackClipboardExec(text);
+        doToast();
+      }
+    }
+
+    function fallbackClipboardExec(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      ta.style.top = '-9999px';
+      ta.setAttribute('readonly', '');
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+    }
+
+    window.copyCurrentShareLink = function() {
+      if (!currentActiveItem) return;
+      const slug = currentActiveItem.slug;
+      const basePath = (window.location.origin + window.location.pathname).replace(/index\.html$/, '');
+      const shareUrl = `${basePath}?item=${encodeURIComponent(slug)}`;
+      copyTextToClipboard(shareUrl, 'لینک اختصاصی عنوان با موفقیت کپی شد.', shareUrl);
+    };
+
     window.shareCurrentItem = function() {
       if (!currentActiveItem) return;
       const slug = currentActiveItem.slug;
-      const shareUrl = `${window.location.origin}/?item=${encodeURIComponent(slug)}#item/${encodeURIComponent(slug)}`;
+      const basePath = (window.location.origin + window.location.pathname).replace(/index\.html$/, '');
+      const shareUrl = `${basePath}?item=${encodeURIComponent(slug)}`;
       const title = currentActiveItem.title_fa || currentActiveItem.title_en || 'عنوان سینمایی';
 
-      if (navigator.share) {
+      copyTextToClipboard(shareUrl, 'لینک اختصاصی عنوان با موفقیت کپی شد.', shareUrl);
+
+      if (navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '')) {
         navigator.share({
           title: `تماشای ${title} در Mewvi`,
-          text: `پخش آنلاین و دانلود مستقیم «${title}» در وب‌اپلیکیشن Mewvi`,
+          text: `پخش آنلاین و دانلود مستقیم «${title}» در وب‌اپلیکیشن Mewvi: ${shareUrl}`,
           url: shareUrl
         }).catch(() => {});
-      } else if (navigator.clipboard) {
-        navigator.clipboard.writeText(shareUrl).then(() => {
-          TermitoonStream.showToast('لینک اختصاصی عنوان با موفقیت کپی شد.');
-        }).catch(() => {
-          TermitoonStream.showToast(shareUrl);
-        });
-      } else {
-        TermitoonStream.showToast(shareUrl);
       }
     };
 
