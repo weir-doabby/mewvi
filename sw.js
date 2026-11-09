@@ -3,7 +3,7 @@
  * Caches app shell, fonts, icons, and instant home showcase for blazing performance.
  */
 
-const CACHE_NAME = 'mewvi-pwa-v7';
+const CACHE_NAME = 'mewvi-pwa-v8';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -34,6 +34,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
+            console.log('Purging legacy cache:', key);
             return caches.delete(key);
           }
         })
@@ -58,6 +59,22 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Network-first for home_showcase and version.json to ensure instant updates and no stale caches
+  if (url.pathname.includes('home_showcase.json') || url.pathname.includes('version.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const respClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, respClone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request, { ignoreSearch: true }))
+    );
+    return;
+  }
+
   // Document Navigation (Deep links like /?item=slug or offline PWA launch)
   if (event.request.mode === 'navigate') {
     event.respondWith(
@@ -67,7 +84,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Stale-while-revalidate for static assets (with search params ignored for PWA queries)
+  // Stale-while-revalidate for static assets
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cached) => {
       const fetchPromise = fetch(event.request)
