@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html class="dark" dir="rtl" lang="fa">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+  <title>۲۵۰ فیلم برتر تاریخ سینما | IMDb Top 250 | Mewvi</title>
+  
+  <script src="js/tailwind.min.js"></script>
+  <link rel="stylesheet" href="css/vazirmatn.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            appDark: '#0a0a0f',
+            cardDark: '#12121a',
+            surfaceDark: '#181824',
+            brandRed: '#EF4444',
+            brandRedHover: '#DC2626',
+            brandYellow: '#FBBF24'
+          },
+          fontFamily: {
+            sans: ['Vazirmatn', 'system-ui', '-apple-system', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html, body, button, input, select, textarea {
+      font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif !important;
+      -webkit-font-smoothing: antialiased;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-appDark text-white font-sans antialiased pb-20 min-h-screen">
+
+  <!-- Top Sticky Header: Back Icon, Title, Count -->
+  <header class="sticky top-0 z-50 bg-appDark/95 backdrop-blur-md border-b border-white/10 px-4 py-3 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <!-- Back Icon Button (No text, only icon) -->
+        <a href="index.html" class="w-9 h-9 flex-shrink-0 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white border border-white/10 flex items-center justify-center transition shadow cursor-pointer" title="بازگشت">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <div class="h-4 w-px bg-white/10 hidden sm:block"></div>
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-black tracking-wider flex-shrink-0">IMDb</span>
+          <h1 class="text-sm sm:text-base font-extrabold text-white truncate">۲۵۰ فیلم برتر تاریخ سینما</h1>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <span id="resultCountBadge" class="text-xs font-bold text-gray-400 bg-white/5 border border-white/10 px-2.5 py-1 rounded-xl">۲۵۰ فیلم</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Simple Search and Filters (No hero box, no descriptions) -->
+  <section class="max-w-7xl mx-auto px-4 pt-4 pb-2">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <!-- Simple Search Bar -->
+      <div class="relative w-full sm:max-w-md">
+        <input id="searchInput" type="text" placeholder="جستجو در ۲۵۰ فیلم برتر..." class="w-full bg-white/5 border border-white/10 focus:border-amber-400 rounded-xl py-2 pr-9 pl-3 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none transition shadow-inner">
+        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </div>
+      </div>
+
+      <!-- Decade Filters -->
+      <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        <button onclick="setFilter('all')" data-filter="all" class="filter-pill active px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-black shadow transition whitespace-nowrap cursor-pointer">همه</button>
+        <button onclick="setFilter('top50')" data-filter="top50" class="filter-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition whitespace-nowrap cursor-pointer">رتبه ۱ تا ۵۰</button>
+        <button onclick="setFilter('classic')" data-filter="classic" class="filter-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition whitespace-nowrap cursor-pointer">قبل از ۱۹۸۰</button>
+        <button onclick="setFilter('90s')" data-filter="90s" class="filter-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition whitespace-nowrap cursor-pointer">دهه ۸۰ و ۹۰</button>
+        <button onclick="setFilter('21st')" data-filter="21st" class="filter-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition whitespace-nowrap cursor-pointer">قرن ۲۱</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Movies Grid Container (Normal Mewvi Cards, No Extra Buttons) -->
+  <main class="max-w-7xl mx-auto px-4 pt-3">
+    <div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+      <!-- Dynamically Rendered by JS -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden text-center py-16 px-4">
+      <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-3 text-gray-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      </div>
+      <h3 class="text-sm font-bold text-white mb-1">فیلمی با این مشخصات یافت نشد</h3>
+      <p class="text-xs text-gray-400">لطفاً عبارت دیگری را جستجو کنید.</p>
+    </div>
+  </main>
+
+  <script>
+    let allMovies = [];
+    let currentFilter = 'all';
+
+    function getRankBadgeHtml(rank) {
+      if (rank === 1) {
+        return `<span class="px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-400 to-yellow-300 text-black font-black text-[10px] shadow border border-yellow-200">#۱</span>`;
+      } else if (rank === 2) {
+        return `<span class="px-2 py-0.5 rounded-md bg-gradient-to-r from-slate-200 to-slate-400 text-black font-black text-[10px] shadow border border-slate-100">#۲</span>`;
+      } else if (rank === 3) {
+        return `<span class="px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-600 to-amber-500 text-white font-black text-[10px] shadow border border-amber-400/40">#۳</span>`;
+      } else if (rank <= 10) {
+        return `<span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-extrabold text-[10px] border border-amber-500/40">#${rank}</span>`;
+      }
+      return `<span class="px-2 py-0.5 rounded-md bg-black/70 text-gray-300 font-bold text-[10px] border border-white/15">#${rank}</span>`;
+    }
+
+    function createCard(item, index) {
+      const posterUrl = item.poster || 'icon.jpg';
+      const titleFa = item.title_fa || item.title_en || 'بدون نام';
+      const titleEn = item.title_en || '';
+      const year = item.year || '';
+      const rating = item.rating || '8.0';
+      const rank = item.rank || (index + 1);
+
+      return `
+        <article class="w-full group cursor-pointer" onclick="openItemDetails('${item.slug}')">
+          <!-- Standard 2:3 Poster Container -->
+          <div class="relative w-full aspect-[2/3] rounded-2xl overflow-hidden bg-surfaceDark border border-white/10 group-hover:border-amber-400/60 transition duration-200 shadow-lg">
+            <img src="${posterUrl}" alt="${titleFa}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='icon.jpg'">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none"></div>
+
+            <!-- Rating Badge Top-Left -->
+            <div class="absolute top-2 left-2 z-10">
+              <span class="px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-md text-amber-400 font-bold text-[10px] border border-white/10 flex items-center gap-1 shadow">
+                <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                <span>${rating}</span>
+              </span>
+            </div>
+
+            <!-- Rank Badge Top-Right -->
+            <div class="absolute top-2 right-2 z-10">
+              ${getRankBadgeHtml(rank)}
+            </div>
+          </div>
+
+          <!-- Titles Under Card (Persian Bold, English Subtitle) -->
+          <div class="mt-2 space-y-0.5">
+            <h3 class="text-xs sm:text-sm font-bold text-white group-hover:text-amber-400 truncate transition duration-150 leading-snug">
+              ${titleFa}
+            </h3>
+            <div class="flex items-center justify-between text-[11px] text-gray-400">
+              <span class="truncate max-w-[65%]">${titleEn}</span>
+              <span class="text-gray-300 font-medium">${year}</span>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function openItemDetails(slug) {
+      window.location.href = 'index.html#item/' + encodeURIComponent(slug);
+    }
+
+    function renderMovies(list) {
+      const grid = document.getElementById('moviesGrid');
+      const empty = document.getElementById('emptyState');
+      const badge = document.getElementById('resultCountBadge');
+
+      if (!list || list.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        if (badge) badge.textContent = '۰ مورد';
+        return;
+      }
+
+      empty.classList.add('hidden');
+      grid.innerHTML = list.map(createCard).join('');
+      if (badge) badge.textContent = `${list.length.toLocaleString('fa-IR')} فیلم`;
+    }
+
+    function applyFilterAndSearch() {
+      const q = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      
+      let filtered = [...allMovies];
+
+      if (currentFilter === 'top50') {
+        filtered = filtered.filter(it => (it.rank || 0) <= 50);
+      } else if (currentFilter === 'classic') {
+        filtered = filtered.filter(it => parseInt(it.year || 0) < 1980);
+      } else if (currentFilter === '90s') {
+        filtered = filtered.filter(it => {
+          const y = parseInt(it.year || 0);
+          return y >= 1980 && y < 2000;
+        });
+      } else if (currentFilter === '21st') {
+        filtered = filtered.filter(it => parseInt(it.year || 0) >= 2000);
+      }
+
+      if (q) {
+        filtered = filtered.filter(it => {
+          const fa = (it.title_fa || '').toLowerCase();
+          const en = (it.title_en || '').toLowerCase();
+          const sl = (it.slug || '').toLowerCase();
+          const rk = `رتبه ${it.rank || ''}`;
+          const yr = String(it.year || '');
+          return fa.includes(q) || en.includes(q) || sl.includes(q) || rk.includes(q) || yr.includes(q);
+        });
+      }
+
+      renderMovies(filtered);
+    }
+
+    window.setFilter = function(filterKey) {
+      currentFilter = filterKey;
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        if (btn.getAttribute('data-filter') === filterKey) {
+          btn.className = 'filter-pill active px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 text-black shadow transition whitespace-nowrap cursor-pointer';
+        } else {
+          btn.className = 'filter-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10 transition whitespace-nowrap cursor-pointer';
+        }
+      });
+      applyFilterAndSearch();
+    };
+
+    document.getElementById('searchInput').addEventListener('input', applyFilterAndSearch);
+
+    async function init() {
+      try {
+        const res = await fetch('data/home_showcase.json');
+        const data = await res.json();
+        allMovies = data.top250 || [];
+      } catch(e) {
+        try {
+          const res2 = await fetch('home_showcase.json');
+          const data2 = await res2.json();
+          allMovies = data2.top250 || [];
+        } catch(e2) {
+          console.error('Failed to load showcase data', e2);
+        }
+      }
+
+      renderMovies(allMovies);
+    }
+
+    init();
+  </script>
+</body>
+</html>

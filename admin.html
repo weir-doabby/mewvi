@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html class="dark" dir="rtl" lang="fa">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+  <title>پنل مدیریت و همگام‌سازی هوشمند | Mewvi</title>
+  
+  <script src="js/tailwind.min.js"></script>
+  <link rel="stylesheet" href="css/vazirmatn.css">
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            appDark: '#08080a',
+            cardDark: '#121217',
+            surfaceDark: '#16161c',
+            surfaceElevated: '#1e1e26',
+            brandRed: '#EF4444',
+            brandRedHover: '#DC2626',
+            brandYellow: '#FBBF24',
+            brandGreen: '#10B981',
+            brandBlue: '#3B82F6'
+          },
+          fontFamily: {
+            sans: ['Vazirmatn', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html, body, button, input, select, textarea {
+      font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-appDark text-white font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-brandRed selection:text-white">
+
+  <!-- ========================================================================= -->
+  <!-- 1. AUTHENTICATION LOCK SCREEN -->
+  <!-- ========================================================================= -->
+  <div id="adminAuthLockScreen" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-[#121217] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-right">
+      <div class="text-center space-y-3">
+        <div class="w-14 h-14 rounded-2xl bg-brandRed/15 border border-brandRed/30 flex items-center justify-center mx-auto text-brandRed shadow-lg shadow-brandRed/20">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-white tracking-tight">ورود به پنل مدیریت Mewvi</h2>
+          <p class="text-xs text-gray-400 mt-1">مدیریت و همگام‌سازی هوشمند خودکار چندسورس</p>
+        </div>
+      </div>
+
+      <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1.5">ایمیل مدیر</label>
+          <input id="adminEmailInput" type="email" required autocomplete="username" placeholder="admin@nodepads.com" class="w-full bg-[#181820] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brandRed transition">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-300 mb-1.5">رمز عبور</label>
+          <input id="adminPassInput" type="password" required autocomplete="current-password" placeholder="••••••••" class="w-full bg-[#181820] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brandRed transition">
+        </div>
+        <div id="loginErrorMsg" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl text-center font-medium"></div>
+        <button id="loginSubmitBtn" type="submit" class="w-full py-3.5 px-4 rounded-xl bg-brandRed hover:bg-brandRedHover text-white font-bold text-sm shadow-lg shadow-brandRed/30 transition flex items-center justify-center gap-2">
+          <span>ورود به پنل</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 2. ULTRA-LIGHT MAIN DASHBOARD -->
+  <!-- ========================================================================= -->
+  <div id="adminMainDashboard" class="hidden flex-1 flex flex-col">
+    
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 bg-[#0c0c10]/80 backdrop-blur-md border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2 group">
+          <div class="w-9 h-9 rounded-xl bg-brandRed/20 border border-brandRed/40 flex items-center justify-center text-brandRed font-black text-lg group-hover:scale-105 transition">
+            M
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-white text-base tracking-tight">Mewvi</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-brandRed/20 text-brandRed font-bold border border-brandRed/30">پنل هوشمند</span>
+            </div>
+            <p class="text-[10px] text-gray-400 hidden sm:block">سیستم همگام‌سازی چندگانه خودکار</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>سرور آماده و آنلاین</span>
+        </div>
+        <a href="index.html" class="px-3.5 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white transition font-medium flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          <span>مشاهده سایت</span>
+        </a>
+        <button onclick="handleAdminLogout()" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-bold transition">
+          خروج
+        </button>
+      </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+
+      <!-- Live Database Stats Cards -->
+      <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="p-4 rounded-2xl bg-[#121217] border border-white/10 space-y-1 shadow-lg">
+          <span class="text-xs text-gray-400 font-medium">کل عناوین آرشیو</span>
+          <div id="statTotal" class="text-xl sm:text-2xl font-black text-white font-mono">...</div>
+          <span class="text-[10px] text-emerald-400">۲۹,۶۰۸ عنوان فعال</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-[#121217] border border-white/10 space-y-1 shadow-lg">
+          <span class="text-xs text-gray-400 font-medium">فیلم‌های سینمایی</span>
+          <div id="statMovies" class="text-xl sm:text-2xl font-black text-white font-mono">...</div>
+          <span class="text-[10px] text-gray-500">کیفیت 1080p و 720p</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-[#121217] border border-white/10 space-y-1 shadow-lg">
+          <span class="text-xs text-gray-400 font-medium">سریال‌ها و فصول</span>
+          <div id="statSeries" class="text-xl sm:text-2xl font-black text-white font-mono">...</div>
+          <span class="text-[10px] text-indigo-400">فصل‌ها و قسمت‌ها</span>
+        </div>
+        <div class="p-4 rounded-2xl bg-[#121217] border border-white/10 space-y-1 shadow-lg">
+          <span class="text-xs text-gray-400 font-medium">انیمیشن و انیمه</span>
+          <div id="statAnime" class="text-xl sm:text-2xl font-black text-white font-mono">...</div>
+          <span class="text-[10px] text-amber-400">دوبله و زیرنویس</span>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- MANUAL CONTENT MANAGEMENT SECTION (LIGHTWEIGHT, FAST & RESPONSIVE)         -->
+      <!-- ========================================================================= -->
+      <section class="p-5 sm:p-7 rounded-3xl bg-[#121217] border border-white/10 shadow-2xl space-y-5">
+        <div class="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-white/10">
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-brandRed"></span>
+              <span>مدیریت، ویرایش و حذف دستی عناوین</span>
+            </h2>
+            <p class="text-xs text-gray-400 mt-0.5">مشاهده تمام عناوین، جستجوی آنی، ویرایش مشخصات و لینک‌ها، و حذف فوری</p>
+          </div>
+          <button onclick="openNewModal()" type="button" class="px-4 py-2 rounded-xl bg-brandRed hover:bg-brandRedHover text-white text-xs font-bold transition flex items-center gap-1.5 shadow-lg shadow-brandRed/20 active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+            <span>افزودن اثر جدید</span>
+          </button>
+        </div>
+
+        <!-- Search & Category Filters in Admin -->
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <div class="relative flex-1 min-w-[240px]">
+            <input id="adminSearchInput" oninput="debounceAdminSearch()" type="search" placeholder="جستجوی سریع عنوان، نام انگلیسی، اسلاگ، کارگردان یا بازیگر..." class="w-full bg-[#181820] border border-white/10 text-xs sm:text-sm text-white placeholder-gray-500 rounded-2xl px-4 py-2.5 focus:outline-none focus:border-brandRed transition">
+          </div>
+          <select id="adminCategorySelect" onchange="filterAdminCategory(this.value)" class="bg-[#181820] border border-white/10 text-xs sm:text-sm text-gray-200 rounded-2xl px-3.5 py-2.5 focus:outline-none focus:border-brandRed cursor-pointer shrink-0">
+            <option value="all">تمام دسته‌بندی‌ها (همه عناوین)</option>
+            <option value="movies">فیلم‌های سینمایی</option>
+            <option value="series">سریال‌ها</option>
+            <option value="animation">انیمیشن و کارتون</option>
+            <option value="anime">انیمه‌ها</option>
+          </select>
+        </div>
+
+        <!-- Titles Table / List -->
+        <div class="overflow-x-auto no-scrollbar rounded-2xl border border-white/10 bg-[#0e0e13]">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-white/[0.04] text-gray-400 font-bold border-b border-white/10">
+              <tr>
+                <th class="p-3 w-14">پوستر</th>
+                <th class="p-3">عنوان اثر</th>
+                <th class="p-3 hidden sm:table-cell">دسته‌بندی</th>
+                <th class="p-3 hidden md:table-cell">کارگردان</th>
+                <th class="p-3">نمره</th>
+                <th class="p-3 text-center w-28">عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="adminTitlesTableBody" class="divide-y divide-white/5 text-gray-200">
+              <tr>
+                <td colspan="6" class="p-6 text-center text-gray-500">در حال دریافت فهرست عناوین...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination & Jump Controls -->
+        <div class="flex items-center justify-between flex-wrap gap-2.5 pt-2">
+          <div class="flex items-center gap-1.5">
+            <button id="adminPrevPageBtn" onclick="changeAdminPage(-1)" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-gray-300 disabled:opacity-30 disabled:pointer-events-none transition">
+              صفحه قبلی
+            </button>
+            <button id="adminNextPageBtn" onclick="changeAdminPage(1)" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-gray-300 disabled:opacity-30 disabled:pointer-events-none transition">
+              صفحه بعدی
+            </button>
+          </div>
+          <span id="adminPaginationText" class="text-xs text-gray-400 font-mono">صفحه ۱ از ...</span>
+          <div class="flex items-center gap-1.5 text-xs text-gray-400">
+            <span>برو به صفحه:</span>
+            <input id="adminJumpPageInput" type="number" min="1" max="2000" placeholder="۱" class="w-16 bg-[#181820] border border-white/10 rounded-xl px-2 py-1 text-center text-white font-mono text-xs focus:outline-none focus:border-brandRed" onkeydown="if(event.key==='Enter') jumpAdminPage()">
+            <button onclick="jumpAdminPage()" class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition">برو</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Nightly Chat Update Workflow Notice Card -->
+      <section class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-950/30 via-slate-900 to-indigo-950/30 border border-blue-500/20 text-xs space-y-2">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div class="flex items-center gap-2 text-blue-400 font-bold">
+            <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+            <span>گردش کار به‌روزرسانی شبانه سایت (ساعت ۱۲ شب در همین چت)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="downloadBackupCatalog()" class="px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium border border-white/10 text-[11px] transition flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>دانلود فایل کاتالوگ (series.json)</span>
+            </button>
+          </div>
+        </div>
+        <p class="text-gray-300 leading-relaxed text-[11px] sm:text-xs">
+          جهت پایداری کامل و جلوگیری از مصرف ناخواسته رم یا کرش هاست، نیازی به اجرای کران‌جاب سنگین نیست. هر شب ساعت ۱۲ در همین چت پیام دهید تا فایل به‌روزرسانی‌شده قسمت‌های جدید آماده شود و شما فقط با آپلود و جایگزینی فایل در cPanel، سایت را آپدیت نمایید.
+        </p>
+      </section>
+
+    </main>
+        </div>
+
+        <!-- Search & Category Filters in Admin -->
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <div class="relative flex-1 min-w-[220px]">
+            <input id="adminSearchInput" oninput="debounceAdminSearch()" type="search" placeholder="جستجوی سریع عنوان، نام انگلیسی، اسلاگ یا کارگردان..." class="w-full bg-[#181820] border border-white/10 text-xs sm:text-sm text-white placeholder-gray-500 rounded-2xl px-4 py-2.5 focus:outline-none focus:border-brandRed transition">
+          </div>
+          <select id="adminCategorySelect" onchange="filterAdminCategory(this.value)" class="bg-[#181820] border border-white/10 text-xs sm:text-sm text-gray-200 rounded-2xl px-3.5 py-2.5 focus:outline-none focus:border-brandRed cursor-pointer shrink-0">
+            <option value="all">تمام دسته‌بندی‌ها (۲۹,۶۰۸)</option>
+            <option value="movies">فیلم‌های سینمایی</option>
+            <option value="series">سریال‌ها</option>
+            <option value="animation">انیمیشن و کارتون</option>
+            <option value="anime">انیمه‌ها</option>
+          </select>
+        </div>
+
+        <!-- Titles Table / List -->
+        <div class="overflow-x-auto no-scrollbar rounded-2xl border border-white/10 bg-[#0e0e13]">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-white/[0.04] text-gray-400 font-bold border-b border-white/10">
+              <tr>
+                <th class="p-3 w-14">پوستر</th>
+                <th class="p-3">عنوان اثر</th>
+                <th class="p-3 hidden sm:table-cell">دسته‌بندی</th>
+                <th class="p-3 hidden md:table-cell">کارگردان</th>
+                <th class="p-3">نمره</th>
+                <th class="p-3 text-center w-28">عملیات</th>
+              </tr>
+            </thead>
+            <tbody id="adminTitlesTableBody" class="divide-y divide-white/5 text-gray-200">
+              <tr>
+                <td colspan="6" class="p-6 text-center text-gray-500">در حال دریافت فهرست عناوین...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination & Jump Controls -->
+        <div class="flex items-center justify-between flex-wrap gap-2.5 pt-2">
+          <div class="flex items-center gap-1.5">
+            <button id="adminPrevPageBtn" onclick="changeAdminPage(-1)" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-gray-300 disabled:opacity-30 disabled:pointer-events-none transition">
+              صفحه قبلی
+            </button>
+            <button id="adminNextPageBtn" onclick="changeAdminPage(1)" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs text-gray-300 disabled:opacity-30 disabled:pointer-events-none transition">
+              صفحه بعدی
+            </button>
+          </div>
+          <span id="adminPaginationText" class="text-xs text-gray-400 font-mono">صفحه ۱ از ...</span>
+          <div class="flex items-center gap-1.5 text-xs text-gray-400">
+            <span>برو به صفحه:</span>
+            <input id="adminJumpPageInput" type="number" min="1" max="2000" placeholder="۱" class="w-16 bg-[#181820] border border-white/10 rounded-xl px-2 py-1 text-center text-white font-mono text-xs focus:outline-none focus:border-brandRed" onkeydown="if(event.key==='Enter') jumpAdminPage()">
+            <button onclick="jumpAdminPage()" class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold transition">برو</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Utility Tools Bar -->
+      <section class="flex items-center justify-between flex-wrap gap-3 pt-2 text-xs text-gray-400">
+        <div class="flex items-center gap-2">
+          <span>دانلود مستقیم نسخه پشتیبان:</span>
+          <button onclick="downloadBackupCatalog()" class="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-medium border border-white/10 transition flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            <span>دانلود series.json</span>
+          </button>
+        </div>
+        <div class="text-[11px] text-gray-500">
+          Mewvi UltraLight v4 • مجهز به هسته اختصاصی هوشمند
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-xs text-gray-600 border-t border-white/5">
+      Mewvi Streaming Platform • مدیریت یکپارچه کاتالوگ
+    </footer>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: ویرایش و ثبت اثر دستی (EDIT / CREATE TITLE MODAL)                 -->
+  <!-- ========================================================================= -->
+  <div id="adminEditModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="w-full max-w-2xl bg-[#121217] border border-white/10 rounded-3xl p-5 sm:p-7 shadow-2xl space-y-4 my-8 text-right">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <h3 id="modalTitleText" class="text-base font-bold text-white flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-brandRed"></span>
+          <span>ویرایش عنوان</span>
+        </h3>
+        <button onclick="closeEditModal()" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition">
+          
+        </button>
+      </div>
+
+      <form id="adminEditForm" onsubmit="saveItemModal(event)" class="space-y-4 text-xs">
+        <input type="hidden" id="editItemIsNew" value="0">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">شناسه یکتا (Slug انگلیسی)</label>
+            <input id="editSlug" required placeholder="interstellar-2014" class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white font-mono placeholder-gray-500 focus:outline-none focus:border-brandRed">
+          </div>
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">دسته‌بندی</label>
+            <select id="editCategory" class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brandRed">
+              <option value="movies">فیلم‌های سینمایی (movies)</option>
+              <option value="series">سریال‌ها (series)</option>
+              <option value="animation">انیمیشن و کارتون (animation)</option>
+              <option value="anime">انیمه ژاپنی (anime)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">عنوان فارسی</label>
+            <input id="editTitleFa" required placeholder="میان‌ستاره‌ای" class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brandRed">
+          </div>
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">عنوان انگلیسی</label>
+            <input id="editTitleEn" placeholder="Interstellar" class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brandRed">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">سال انتشار</label>
+            <input id="editYear" placeholder="2024" class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brandRed">
+          </div>
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">امتیاز IMDb</label>
+            <input id="editRating" placeholder="8.6" class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brandRed">
+          </div>
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">کارگردان</label>
+            <input id="editDirector" placeholder="کریستوفر نولان (Christopher Nolan)" class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brandRed">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">بازیگران (با کاما جدا شود)</label>
+          <input id="editActors" placeholder="متیو مک‌کانهی، ان هتوی، جسیکا چستین" class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brandRed">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">لینک پوستر (عمودی)</label>
+            <input id="editPoster" placeholder="https://..." class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brandRed" dir="ltr">
+          </div>
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">لینک کاور پس‌زمینه (افقی)</label>
+            <input id="editBackdrop" placeholder="https://..." class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brandRed" dir="ltr">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">لینک استریم مستقیم 720p</label>
+            <input id="editVideo720" placeholder="https://..." class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brandRed" dir="ltr">
+          </div>
+          <div>
+            <label class="block text-gray-300 font-semibold mb-1">لینک استریم مستقیم 1080p</label>
+            <input id="editVideo1080" placeholder="https://..." class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-brandRed" dir="ltr">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-300 font-semibold mb-1">خلاصه داستان</label>
+          <textarea id="editDescription" rows="3" placeholder="توضیحات و خلاصه داستان کامل اثر..." class="w-full bg-[#181820] border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brandRed leading-relaxed"></textarea>
+        </div>
+
+        <div>
+          <details class="group border border-white/10 rounded-xl bg-white/[0.02] p-2.5">
+            <summary class="text-xs font-bold text-gray-300 cursor-pointer flex items-center justify-between select-none">
+              <span>مدیریت پیشرفته فصول، قسمت‌ها و لینک‌ها (Seasons JSON)</span>
+              <span class="text-brandRed text-[11px] group-open:rotate-180 transition-transform">&darr;</span>
+            </summary>
+            <div class="mt-2 space-y-1">
+              <span class="text-[10px] text-gray-400 block">ساختار فصول و لینک قسمت‌های سریال به صورت JSON (اختیاری برای ویرایش دستی دقیق):</span>
+              <textarea id="editSeasonsJson" rows="5" placeholder='[{"season_number":1,"season_name":"فصل اول","episodes":[{"episode_number":1,"title":"قسمت اول","video":"https://..."}]}]' class="w-full bg-[#101015] border border-white/10 rounded-lg p-2 text-white font-mono text-[11px] focus:outline-none focus:border-brandRed" dir="ltr"></textarea>
+            </div>
+          </details>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-white/10">
+          <button onclick="closeEditModal()" type="button" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-semibold transition">
+            انصراف
+          </button>
+          <button id="modalSaveBtn" type="submit" class="px-5 py-2 rounded-xl bg-brandRed hover:bg-brandRedHover text-white font-bold transition shadow-lg shadow-brandRed/20">
+            ذخیره تغییرات
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. DASHBOARD LOGIC (ULTRA-LIGHTWEIGHT & FAST) -->
+  <!-- ========================================================================= -->
+  <script>
+    const PHP_API = 'api.php?action=';
+
+    function showToast(msg, isError = false) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const el = document.createElement('div');
+      el.className = `px-4 py-2.5 rounded-2xl text-xs font-bold text-white shadow-xl transition-all duration-300 flex items-center gap-2 ${
+        isError ? 'bg-rose-600' : 'bg-emerald-600'
+      }`;
+      el.textContent = msg;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => el.remove(), 300);
+      }, 3500);
+    }
+
+    // Check Authentication on Page Load
+    async function checkAuth() {
+      try {
+        const res = await fetch(`${PHP_API}auth_me`, { cache: 'no-cache' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.user && data.user.role === 'admin') {
+            document.getElementById('adminAuthLockScreen').classList.add('hidden');
+            document.getElementById('adminMainDashboard').classList.remove('hidden');
+            loadDatabaseStats();
+            loadAdminTitles(1);
+            return;
+          }
+        }
+      } catch(e) {}
+      document.getElementById('adminAuthLockScreen').classList.remove('hidden');
+      document.getElementById('adminMainDashboard').classList.add('hidden');
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('adminEmailInput').value.trim();
+      const password = document.getElementById('adminPassInput').value;
+      const btn = document.getElementById('loginSubmitBtn');
+      const errEl = document.getElementById('loginErrorMsg');
+
+      errEl.classList.add('hidden');
+      btn.disabled = true;
+      btn.innerHTML = 'در حال بررسی...';
+
+      try {
+        const res = await fetch(`${PHP_API}login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok && data && data.user && data.user.role === 'admin') {
+          document.getElementById('adminAuthLockScreen').classList.add('hidden');
+          document.getElementById('adminMainDashboard').classList.remove('hidden');
+          loadDatabaseStats();
+          loadAdminTitles(1);
+        } else {
+          errEl.textContent = data.error || 'اطلاعات ورود نامعتبر است.';
+          errEl.classList.remove('hidden');
+        }
+      } catch(err) {
+        errEl.textContent = 'خطا در برقراری ارتباط با سرور.';
+        errEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>ورود به پنل</span>';
+      }
+    }
+
+    async function handleAdminLogout() {
+      try {
+        await fetch(`${PHP_API}logout`, { method: 'POST' });
+      } catch(e) {}
+      window.location.reload();
+    }
+
+    // Load Live DB Stats (<5ms from server, zero browser lag!)
+    async function loadDatabaseStats() {
+      try {
+        const res = await fetch(`${PHP_API}stats`, { cache: 'no-cache' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.stats) {
+            const s = data.stats;
+            document.getElementById('statTotal').textContent = (s.total || 0).toLocaleString('fa-IR');
+            document.getElementById('statMovies').textContent = (s.movies || 0).toLocaleString('fa-IR');
+            document.getElementById('statSeries').textContent = (s.series || 0).toLocaleString('fa-IR');
+            document.getElementById('statAnime').textContent = ((s.animation || 0) + (s.anime || 0)).toLocaleString('fa-IR');
+            
+            if (s.last_updated) {
+              document.getElementById('lastSyncTimeText').textContent = `آخرین سینک: ${s.last_updated}`;
+            }
+          }
+        }
+      } catch(e) {}
+    }
+
+    function appendTerminalLog(msg, level = 'info', time = '') {
+      const box = document.getElementById('terminalLogBox');
+      if (!box) return;
+
+      const t = time || new Date().toLocaleTimeString('fa-IR');
+      const row = document.createElement('div');
+      row.className = 'flex items-start gap-2 py-0.5';
+
+      let colorClass = 'text-gray-300';
+      if (level === 'success') colorClass = 'text-emerald-400 font-bold';
+      else if (level === 'warning') colorClass = 'text-amber-400';
+      else if (level === 'error') colorClass = 'text-rose-400 font-bold';
+      else if (level === 'done') colorClass = 'text-cyan-300 font-extrabold bg-cyan-950/30 p-2 rounded-xl border border-cyan-800/40 my-1';
+
+      row.innerHTML = `
+        <span class="text-gray-500 shrink-0 text-[10px] font-mono">[${t}]</span>
+        <span class="${colorClass} break-words whitespace-pre-wrap">${msg}</span>
+      `;
+      box.appendChild(row);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function clearConsoleLog() {
+      const box = document.getElementById('terminalLogBox');
+      if (box) box.innerHTML = '<div class="text-gray-500">کنسول پاک‌سازی شد.</div>';
+    }
+
+    // Master Multi-Source Smart Sync Trigger
+    let isSyncRunning = false;
+
+    async function startSmartSync() {
+      if (isSyncRunning) return;
+      isSyncRunning = true;
+
+      const btn = document.getElementById('masterSyncBtn');
+      const icon = document.getElementById('syncIcon');
+      const txt = document.getElementById('syncBtnText');
+
+      btn.disabled = true;
+      icon.classList.add('animate-spin');
+      txt.textContent = 'در حال همگام‌سازی چندگانه خودکار...';
+
+      appendTerminalLog('شروع فرآیند همگام‌سازی چندگانه...', 'info');
+
+      try {
+        const syncToken = 'simba_sync_nodepads_2026';
+        let response = await fetch(`smart_sync.php?token=${syncToken}`, {
+          credentials: 'same-origin'
+        });
+
+        if (!response.ok) {
+          // Fallback to api.php action
+          response = await fetch(`api.php?action=smart_sync&token=${syncToken}`, {
+            credentials: 'same-origin'
+          });
+        }
+
+        if (!response.ok) throw new Error(`HTTP ${response.status} - خطای سرور`);
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // keep last incomplete chunk
+
+          for (const line of lines) {
+            const cleanLine = line.trim();
+            if (cleanLine.startsWith('data:')) {
+              try {
+                const data = JSON.parse(cleanLine.substring(5).trim());
+                appendTerminalLog(data.msg, data.level, data.time);
+                if (data.level === 'done') {
+                  showToast('همگام‌سازی با موفقیت انجام شد!');
+                  loadDatabaseStats();
+                }
+              } catch(e) {}
+            } else if (cleanLine.length > 0) {
+              appendTerminalLog(cleanLine, 'info');
+            }
+          }
+        }
+      } catch(err) {
+        appendTerminalLog(`خطا در اجرای همگام‌سازی: ${err.message}`, 'error');
+        showToast('خطا در فرآیند همگام‌سازی', true);
+      } finally {
+        isSyncRunning = false;
+        btn.disabled = false;
+        icon.classList.remove('animate-spin');
+        txt.textContent = 'شروع همگام‌سازی چندگانه خودکار (Smart Multi-Sync)';
+        loadDatabaseStats();
+      }
+    }
+
+    function downloadBackupCatalog() {
+      window.open('data/series.json', '_blank');
+    }
+
+    // =========================================================================
+    // MANUAL CONTENT MANAGEMENT LOGIC (ULTRA-LIGHTWEIGHT PAGINATED CRUD)
+    // =========================================================================
+    let currentAdminPage = 1;
+    let totalAdminPages = 1;
+    let currentAdminCategory = 'all';
+    let adminSearchTimer = null;
+    let activeEditingRawJson = null;
+
+    async function loadAdminTitles(page = 1) {
+      currentAdminPage = page;
+      const tbody = document.getElementById('adminTitlesTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-gray-500">در حال بارگذاری عناوین...</td></tr>';
+
+      try {
+        const res = await fetch(`${PHP_API}admin_list&page=${page}&category=${encodeURIComponent(currentAdminCategory)}`, { 
+          cache: 'no-cache',
+          credentials: 'same-origin'
+        });
+        if (res.status === 401) {
+          document.getElementById('adminAuthLockScreen').classList.remove('hidden');
+          document.getElementById('adminMainDashboard').classList.add('hidden');
+          return;
+        }
+        const data = await res.json();
+        if (data && data.success && Array.isArray(data.items)) {
+          totalAdminPages = data.pages || 1;
+          const pagText = document.getElementById('adminPaginationText');
+          if (pagText) pagText.textContent = `صفحه ${page} از ${totalAdminPages}`;
+          
+          const jumpInput = document.getElementById('adminJumpPageInput');
+          if (jumpInput) jumpInput.value = page;
+
+          const prevBtn = document.getElementById('adminPrevPageBtn');
+          const nextBtn = document.getElementById('adminNextPageBtn');
+          if (prevBtn) prevBtn.disabled = (page <= 1);
+          if (nextBtn) nextBtn.disabled = (page >= totalAdminPages);
+
+          renderAdminTable(data.items);
+        }
+      } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-rose-400">خطا در دریافت اطلاعات از سرور</td></tr>';
+      }
+    }
+
+    function filterAdminCategory(cat) {
+      currentAdminCategory = cat || 'all';
+      loadAdminTitles(1);
+    }
+
+    function jumpAdminPage() {
+      const input = document.getElementById('adminJumpPageInput');
+      const val = parseInt(input?.value || '1', 10);
+      if (val >= 1 && val <= totalAdminPages) {
+        loadAdminTitles(val);
+      } else {
+        showToast(`لطفاً صفحه‌ای بین ۱ تا ${totalAdminPages} وارد کنید.`);
+      }
+    }
+
+    function renderAdminTable(items) {
+      const tbody = document.getElementById('adminTitlesTableBody');
+      if (!tbody) return;
+
+      if (!items || items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-gray-400">عنوانی یافت نشد.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = items.map(it => `
+        <tr class="hover:bg-white/[0.02] transition">
+          <td class="p-2.5">
+            <div class="w-10 h-14 rounded-lg overflow-hidden bg-neutral-900 border border-white/10 shrink-0">
+              <img src="${it.poster || 'icon.jpg'}" alt="" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='icon.jpg'">
+            </div>
+          </td>
+          <td class="p-2.5">
+            <div class="font-bold text-white line-clamp-1">${it.title_fa || it.title_en}</div>
+            <div class="text-[10px] text-gray-400 font-mono line-clamp-1" dir="ltr">${it.title_en || it.slug}</div>
+          </td>
+          <td class="p-2.5 hidden sm:table-cell text-gray-300">
+            <span class="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px]">${it.category_type}</span>
+          </td>
+          <td class="p-2.5 hidden md:table-cell text-gray-400 text-[11px] line-clamp-1">
+            ${it.director || '—'}
+          </td>
+          <td class="p-2.5 font-mono font-bold text-amber-400 text-xs">
+            ${it.rating || '—'}
+          </td>
+          <td class="p-2.5 text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openEditModal('${it.slug}')" class="px-2.5 py-1 rounded-lg bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 font-bold transition">
+                ویرایش
+              </button>
+              <button onclick="deleteAdminItem('${it.slug}')" class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-bold transition">
+                حذف
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function changeAdminPage(delta) {
+      const target = currentAdminPage + delta;
+      if (target >= 1 && target <= totalAdminPages) {
+        loadAdminTitles(target);
+      }
+    }
+
+    function debounceAdminSearch() {
+      clearTimeout(adminSearchTimer);
+      adminSearchTimer = setTimeout(async () => {
+        const input = document.getElementById('adminSearchInput');
+        const q = (input?.value || '').trim();
+        if (!q) {
+          loadAdminTitles(1);
+          return;
+        }
+
+        const tbody = document.getElementById('adminTitlesTableBody');
+        tbody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-gray-500">در حال جستجو...</td></tr>';
+
+        try {
+          const res = await fetch(`${PHP_API}admin_search&q=${encodeURIComponent(q)}`);
+          const data = await res.json();
+          if (data && data.success) {
+            renderAdminTable(data.results || []);
+          }
+        } catch(e) {
+          tbody.innerHTML = '<tr><td colspan="6" class="p-5 text-center text-rose-400">خطا در جستجو</td></tr>';
+        }
+      }, 250);
+    }
+
+    async function openEditModal(slug) {
+      activeEditingRawJson = null;
+      document.getElementById('modalTitleText').textContent = 'ویرایش اثر: ' + slug;
+      document.getElementById('editItemIsNew').value = '0';
+      document.getElementById('editSlug').readOnly = true;
+
+      try {
+        const res = await fetch(`${PHP_API}admin_get&slug=${encodeURIComponent(slug)}`);
+        const data = await res.json();
+        if (data && data.success && data.item) {
+          const it = data.item;
+          activeEditingRawJson = it;
+          document.getElementById('editSlug').value = it.slug || '';
+          document.getElementById('editCategory').value = it.category_type || 'movies';
+          document.getElementById('editTitleFa').value = it.title_fa || '';
+          document.getElementById('editTitleEn').value = it.title_en || '';
+          document.getElementById('editYear').value = it.year || '';
+          document.getElementById('editRating').value = it.rating || '';
+          document.getElementById('editDirector').value = it.director || '';
+          document.getElementById('editActors').value = Array.isArray(it.actors) ? it.actors.join('، ') : (it.actors || '');
+          document.getElementById('editPoster').value = it.poster || '';
+          document.getElementById('editBackdrop').value = it.backdrop || '';
+          document.getElementById('editVideo720').value = it.video_720 || '';
+          document.getElementById('editVideo1080').value = it.video_1080 || '';
+          document.getElementById('editDescription').value = it.description || '';
+          const seasonsField = document.getElementById('editSeasonsJson');
+          if (seasonsField) {
+            seasonsField.value = (it.seasons && Array.isArray(it.seasons) && it.seasons.length > 0) ? JSON.stringify(it.seasons, null, 2) : '';
+          }
+
+          document.getElementById('adminEditModal').classList.remove('hidden');
+        } else {
+          showToast('اطلاعات عنوان یافت نشد', true);
+        }
+      } catch(e) {
+        showToast('خطا در دریافت جزئیات اثر', true);
+      }
+    }
+
+    function openNewModal() {
+      activeEditingRawJson = null;
+      document.getElementById('modalTitleText').textContent = 'افزودن اثر جدید';
+      document.getElementById('editItemIsNew').value = '1';
+      document.getElementById('editSlug').readOnly = false;
+      document.getElementById('adminEditForm').reset();
+      const seasonsField = document.getElementById('editSeasonsJson');
+      if (seasonsField) seasonsField.value = '';
+      document.getElementById('adminEditModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('adminEditModal').classList.add('hidden');
+    }
+
+    async function saveItemModal(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('modalSaveBtn');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال ذخیره‌سازی...';
+
+      const isNew = document.getElementById('editItemIsNew').value === '1';
+      const slug = document.getElementById('editSlug').value.trim();
+      const category_type = document.getElementById('editCategory').value;
+      const title_fa = document.getElementById('editTitleFa').value.trim();
+      const title_en = document.getElementById('editTitleEn').value.trim();
+      const year = document.getElementById('editYear').value.trim();
+      const rating = document.getElementById('editRating').value.trim();
+      const director = document.getElementById('editDirector').value.trim();
+      const actorsRaw = document.getElementById('editActors').value.trim();
+      const actors = actorsRaw ? actorsRaw.split(/[,،]/).map(s => s.trim()).filter(Boolean) : [];
+      const poster = document.getElementById('editPoster').value.trim();
+      const backdrop = document.getElementById('editBackdrop').value.trim();
+      const video_720 = document.getElementById('editVideo720').value.trim();
+      const video_1080 = document.getElementById('editVideo1080').value.trim();
+      const description = document.getElementById('editDescription').value.trim();
+
+      const seasonsRaw = (document.getElementById('editSeasonsJson')?.value || '').trim();
+      let customSeasons = null;
+      if (seasonsRaw) {
+        try {
+          customSeasons = JSON.parse(seasonsRaw);
+        } catch(err) {
+          showToast('خطا در ساختار JSON فصول سریال. لطفاً صحت نگارش را بررسی کنید.', true);
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'ذخیره تغییرات';
+          return;
+        }
+      }
+
+      const itemPayload = {
+        ...(activeEditingRawJson || {}),
+        slug,
+        category_type,
+        title_fa,
+        title_en,
+        year,
+        rating,
+        director,
+        actors,
+        poster,
+        backdrop,
+        video_720,
+        video_1080,
+        description,
+        ...(customSeasons ? { seasons: customSeasons } : {})
+      };
+
+      try {
+        const res = await fetch(`${PHP_API}upsert`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(itemPayload)
+        });
+        const data = await res.json();
+        if (res.ok && data && data.success) {
+          showToast(isNew ? 'اثر جدید با موفقیت افزوده شد.' : 'تغییرات با موفقیت ذخیره شد.');
+          closeEditModal();
+          loadDatabaseStats();
+          loadAdminTitles(currentAdminPage);
+        } else {
+          showToast(data.error || 'خطا در ذخیره‌سازی', true);
+        }
+      } catch(err) {
+        showToast('خطا در برقراری ارتباط با سرور', true);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'ذخیره تغییرات';
+      }
+    }
+
+    async function deleteAdminItem(slug) {
+      if (!confirm(`آیا از حذف کامل این عنوان («${slug}») از پایگاه داده و آرشیو اطمینان دارید؟`)) return;
+
+      try {
+        const res = await fetch(`${PHP_API}delete&slug=${encodeURIComponent(slug)}`, {
+          method: 'POST'
+        });
+        const data = await res.json();
+        if (res.ok && data && data.success) {
+          showToast(`عنوان «${slug}» با موفقیت حذف شد.`);
+          loadDatabaseStats();
+          loadAdminTitles(currentAdminPage);
+        } else {
+          showToast(data.error || 'خطا در حذف اثر', true);
+        }
+      } catch(e) {
+        showToast('خطا در ارتباط با سرور', true);
+      }
+    }
+
+    // Initialize
+    checkAuth();
+  </script>
+</body>
+</html>

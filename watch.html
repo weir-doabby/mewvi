@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html class="dark" dir="rtl" lang="fa">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
+  <title>پخش آنلاین | Mewvi</title>
+  
+  <script src="js/tailwind.min.js"></script>
+  <link rel="stylesheet" href="css/vazirmatn.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'">
+  
+  <!-- Hls.js for Cross-browser Adaptive Streaming -->
+  <script src="js/hls.min.js"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            appDark: '#000000',
+            cardDark: '#121217',
+            surfaceDark: '#1a1a24',
+            brandRed: '#EF4444',
+            brandRedHover: '#DC2626',
+            brandYellow: '#FBBF24'
+          },
+          fontFamily: {
+            sans: ['Vazirmatn', 'system-ui', '-apple-system', 'sans-serif'],
+            display: ['Vazirmatn', 'system-ui', '-apple-system', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html, body, button, input, select, textarea {
+      font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-black text-white font-sans antialiased pb-24 overflow-x-hidden">
+
+  <!-- Top Bar -->
+  <header class="sticky top-0 z-50 bg-black/95 backdrop-blur-md px-4 py-3 border-b border-white/5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="index.html" aria-label="بازگشت به خانه" title="بازگشت به خانه" class="w-9 h-9 rounded-2xl bg-[#16161c] border border-white/10 text-gray-300 hover:text-white flex items-center justify-center transition">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </a>
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl overflow-hidden bg-black border border-white/10 flex items-center justify-center p-0.5">
+          <img src="/logo.jpg" alt="Mewvi" class="w-full h-full object-cover rounded-lg">
+        </div>
+        <span class="font-bold text-sm tracking-tight text-white">Mewvi Player</span>
+      </a>
+    </div>
+
+    <a href="index.html" class="text-xs text-brandRed font-medium hover:underline">
+      بازگشت به خانه
+    </a>
+  </header>
+
+  <!-- Player Layout -->
+  <main class="max-w-6xl mx-auto px-4 pt-4 space-y-4">
+    
+    <!-- Stream Info Banner -->
+    <div id="playbackStatusBanner" class="hidden text-center py-2 px-4 rounded-2xl bg-brandRed/10 border border-brandRed/20 text-xs text-brandRed font-medium flex items-center justify-between">
+      <span id="playbackStatusText"></span>
+      <button type="button" onclick="document.getElementById('playbackStatusBanner').classList.add('hidden')" class="text-xs hover:underline text-gray-400">بستن</button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Video Player (2 Cols on Desktop) -->
+      <div class="lg:col-span-2 space-y-4">
+        <div class="relative w-full aspect-video rounded-3xl overflow-hidden bg-neutral-900 border border-white/10 shadow-2xl">
+          <video id="mainVideo" controls playsinline preload="metadata" class="w-full h-full object-contain">
+            <source id="videoSource" src="" type="video/mp4">
+            مرورگر شما از پخش این ویدیو پشتیبانی نمی‌کند.
+          </video>
+        </div>
+
+        <!-- Quality Switcher Pills (1080p / 720p) -->
+        <div id="qualitySwitcherRow" class="hidden flex items-center gap-2 px-1">
+          <span class="text-xs text-gray-400 font-medium">کیفیت پخش:</span>
+          <button id="qualBtn1080" type="button" onclick="switchWatchQuality('1080p')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-brandRed text-white">1080p Full HD</button>
+          <button id="qualBtn720" type="button" onclick="switchWatchQuality('720p')" class="px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-white/5 text-gray-300 hover:text-white">720p HD</button>
+        </div>
+
+        <!-- Info Card (User Specification) -->
+        <div class="p-5 sm:p-6 rounded-3xl bg-[#121217] border border-white/10 space-y-4">
+          <div class="flex items-start justify-between gap-4 flex-wrap">
+            <div>
+              <h1 id="seriesTitleEn" class="text-xl sm:text-2xl font-extrabold text-white"></h1>
+              <h2 id="seriesTitleFa" class="text-sm sm:text-base font-bold text-gray-400 mt-0.5"></h2>
+            </div>
+            
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="yearBadge" class="text-xs px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-gray-300 font-mono"></span>
+              <span id="durationBadge" class="text-xs px-2.5 py-1 rounded-xl bg-white/5 border border-white/10 text-gray-300"></span>
+              <span id="ageRatingBadge" class="text-xs px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 text-gray-200 font-bold"></span>
+              <span id="ratingBadge" class="text-xs px-2.5 py-1 rounded-xl bg-amber-400/20 text-amber-400 font-bold flex items-center gap-1"></span>
+            </div>
+          </div>
+
+          <!-- Badges / Tags -->
+          <div id="watchBadgesRow" class="flex items-center gap-2 flex-wrap pt-1">
+            <!-- Dynamic Badges -->
+          </div>
+
+          <!-- PURE TEXT BUTTONS WITHOUT VECTOR / LOGO (AS REQUESTED) -->
+          <div class="mt-4 pt-4 border-t border-white/5 flex flex-wrap items-center gap-2.5">
+            <button id="btnOpenVlc" type="button" class="px-5 py-2.5 bg-brandRed hover:bg-brandRedHover text-white text-xs font-bold rounded-xl shadow transition">
+              تماشا آنلاین در VLC
+            </button>
+            <button id="btnOpenDlModal" type="button" class="px-5 py-2.5 bg-[#16161c] hover:bg-white/10 border border-white/10 text-white text-xs font-bold rounded-xl transition">
+              دانلود فایل
+            </button>
+            <button id="btnDlM3u" type="button" class="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white rounded-xl transition">
+              دریافت فایل M3U
+            </button>
+            <button id="btnCopyVlc" type="button" class="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 hover:text-white rounded-xl transition">
+              کپی لینک استریم
+            </button>
+          </div>
+
+          <!-- Synopsis -->
+          <div class="pt-2 text-right">
+            <div class="text-xs font-bold text-brandRed mb-1 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-brandRed shrink-0"></span>
+              <span>خلاصه داستان:</span>
+            </div>
+            <p id="seriesDesc" class="text-xs sm:text-sm text-gray-300 leading-relaxed"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Playlist / Titles Sidebar (1 Col) -->
+      <div class="p-5 rounded-3xl bg-[#121217] border border-white/10 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-white/5">
+          <span class="text-xs font-bold text-white">انتخاب عنوان:</span>
+          <select id="seriesDropdown" class="bg-[#16161c] border border-white/10 text-xs text-white rounded-xl px-2.5 py-1.5 focus:outline-none">
+            <!-- Injected -->
+          </select>
+        </div>
+
+        <div id="watchSeasonRow" class="hidden flex items-center justify-between pb-2 border-b border-white/5">
+          <span class="text-xs font-bold text-gray-300">انتخاب فصل:</span>
+          <select id="watchSeasonDropdown" onchange="handleWatchSeasonChange(this.value)" class="bg-[#16161c] border border-white/10 text-xs text-white rounded-xl px-2.5 py-1 focus:outline-none">
+            <!-- Injected -->
+          </select>
+        </div>
+
+        <div class="text-xs text-gray-400 font-medium" id="epCountText">فهرست قسمت‌ها</div>
+        <div id="playlistItems" class="space-y-2 max-h-[500px] overflow-y-auto no-scrollbar">
+          <!-- Injected -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Download Modal -->
+  <div id="downloadModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-[#121217] border border-white/10 rounded-3xl p-6 shadow-2xl space-y-5 text-right">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div>
+          <h3 id="dlModalTitle" class="text-base font-bold text-white">دانلود فایل فیلم</h3>
+          <p class="text-xs text-gray-400 mt-0.5">کیفیت‌های آماده برای دانلود مستقیم با ترافیک نیم‌بهاء</p>
+        </div>
+        <button onclick="closeDownloadModal()" class="w-8 h-8 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div id="dlQualitiesList" class="space-y-2.5"></div>
+
+      <!-- Download Manager Tip -->
+      <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 text-[11px] text-gray-300 leading-relaxed flex items-start gap-2.5">
+        <span class="text-brandRed text-sm shrink-0"></span>
+        <span id="dlOsAdviceText">برای دانلود بدون قطعی و با بالاترین سرعت، از دانلودمنیجر مخصوص سیستم‌عامل خود استفاده فرمایید.</span>
+      </div>
+
+      <div class="pt-2 border-t border-white/5 flex justify-end">
+        <button onclick="closeDownloadModal()" type="button" class="px-4 py-2 rounded-xl bg-white/5 text-xs text-gray-300">بستن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VLC Streaming Popup Modal -->
+  <div id="vlcModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-[#121217] border border-white/10 rounded-3xl p-6 shadow-2xl space-y-4 text-right animate-in fade-in duration-150">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div>
+          <h3 id="vlcModalTitle" class="text-base font-bold text-white">پخش مستقیم در VLC</h3>
+          <p class="text-[11px] text-gray-400 mt-0.5">پخش مستقیم و باکیفیت در اپلیکیشن VLC</p>
+        </div>
+        <button onclick="closeVlcModal()" aria-label="بستن" class="w-8 h-8 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-[11px] font-semibold text-gray-300">کیفیت استریم مورد نظر را انتخاب کنید:</div>
+        <div id="vlcQualityButtons" class="space-y-2"></div>
+      </div>
+
+      <div class="pt-2 border-t border-white/5 grid grid-cols-2 gap-2">
+        <button id="vlcCopyBtn" type="button" class="py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-200 hover:text-white font-semibold transition text-center">
+          کپی آدرس استریم
+        </button>
+        <button id="vlcM3uBtn" type="button" class="py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-200 hover:text-white font-semibold transition text-center">
+          دریافت فایل M3U
+        </button>
+      </div>
+
+      <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-[11px] text-gray-400 leading-relaxed">
+        راهنما: برای پخش بدون بافر، اپلیکیشن VLC را روی دستگاه خود نصب داشته باشید.
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop VLC Prompt Modal -->
+  <div id="desktopVlcModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-[#121217] border border-white/10 rounded-3xl p-6 shadow-2xl space-y-4 text-right animate-in fade-in duration-150">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div>
+          <h3 id="desktopVlcModalTitle" class="text-base font-bold text-white">درخواست باز کردن در VLC</h3>
+          <p id="desktopVlcModalSub" class="text-[11px] text-gray-400 mt-0.5">درخواست اجرای استریم به سیستم دسکتاپ ارسال شد</p>
+        </div>
+        <button onclick="closeDesktopVlcModal()" aria-label="بستن" class="w-8 h-8 rounded-2xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-brandRed/10 border border-brandRed/20 text-xs text-gray-200 leading-relaxed space-y-1.5">
+        <div class="font-bold text-brandRed">درخواست ادامه با VLC ارسال گردید</div>
+        <p>لطفاً در پنجره تایید مرورگر، دکمه <strong class="text-white">Open VLC media player</strong> یا <strong class="text-white">تأیید</strong> را انتخاب نمایید تا پخش ویدیو در نرم‌افزار VLC آغاز شود.</p>
+      </div>
+
+      <div class="space-y-2 pt-1">
+        <button id="btnDesktopVlcRetry" type="button" class="w-full py-3 px-4 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-md">
+          <span>تلاش مجدد برای باز کردن با VLC</span>
+        </button>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btnDesktopVlcCopy" type="button" class="py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-200 hover:text-white font-semibold transition text-center">
+            کپی آدرس استریم
+          </button>
+          <button id="btnDesktopVlcM3u" type="button" class="py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-200 hover:text-white font-semibold transition text-center">
+            دریافت فایل M3U
+          </button>
+        </div>
+      </div>
+
+      <div class="pt-2 text-center">
+        <button onclick="closeDesktopVlcModal()" type="button" class="text-xs text-gray-400 hover:text-white transition">
+          بستن پنجره
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/stream.js"></script>
+  <script>
+    let allSeries = [];
+    let currentSeries = null;
+    let currentSeasonIndex = 0;
+    let currentEpIndex = 0;
+    let activeQuality = '1080p';
+
+    const API_BASE = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+
+    const mainVideo = document.getElementById('mainVideo');
+    const videoSource = document.getElementById('videoSource');
+    const seriesTitleEn = document.getElementById('seriesTitleEn');
+    const seriesTitleFa = document.getElementById('seriesTitleFa');
+    const yearBadge = document.getElementById('yearBadge');
+    const durationBadge = document.getElementById('durationBadge');
+    const ageRatingBadge = document.getElementById('ageRatingBadge');
+    const ratingBadge = document.getElementById('ratingBadge');
+    const watchBadgesRow = document.getElementById('watchBadgesRow');
+    const seriesDesc = document.getElementById('seriesDesc');
+    const seriesDropdown = document.getElementById('seriesDropdown');
+    const watchSeasonRow = document.getElementById('watchSeasonRow');
+    const watchSeasonDropdown = document.getElementById('watchSeasonDropdown');
+    const playlistItems = document.getElementById('playlistItems');
+    const epCountText = document.getElementById('epCountText');
+    const btnOpenVlc = document.getElementById('btnOpenVlc');
+    const btnOpenDlModal = document.getElementById('btnOpenDlModal');
+    const btnDlM3u = document.getElementById('btnDlM3u');
+    const btnCopyVlc = document.getElementById('btnCopyVlc');
+    const downloadModal = document.getElementById('downloadModal');
+    const vlcModal = document.getElementById('vlcModal');
+    const qualitySwitcherRow = document.getElementById('qualitySwitcherRow');
+    const qualBtn1080 = document.getElementById('qualBtn1080');
+    const qualBtn720 = document.getElementById('qualBtn720');
+
+    async function parseResponseJson(res) {
+      if (!res) return null;
+      const text = await res.text();
+      if (text.trim().startsWith('<')) return null;
+      try {
+        return JSON.parse(text);
+      } catch(e) {
+        return null;
+      }
+    }
+
+    async function init() {
+      let items = [];
+      const endpoints = [
+        API_BASE + '/api/series?t=' + Date.now(),
+        'api.php?action=get_series&t=' + Date.now(),
+        'data/series.json?t=' + Date.now(),
+        'series.json?t=' + Date.now()
+      ];
+
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep);
+          if (res.ok) {
+            const data = await parseResponseJson(res);
+            if (Array.isArray(data) && data.length > 0) {
+              items = data;
+              break;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // Merge local admin catalog
+      try {
+        const localCatalog = JSON.parse(localStorage.getItem('termitoon_admin_catalog') || '[]');
+        if (Array.isArray(localCatalog) && localCatalog.length > 0) {
+          localCatalog.forEach(ci => {
+            const idx = items.findIndex(s => s.slug === ci.slug);
+            if (idx >= 0) items[idx] = ci;
+            else items.unshift(ci);
+          });
+        }
+      } catch(e) {}
+
+      allSeries = Array.isArray(items) ? items : [];
+
+      if (allSeries.length === 0) {
+        const main = document.querySelector('main');
+        if (main) {
+          main.innerHTML = `
+            <div class="max-w-md mx-auto py-20 text-center space-y-4">
+              <div class="w-16 h-16 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto text-gray-400">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-white">آرشیو پخش در حال بارگذاری است</h2>
+                <p class="text-xs text-gray-400 mt-1">عنوانی برای پخش یافت نشد. به صفحه اصلی بازگردید.</p>
+              </div>
+              <a href="index.html" class="inline-block px-5 py-2.5 rounded-xl bg-brandRed text-white text-xs font-bold transition hover:bg-brandRedHover">
+                بازگشت به صفحه اصلی
+              </a>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      seriesDropdown.innerHTML = '';
+      allSeries.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.slug;
+        opt.textContent = `${s.title_fa || s.title_en}`;
+        seriesDropdown.appendChild(opt);
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      const reqSlug = params.get('series');
+      const reqEp = parseInt(params.get('ep') || '0', 10);
+
+      let chosen = allSeries.find(s => s.slug === reqSlug) || allSeries[0];
+      if (chosen) {
+        seriesDropdown.value = chosen.slug;
+        selectSeries(chosen, 0, reqEp);
+      }
+    }
+
+    function selectSeries(series, seasonIdx = 0, epIndex = 0) {
+      currentSeries = series;
+      currentSeasonIndex = seasonIdx;
+
+      document.title = `پخش ${series.title_fa || series.title_en} | Mewvi`;
+      seriesTitleEn.textContent = series.title_en || 'عنوان انگلیسی';
+      seriesTitleFa.textContent = series.title_fa || '';
+      yearBadge.textContent = series.year || '2024';
+      durationBadge.textContent = series.duration || '90 min';
+      ageRatingBadge.textContent = `رده سنی: ${series.age_rating || 'PG-13'}`;
+      ratingBadge.innerHTML = `
+        <svg class="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+        <span>${series.rating || '8.0'} / 10</span>
+      `;
+      seriesDesc.textContent = series.description || '';
+
+      // Badges
+      watchBadgesRow.innerHTML = '';
+      const allBadges = [...(series.tags || []), ...(series.genres || [])];
+      allBadges.forEach(b => {
+        const span = document.createElement('span');
+        span.className = 'px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-gray-300 text-xs font-medium';
+        span.textContent = b;
+        watchBadgesRow.appendChild(span);
+      });
+
+      // Seasons Setup
+      if (series.seasons && series.seasons.length > 1) {
+        watchSeasonRow.classList.remove('hidden');
+        watchSeasonDropdown.innerHTML = '';
+        series.seasons.forEach((s, idx) => {
+          const opt = document.createElement('option');
+          opt.value = idx;
+          opt.textContent = s.title || `فصل ${idx + 1}`;
+          watchSeasonDropdown.appendChild(opt);
+        });
+        watchSeasonDropdown.value = seasonIdx;
+      } else {
+        watchSeasonRow.classList.add('hidden');
+      }
+
+      const activeEps = getActiveSeasonEpisodes();
+      currentEpIndex = activeEps.length > 0 ? Math.max(0, Math.min(epIndex, activeEps.length - 1)) : 0;
+
+      renderPlaylist();
+      loadEpisodeMedia();
+    }
+
+    function getActiveSeasonEpisodes() {
+      if (!currentSeries) return [];
+      if (currentSeries.seasons && currentSeries.seasons.length > 0) {
+        const s = currentSeries.seasons[currentSeasonIndex] || currentSeries.seasons[0];
+        return s.episodes || [];
+      }
+      return currentSeries.episodes || [];
+    }
+
+    window.handleWatchSeasonChange = function(val) {
+      currentSeasonIndex = parseInt(val, 10) || 0;
+      currentEpIndex = 0;
+      renderPlaylist();
+      loadEpisodeMedia();
+    };
+
+    function loadEpisodeMedia() {
+      const activeEps = getActiveSeasonEpisodes();
+      const ep = activeEps[currentEpIndex];
+      const target = ep || currentSeries;
+      if (!target) return;
+
+      const has1080 = !!(target.video_1080 || target.video);
+      const has720 = !!target.video_720;
+
+      if (has1080 && has720) {
+        qualitySwitcherRow.classList.remove('hidden');
+        activeQuality = '1080p';
+        updateQualityPillStyles();
+      } else {
+        qualitySwitcherRow.classList.add('hidden');
+        activeQuality = has1080 ? '1080p' : '720p';
+      }
+
+      let activeUrl = getActiveVideoUrl();
+      if (activeUrl) {
+        attachAndPlaySource(activeUrl, ep?.thumb || currentSeries.backdrop || currentSeries.poster || '');
+      }
+    }
+
+    let hlsInstance = null;
+    function attachAndPlaySource(url, posterUrl = '', resumePos = null) {
+      if (!url) return;
+
+      if (posterUrl) {
+        mainVideo.poster = posterUrl;
+      }
+
+      const isHls = url.includes('.m3u8');
+
+      if (hlsInstance) {
+        hlsInstance.destroy();
+        hlsInstance = null;
+      }
+
+      const storageKey = `termitoon_pos_${currentSeries?.slug || 'unknown'}_s${currentSeasonIndex}_e${currentEpIndex}`;
+      const savedTime = resumePos !== null ? resumePos : parseFloat(localStorage.getItem(storageKey) || '0');
+
+      if (isHls && window.Hls && Hls.isSupported()) {
+        hlsInstance = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true
+        });
+        hlsInstance.loadSource(url);
+        hlsInstance.attachMedia(mainVideo);
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
+          if (savedTime > 15) {
+            mainVideo.currentTime = savedTime;
+            showResumeBanner(savedTime);
+          }
+        });
+      } else if (isHls && mainVideo.canPlayType('application/vnd.apple.mpegurl')) {
+        mainVideo.src = url;
+        if (savedTime > 15) {
+          mainVideo.addEventListener('loadedmetadata', function onMeta() {
+            mainVideo.currentTime = savedTime;
+            showResumeBanner(savedTime);
+          }, { once: true });
+        }
+      } else {
+        if (mainVideo.hasAttribute('src')) {
+          mainVideo.removeAttribute('src');
+        }
+        videoSource.src = url;
+        mainVideo.load();
+        if (savedTime > 15) {
+          mainVideo.addEventListener('loadedmetadata', function onMeta() {
+            if (savedTime < (mainVideo.duration - 20)) {
+              mainVideo.currentTime = savedTime;
+              showResumeBanner(savedTime);
+            }
+          }, { once: true });
+        }
+      }
+
+      // Track playback progress
+      mainVideo.ontimeupdate = () => {
+        if (mainVideo.currentTime > 5 && !mainVideo.paused) {
+          localStorage.setItem(storageKey, Math.floor(mainVideo.currentTime).toString());
+        }
+      };
+    }
+
+    function showResumeBanner(seconds) {
+      const banner = document.getElementById('playbackStatusBanner');
+      const text = document.getElementById('playbackStatusText');
+      if (banner && text) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+        text.textContent = `پخش از دقیقه ${mins}:${secs} ادامه یافت.`;
+        banner.classList.remove('hidden');
+        setTimeout(() => { banner.classList.add('hidden'); }, 6000);
+      }
+    }
+
+    function getActiveVideoUrl() {
+      const activeEps = getActiveSeasonEpisodes();
+      const ep = activeEps[currentEpIndex];
+      const target = ep || currentSeries;
+      if (!target) return '';
+      const links = Array.isArray(target.download_links) ? target.download_links : [];
+
+      if (activeQuality === '720p') {
+        const link720 = links.find(l => (l.quality || '').includes('720'));
+        if (link720 && link720.url) return link720.url;
+        if (target.video_720 && !target.video_720.toLowerCase().includes('480')) return target.video_720;
+      } else if (activeQuality === '1080p') {
+        const link1080 = links.find(l => (l.quality || '').includes('1080'));
+        if (link1080 && link1080.url) return link1080.url;
+        if (target.video_1080 && !target.video_1080.toLowerCase().includes('480')) return target.video_1080;
+      } else if (activeQuality === '480p') {
+        const link480 = links.find(l => (l.quality || '').includes('480'));
+        if (link480 && link480.url) return link480.url;
+        if (target.video_480) return target.video_480;
+      }
+
+      return target.video_720 || target.video_1080 || target.video || (links[0]?.url) || '';
+    }
+
+    window.switchWatchQuality = function(q) {
+      activeQuality = q;
+      updateQualityPillStyles();
+      const url = getActiveVideoUrl();
+      if (url) {
+        const currentTime = mainVideo.currentTime;
+        attachAndPlaySource(url, '', currentTime);
+        mainVideo.play().catch(() => {});
+        TermitoonStream.showToast(`کیفیت ${q} انتخاب شد.`);
+      }
+    };
+
+    function updateQualityPillStyles() {
+      if (activeQuality === '1080p') {
+        qualBtn1080.className = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-brandRed text-white';
+        qualBtn720.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-white/5 text-gray-300 hover:text-white';
+      } else {
+        qualBtn720.className = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-brandRed text-white';
+        qualBtn1080.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold transition bg-white/5 text-gray-300 hover:text-white';
+      }
+    }
+
+    function renderPlaylist() {
+      playlistItems.innerHTML = '';
+      const episodes = getActiveSeasonEpisodes();
+      epCountText.textContent = episodes.length > 0 ? `${episodes.length} قسمت موجود است` : 'نسخه کامل فیلم';
+
+      if (episodes.length === 0) {
+        playlistItems.innerHTML = `
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/5 text-xs text-gray-300">
+            نسخه کامل سینمایی آماده پخش
+          </div>
+        `;
+        return;
+      }
+
+      episodes.forEach((ep, idx) => {
+        const item = document.createElement('div');
+        const isActive = idx === currentEpIndex;
+        item.className = `flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition ${
+          isActive ? 'bg-brandRed/20 border-brandRed text-white' : 'bg-white/5 border-white/5 text-gray-300 hover:bg-white/10'
+        }`;
+        item.onclick = () => {
+          currentEpIndex = idx;
+          renderPlaylist();
+          loadEpisodeMedia();
+        };
+
+        item.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <span class="text-xs font-bold ${isActive ? 'text-brandRed' : 'text-gray-500'}">${ep.number || (idx + 1)}</span>
+            <div>
+              <div class="text-xs font-semibold">${ep.title || 'قسمت ' + (idx + 1)}</div>
+              <div class="text-[10px] text-gray-400">${ep.duration || 'کیفیت بالا'}</div>
+            </div>
+          </div>
+        `;
+        playlistItems.appendChild(item);
+      });
+    }
+
+    seriesDropdown.addEventListener('change', (e) => {
+      const s = allSeries.find(item => item.slug === e.target.value);
+      if (s) selectSeries(s, 0, 0);
+    });
+
+    // VLC STREAMING TRIGGER WITH DESKTOP PROMPT
+    btnOpenVlc.addEventListener('click', () => {
+      const url = getActiveVideoUrl();
+      if (!url) { TermitoonStream.showToast('برای این قسمت لینک پخش ثبت نشده است.'); return; }
+      const title = currentSeries?.title_fa || currentSeries?.title_en || '';
+      TermitoonStream.openInVLC(url, title);
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (!isMobile) {
+        openDesktopVlcModal(url, title);
+      }
+    });
+
+    window.openDesktopVlcModal = function(streamUrl, streamTitle) {
+      const modal = document.getElementById('desktopVlcModal');
+      if (!modal) return;
+      const sub = document.getElementById('desktopVlcModalSub');
+      if (sub) sub.textContent = `در حال پخش: ${streamTitle}`;
+
+      document.getElementById('btnDesktopVlcRetry').onclick = () => {
+        TermitoonStream.openInVLC(streamUrl, streamTitle);
+        TermitoonStream.showToast('درخواست اجرای مجدد در VLC ارسال شد.');
+      };
+
+      document.getElementById('btnDesktopVlcCopy').onclick = () => {
+        navigator.clipboard.writeText(streamUrl).then(() => {
+          TermitoonStream.showToast('آدرس مستقیم استریم کپی شد.');
+        });
+      };
+
+      document.getElementById('btnDesktopVlcM3u').onclick = () => {
+        TermitoonStream.downloadStreamFile(streamUrl, streamTitle);
+      };
+
+      modal.classList.remove('hidden');
+    };
+
+    window.closeDesktopVlcModal = function() {
+      const modal = document.getElementById('desktopVlcModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    function openVlcModal() {
+      const activeEps = getActiveSeasonEpisodes();
+      const ep = activeEps[currentEpIndex];
+      const target = ep || currentSeries;
+      const title = ep ? `${currentSeries.title_fa || currentSeries.title_en} - ${ep.title}` : (currentSeries?.title_fa || currentSeries?.title_en || 'فیلم');
+      
+      document.getElementById('vlcModalTitle').textContent = `پخش آنلاین ${title}`;
+      const list = document.getElementById('vlcQualityButtons');
+      list.innerHTML = '';
+
+      // Extract all available links from download_links and direct video properties
+      const links = [];
+      const seenUrls = new Set();
+
+      if (Array.isArray(target.download_links)) {
+        target.download_links.forEach(l => {
+          if (l && l.url && !seenUrls.has(l.url)) {
+            seenUrls.add(l.url);
+            links.push({ quality: l.quality || 'لینک مستقیم', url: l.url });
+          }
+        });
+      }
+
+      if (target.video_1080 && !seenUrls.has(target.video_1080)) {
+        seenUrls.add(target.video_1080);
+        links.unshift({ quality: '1080p Full HD', url: target.video_1080 });
+      }
+      if (target.video_720 && !seenUrls.has(target.video_720)) {
+        seenUrls.add(target.video_720);
+        links.push({ quality: '720p HD', url: target.video_720 });
+      }
+      if (target.video && !seenUrls.has(target.video)) {
+        seenUrls.add(target.video);
+        links.push({ quality: 'کیفیت استاندارد', url: target.video });
+      }
+
+      const defaultUrl = links[0]?.url || '';
+
+      if (links.length > 0) {
+        links.forEach((link, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isPrimary = (idx === 0);
+          btn.className = `w-full p-3.5 rounded-2xl ${isPrimary ? 'bg-brandRed hover:bg-brandRedHover text-white' : 'bg-white/5 hover:bg-white/10 border border-white/10 text-gray-200 hover:text-white'} font-bold text-xs flex items-center justify-between transition group shadow-md`;
+          btn.innerHTML = `
+            <div class="text-right">
+              <div class="font-bold text-sm">پخش ${link.quality} در VLC</div>
+              <div class="text-[10px] ${isPrimary ? 'text-white/80' : 'text-gray-400 group-hover:text-gray-300'} mt-0.5">پخش مستقیم و سریع بدون وقفه</div>
+            </div>
+            <span class="px-2.5 py-1 rounded-xl ${isPrimary ? 'bg-black/30 text-white' : 'bg-white/10 text-gray-300'} text-[11px] font-mono font-bold">VLC</span>
+          `;
+          btn.onclick = () => {
+            closeVlcModal();
+            TermitoonStream.openInVLC(link.url, `${title} (${link.quality})`);
+          };
+          list.appendChild(btn);
+        });
+      } else {
+        list.innerHTML = `<div class="p-4 text-center text-xs text-gray-400">لینکی برای این عنوان ثبت نشده است.</div>`;
+      }
+
+      document.getElementById('vlcCopyBtn').onclick = () => {
+        if (!defaultUrl) return;
+        navigator.clipboard.writeText(TermitoonStream.getVlcProtocolUrl(defaultUrl)).then(() => {
+          TermitoonStream.showToast('آدرس مستقیم استریم vlc:// کپی شد.');
+        });
+      };
+
+      document.getElementById('vlcM3uBtn').onclick = () => {
+        if (!defaultUrl) return;
+        TermitoonStream.downloadStreamFile(defaultUrl, title);
+      };
+
+      vlcModal.classList.remove('hidden');
+    }
+
+    window.closeVlcModal = function() {
+      vlcModal.classList.add('hidden');
+    };
+
+    function detectUserOS() {
+      const ua = navigator.userAgent || '';
+      if (/Android/i.test(ua)) return 'android';
+      if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
+      if (/Windows/i.test(ua)) return 'windows';
+      if (/Macintosh|Mac OS X/i.test(ua)) return 'mac';
+      if (/Linux/i.test(ua)) return 'linux';
+      return 'other';
+    }
+
+    window.launchAndroidDownloadManager = function(url, app = '1dm') {
+      if (!url) return;
+      const cleanUrl = String(url).trim().replace(/^https?:\/\//i, '');
+      const pkg = (app === 'adm') ? 'com.dv.adm' : 'idm.internet.download.manager';
+      const intentUrl = `intent://${cleanUrl}#Intent;action=android.intent.action.VIEW;scheme=http;type=video/*;package=${pkg};end`;
+      navigator.clipboard.writeText(url);
+      window.location.href = intentUrl;
+      TermitoonStream.showToast(`در حال انتقال دانلود به ${app.toUpperCase()}...`);
+    };
+
+    window.launchIosDocuments = function(url) {
+      if (!url) return;
+      const cleanUrl = String(url).trim();
+      const docSchemeUrl = cleanUrl.startsWith('https://') 
+        ? 'rhttps://' + cleanUrl.slice(8) 
+        : 'rhttp://' + cleanUrl.slice(7);
+      navigator.clipboard.writeText(cleanUrl);
+      window.location.href = docSchemeUrl;
+      TermitoonStream.showToast('در حال انتقال دانلود به اپلیکیشن Documents...');
+    };
+
+    window.launchWindowsIdm = function(url, filename) {
+      if (!url) return;
+      navigator.clipboard.writeText(url).then(() => {
+        triggerVideoDownload(url, filename);
+        TermitoonStream.showToast('لینک کپی شد و به نرم‌افزار IDM ارسال شد.');
+      });
+    };
+
+    // DOWNLOAD MODAL (SMART OS-TAILORED - NO DIRECT REDIRECT)
+    btnOpenDlModal.addEventListener('click', () => {
+      const activeEps = getActiveSeasonEpisodes();
+      const ep = activeEps[currentEpIndex];
+      const target = ep || currentSeries;
+      const title = ep ? `${currentSeries.title_fa || currentSeries.title_en} - ${ep.title}` : (currentSeries.title_fa || currentSeries.title_en);
+      document.getElementById('dlModalTitle').textContent = `دانلود ${title}`;
+      const list = document.getElementById('dlQualitiesList');
+      list.innerHTML = '';
+
+      const userOS = detectUserOS();
+      const osAdvice = document.getElementById('dlOsAdviceText');
+      if (osAdvice) {
+        if (userOS === 'android') {
+          osAdvice.innerHTML = 'سیستم‌عامل شما <strong>اندروید</strong> است. دکمه انتقال مستقیم به <strong>1DM</strong> یا <strong>ADM</strong> را بزنید.';
+        } else if (userOS === 'ios') {
+          osAdvice.innerHTML = 'دستگاه شما <strong>آیفون / آیپد</strong> است. دکمه انتقال به اپ <strong>Documents</strong> را لمس فرمایید.';
+        } else if (userOS === 'windows') {
+          osAdvice.innerHTML = 'سیستم شما <strong>ویندوز</strong> است. لینک جهت انتقال به <strong>IDM</strong> آماده است.';
+        } else {
+          osAdvice.innerHTML = 'لینک دانلود مستقیم آماده انتقال به دانلودمنیجر یا دریافت در مرورگر است.';
+        }
+      }
+
+      const links = [];
+
+      if (target.video_1080) {
+        links.push({
+          quality: '1080p Full HD',
+          size: target.size_1080 || 'بالاترین کیفیت تصویر',
+          url: target.video_1080
+        });
+      }
+
+      if (target.video_720) {
+        links.push({
+          quality: '720p HD',
+          size: target.size_720 || 'حجم بهینه',
+          url: target.video_720
+        });
+      }
+
+      if (target.download_links && target.download_links.length > 0) {
+        target.download_links.forEach(dl => {
+          if (!links.some(l => l.url === dl.url)) links.push(dl);
+        });
+      }
+
+      if (links.length === 0 && target.video) {
+        links.push({
+          quality: 'کیفیت مستقیم',
+          size: 'دانلود مستقیم',
+          url: target.video
+        });
+      }
+
+      if (links.length === 0) {
+        list.innerHTML = `
+          <div class="p-4 rounded-2xl bg-white/5 text-center text-xs text-gray-400">
+            لینکی برای دانلود موجود نیست.
+          </div>
+        `;
+      } else {
+        links.forEach(dl => {
+          const row = document.createElement('div');
+          row.className = 'p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-2.5';
+          const filename = `${title} - ${dl.quality}.mp4`;
+          const rawUrl = dl.url;
+
+          let osBtn = '';
+          if (userOS === 'android') {
+            osBtn = `
+              <div class="grid grid-cols-2 gap-2">
+                <button onclick="launchAndroidDownloadManager('${rawUrl}', '1dm')" type="button" class="py-2 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover text-white text-xs font-bold transition">انتقال به 1DM</button>
+                <button onclick="launchAndroidDownloadManager('${rawUrl}', 'adm')" type="button" class="py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition">انتقال به ADM</button>
+              </div>
+            `;
+          } else if (userOS === 'ios') {
+            osBtn = `
+              <button onclick="launchIosDocuments('${rawUrl}')" type="button" class="w-full py-2 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover text-white text-xs font-bold transition">انتقال به اپلیکیشن Documents</button>
+            `;
+          } else if (userOS === 'windows') {
+            osBtn = `
+              <button onclick="launchWindowsIdm('${rawUrl}', '${filename.replace(/'/g, "\\'")}')" type="button" class="w-full py-2 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover text-white text-xs font-bold transition">انتقال به IDM (Internet Download Manager)</button>
+            `;
+          } else {
+            osBtn = `
+              <button onclick="copyDirectDownloadLink('${rawUrl}')" type="button" class="w-full py-2 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover text-white text-xs font-bold transition">کپی لینک مستقیم برای NeatDM / Folx</button>
+            `;
+          }
+
+          row.innerHTML = `
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-right">
+                <div class="text-xs font-bold text-white">${dl.quality}</div>
+                <div class="text-[10px] text-gray-400 mt-0.5">${dl.size || 'ترافیک نیم‌بهاء'}</div>
+              </div>
+              <span class="px-2 py-0.5 rounded-lg bg-white/10 text-gray-300 font-mono text-xs font-bold">${dl.quality.split(' ')[0]}</span>
+            </div>
+            ${osBtn}
+            <div class="flex items-center justify-between gap-2 pt-1 border-t border-white/5 text-[11px]">
+              <button onclick="copyDirectDownloadLink('${rawUrl}')" type="button" class="text-gray-400 hover:text-white transition">کپی آدرس دانلود</button>
+              <button onclick="triggerVideoDownload('${rawUrl}', '${filename.replace(/'/g, "\\'")}')" type="button" class="text-gray-400 hover:text-brandRed transition">دانلود در مرورگر</button>
+            </div>
+          `;
+          list.appendChild(row);
+        });
+      }
+
+      downloadModal.classList.remove('hidden');
+    });
+
+    window.closeDownloadModal = function() {
+      downloadModal.classList.add('hidden');
+    };
+
+    window.triggerVideoDownload = function(url, filename) {
+      if (!url) return;
+      try {
+        const parsed = new URL(String(url).trim(), window.location.href);
+        if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Unsupported URL scheme');
+        const cleanName = (filename || 'video.mp4').replace(/[\\/:*?"<>|]/g, '-');
+        // Try the browser's download attribute first. For cross-origin files the remote server may ignore it;
+        // opening the original URL in a new tab is the only safe fallback without proxying the entire file.
+        const a = document.createElement('a');
+        a.href = parsed.href;
+        a.download = cleanName;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a); a.click(); a.remove();
+        TermitoonStream.showToast('اگر دانلود خودکار شروع نشد، از لینک مستقیم یا دانلودمنیجر استفاده کنید.');
+      } catch (error) {
+        console.error('Download link failed:', error);
+        TermitoonStream.showToast('لینک دانلود معتبر نیست.');
+      }
+    };
+
+    window.copyDirectDownloadLink = function(url) {
+      if (!url) return;
+      navigator.clipboard.writeText(url).then(() => {
+        TermitoonStream.showToast('لینک دانلود برای IDM / 1DM کپی شد.');
+      });
+    };
+
+    btnDlM3u.addEventListener('click', () => {
+      const activeEps = getActiveSeasonEpisodes();
+      const ep = activeEps[currentEpIndex];
+      const videoUrl = getActiveVideoUrl();
+      const title = ep ? `${currentSeries.title_fa || currentSeries.title_en} - ${ep.title}` : currentSeries?.title_fa;
+      if (videoUrl) TermitoonStream.downloadStreamFile(videoUrl, title);
+    });
+
+    btnCopyVlc.addEventListener('click', () => {
+      const videoUrl = getActiveVideoUrl();
+      if (videoUrl) {
+        navigator.clipboard.writeText(TermitoonStream.getVlcProtocolUrl(videoUrl)).then(() => {
+          TermitoonStream.showToast('آدرس vlc:// کپی شد.');
+        });
+      }
+    });
+
+    // Keyboard Shortcuts for Web Player
+    window.addEventListener('keydown', (e) => {
+      // Ignore if user is typing in an input or select
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        if (mainVideo.paused) mainVideo.play().catch(() => {});
+        else mainVideo.pause();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        mainVideo.currentTime = Math.min(mainVideo.duration || Infinity, mainVideo.currentTime + 10);
+        TermitoonStream.showToast('+۱۰ ثانیه');
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        mainVideo.currentTime = Math.max(0, mainVideo.currentTime - 10);
+        TermitoonStream.showToast('-۱۰ ثانیه');
+      } else if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        if (!document.fullscreenElement) {
+          mainVideo.requestFullscreen?.().catch(() => {});
+        } else {
+          document.exitFullscreen?.().catch(() => {});
+        }
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        mainVideo.muted = !mainVideo.muted;
+        TermitoonStream.showToast(mainVideo.muted ? 'صدا قطع شد' : 'صدا وصل شد');
+      } else if (e.key === 'Escape') {
+        closeDownloadModal();
+        closeVlcModal();
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>
