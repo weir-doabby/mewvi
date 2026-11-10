@@ -336,18 +336,19 @@
   function triggerExternalHandoff(targetUrl) {
     if (!targetUrl) return;
     try {
+      const a = document.createElement('a');
+      a.href = targetUrl;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { a.remove(); }, 1000);
+    } catch (_) {}
+
+    try {
       window.location.href = targetUrl;
-    } catch (e) {
-      try {
-        const a = document.createElement('a');
-        a.href = targetUrl;
-        a.style.display = 'none';
-        a.rel = 'noopener noreferrer';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => { a.remove(); }, 500);
-      } catch (_) {}
-    }
+    } catch (_) {}
   }
 
   function triggerBrowserDownload(url, filename) {
