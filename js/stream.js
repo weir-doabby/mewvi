@@ -335,17 +335,19 @@
   // =========================================================================
   function triggerExternalHandoff(targetUrl) {
     if (!targetUrl) return;
-    const a = document.createElement('a');
-    a.href = targetUrl;
-    a.style.display = 'none';
-    a.rel = 'noopener noreferrer';
-    document.body.appendChild(a);
     try {
-      a.click();
+      window.location.href = targetUrl;
     } catch (e) {
-      console.warn('External handoff failed:', e);
+      try {
+        const a = document.createElement('a');
+        a.href = targetUrl;
+        a.style.display = 'none';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { a.remove(); }, 500);
+      } catch (_) {}
     }
-    setTimeout(() => { a.remove(); }, 500);
   }
 
   function triggerBrowserDownload(url, filename) {
