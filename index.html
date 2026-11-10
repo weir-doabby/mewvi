@@ -2415,6 +2415,18 @@
       }
       if (!item) {
         try {
+          let h = 0;
+          for (let i = 0; i < slug.length; i++) h = ((h * 31) + slug.charCodeAt(i)) >>> 0;
+          const shardId = String(h % 100).padStart(2, '0');
+          const res = await fetch(`data/shards/shard_${shardId}.json`);
+          if (res.ok) {
+            const shardData = await res.json();
+            if (shardData && shardData[slug]) item = shardData[slug];
+          }
+        } catch(e) {}
+      }
+      if (!item) {
+        try {
           const res = await fetch(`data/details/${encodeURIComponent(slug)}.json`);
           if (res.ok) item = await res.json();
         } catch(e) {}
@@ -2436,12 +2448,28 @@
       const ratingEl = document.getElementById('pwaSharedRating');
       const copyInput = document.getElementById('pwaCopyTitleInput');
 
-      if (posterEl) posterEl.src = item.poster || 'icon.jpg';
-      if (backdropEl) backdropEl.src = item.backdrop || item.poster || 'logo.png';
-      if (titleFaEl) titleFaEl.textContent = item.title_fa || item.slug;
-      if (titleEnEl) titleEnEl.textContent = item.title_en || item.slug;
+      let poster = (item.poster || '').trim();
+      if (poster.startsWith('http://ninwinios.info')) poster = poster.replace('http://ninwinios.info', 'https://ninwinios.info');
+      else if (poster.startsWith('http://')) poster = poster.replace('http://', 'https://');
+      if (!poster) poster = MEWVI_FALLBACK_POSTER;
+
+      let backdrop = (item.backdrop || item.poster || '').trim();
+      if (backdrop.startsWith('http://ninwinios.info')) backdrop = backdrop.replace('http://ninwinios.info', 'https://ninwinios.info');
+      else if (backdrop.startsWith('http://')) backdrop = backdrop.replace('http://', 'https://');
+      if (!backdrop) backdrop = poster;
+
+      if (posterEl) {
+        posterEl.src = poster;
+        posterEl.onerror = function() { this.onerror = null; this.src = MEWVI_FALLBACK_POSTER; };
+      }
+      if (backdropEl) {
+        backdropEl.src = backdrop;
+        backdropEl.onerror = function() { this.onerror = null; this.src = poster; };
+      }
+      if (titleFaEl) titleFaEl.textContent = item.title_fa || item.title_en || item.slug;
+      if (titleEnEl) titleEnEl.textContent = item.title_en || '';
       if (catEl) catEl.textContent = (item.category_type === 'series' ? 'سریال' : (item.category_type === 'animation' ? 'انیمیشن' : (item.category_type === 'anime' ? 'انیمه' : 'فیلم')));
-      if (yearEl) yearEl.textContent = item.year || '2024';
+      if (yearEl) yearEl.textContent = item.year || '2025';
       if (ratingEl) ratingEl.textContent = ` ${item.rating || '8.0'}`;
       if (copyInput) copyInput.value = item.title_fa || item.title_en || item.slug;
     }
@@ -3202,7 +3230,9 @@
       hasRenderedShowcase = true;
       renderWatchHistoryRow();
 
-      const showcase = data.collections || data;
+      const showcase = (data && data.top_rated_movies && data.top_rated_movies.length > 0)
+        ? data
+        : ((data && data.collections && Object.keys(data.collections).length > 0) ? data.collections : (data || {}));
       window._homeShowcaseData = showcase;
 
       // Populate memory map for instantaneous card opening (<5ms)
@@ -3366,26 +3396,27 @@
       // Step 1: Synchronous 0ms render from localStorage cache
       try {
         localStorage.removeItem('mewvi_showcase_v2026_final');
-        const raw = localStorage.getItem('mewvi_showcase_v2026_46muv');
+        localStorage.removeItem('mewvi_showcase_v2026_46muv');
+        const raw = localStorage.getItem('mewvi_showcase_v2026_46muv_v81');
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (parsed && (parsed.top250 || (parsed.collections && parsed.collections.top250))) {
+          if (parsed && (parsed.top250 || parsed.top_rated_movies || (parsed.collections && (parsed.collections.top250 || parsed.collections.top_rated_movies)))) {
             renderHomeRowsFromShowcase(parsed);
           }
         }
       } catch(e) {}
 
       // Step 2: Ultra-fast fetch of dedicated home_showcase.json (~15-30ms) with cache-busting
-      const buster = '?v=8.0.0_' + Math.floor(Date.now() / 60000);
+      const buster = '?v=8.1.0_' + Math.floor(Date.now() / 60000);
       const endpoints = ['data/home_showcase.json' + buster, 'home_showcase.json' + buster, PHP_API + 'home_showcase'];
       for (const ep of endpoints) {
         try {
           const res = await fetch(ep);
           if (res.ok) {
             const data = await res.json();
-            if (data && (data.top250 || (data.collections && data.collections.top250))) {
+            if (data && (data.top250 || data.top_rated_movies || (data.collections && (data.collections.top250 || data.collections.top_rated_movies)))) {
               renderHomeRowsFromShowcase(data);
-              try { localStorage.setItem('mewvi_showcase_v2026_46muv', JSON.stringify(data)); } catch(e) {}
+              try { localStorage.setItem('mewvi_showcase_v2026_46muv_v81', JSON.stringify(data)); } catch(e) {}
               break;
             }
           }
@@ -3464,7 +3495,7 @@
                 if (sRes.ok) {
                   const newShowcase = await sRes.json();
                   if (newShowcase && (newShowcase.top250 || newShowcase.collections)) {
-                    localStorage.setItem('mewvi_showcase_v2026_46muv', JSON.stringify(newShowcase));
+                    localStorage.setItem('mewvi_showcase_v2026_46muv_v81', JSON.stringify(newShowcase));
                     localStorage.setItem('mewvi_content_version', remoteVer);
                     renderHomeRowsFromShowcase(newShowcase);
                   }
@@ -4874,11 +4905,23 @@
         else btnAllSeasons.classList.add('hidden');
       }
 
-      // Poster Image & Ambient Glow
-      const posterSrc = episode?.thumb || item.poster || item.backdrop || 'https://image.tmdb.org/t/p/w780/zfaiO7QgpcvR8XDOMokWLRfKeTE.jpg';
+      // Poster Image & Ambient Glow (HTTPS Normalized with Error Fallbacks)
+      let posterSrc = (episode?.thumb || item.poster || item.backdrop || '').trim();
+      if (posterSrc.startsWith('http://ninwinios.info')) posterSrc = posterSrc.replace('http://ninwinios.info', 'https://ninwinios.info');
+      else if (posterSrc.startsWith('http://')) posterSrc = posterSrc.replace('http://', 'https://');
+      if (!posterSrc) posterSrc = MEWVI_FALLBACK_POSTER;
+
       detailHeroImg.src = posterSrc;
+      detailHeroImg.onerror = function() { this.onerror = null; this.src = MEWVI_FALLBACK_POSTER; };
+
       const ambient = document.getElementById('detailAmbientGlow');
-      if (ambient) ambient.src = item.backdrop || posterSrc;
+      if (ambient) {
+        let ambSrc = (item.backdrop || posterSrc).trim();
+        if (ambSrc.startsWith('http://ninwinios.info')) ambSrc = ambSrc.replace('http://ninwinios.info', 'https://ninwinios.info');
+        else if (ambSrc.startsWith('http://')) ambSrc = ambSrc.replace('http://', 'https://');
+        ambient.src = ambSrc || posterSrc;
+        ambient.onerror = function() { this.onerror = null; this.src = posterSrc; };
+      }
 
       // Category Pill
       const catPill = document.getElementById('detailCategoryPill');
@@ -4934,42 +4977,42 @@
       renderItemCast(item, 'detail');
       renderItemRelated(item, 'detail');
 
-      // BUTTON 1: تماشای آنلاین (پخش مستقیم در مرورگر یا VLC)
-      btnWatchPrimary.onclick = async () => {
-        let v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
-        let streamUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video_480 || episode?.video || item.video_720 || item.video_1080 || item.video || (item.download_links?.[0]?.url);
-        
-        if (!streamUrl && item.slug) {
+      // BUTTON 1: تماشای آنلاین (سریع و مستقیم از طریق Media Resource Router)
+      btnWatchPrimary.onclick = () => {
+        const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
+        const res = resolveMediaResource({ item, episode, variant: v }, 'play');
+        if (!res.success && (!item.video_720 && !item.video_1080 && !item.video && (!item.download_links || item.download_links.length === 0))) {
           TermitoonStream.showToast('در حال بارگذاری لینک‌های پخش...');
-          const full = await fetchItemDetail(item.slug);
-          if (full) {
-            Object.assign(item, full);
-            populateVariantSelector(item, episode);
-            v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
-            streamUrl = v?.url || item.video_720 || item.video_1080 || item.video || (item.download_links?.[0]?.url);
-          }
+          fetchItemDetail(item.slug).then(full => {
+            if (full) {
+              Object.assign(item, full);
+              populateVariantSelector(item, episode);
+              const newV = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
+              resolveMediaResource({ item, episode, variant: newV }, 'play');
+            } else {
+              TermitoonStream.showToast('لینکی برای پخش این عنوان یافت نشد.');
+            }
+          });
         }
-        
-        const title = episode ? `${item.title_fa || item.title_en} - ${episode.title}` : (item.title_fa || item.title_en);
-        const label = v ? `${title} (${v.label})` : `${title} (کیفیت مستقیم)`;
-        if (!streamUrl) {
-          TermitoonStream.showToast('لینکی برای پخش این عنوان یافت نشد.');
-          return;
-        }
-        handleWatchOnlineWithUrl(streamUrl, label);
       };
 
       // BUTTON 2: دانلود فایل (باز کردن پنجره جامع دانلود)
-      btnDownloadSecondary.onclick = async () => {
-        if ((!item.download_links || item.download_links.length === 0) && item.slug) {
+      btnDownloadSecondary.onclick = () => {
+        const hasLinks = (item.download_links && item.download_links.length > 0) || (episode && episode.download_links && episode.download_links.length > 0) || item.video_720 || item.video;
+        if (!hasLinks && item.slug) {
           TermitoonStream.showToast('در حال بارگذاری مشخصات دانلود...');
-          const full = await fetchItemDetail(item.slug);
-          if (full) {
-            Object.assign(item, full);
-            populateVariantSelector(item, episode);
-          }
+          fetchItemDetail(item.slug).then(full => {
+            if (full) {
+              Object.assign(item, full);
+              populateVariantSelector(item, episode);
+              openDownloadModal(item, episode);
+            } else {
+              openDownloadModal(item, episode);
+            }
+          });
+        } else {
+          openDownloadModal(item, episode);
         }
-        openDownloadModal(item, episode);
       };
     }
 
@@ -5611,11 +5654,19 @@
     window.launchAndroidDownloadManager = function(url, app = '1dm') {
       if (!url) return;
       const cleanUrl = String(url).trim().replace(/^https?:\/\//i, '');
+      const isHttps = String(url).trim().startsWith('https://');
+      const scheme = isHttps ? 'https' : 'http';
       const pkg = (app === 'adm') ? 'com.dv.adm' : 'idm.internet.download.manager';
-      const intentUrl = `intent://${cleanUrl}#Intent;action=android.intent.action.VIEW;scheme=http;type=video/*;package=${pkg};end`;
+      const intentUrl = `intent://${cleanUrl}#Intent;action=android.intent.action.VIEW;scheme=${scheme};type=video/*;package=${pkg};end`;
 
-      navigator.clipboard.writeText(url);
-      window.location.href = intentUrl;
+      copyTextToClipboard(url);
+      const a = document.createElement('a');
+      a.href = intentUrl;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      try { a.click(); } catch(e) {}
+      setTimeout(() => { a.remove(); }, 500);
+
       TermitoonStream.showToast(`در حال انتقال دانلود به ${app.toUpperCase()}...`);
     };
 
@@ -5626,8 +5677,14 @@
         ? 'rhttps://' + cleanUrl.slice(8) 
         : 'rhttp://' + cleanUrl.slice(7);
 
-      navigator.clipboard.writeText(cleanUrl);
-      window.location.href = docSchemeUrl;
+      copyTextToClipboard(cleanUrl);
+      const a = document.createElement('a');
+      a.href = docSchemeUrl;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      try { a.click(); } catch(e) {}
+      setTimeout(() => { a.remove(); }, 500);
+
       TermitoonStream.showToast('در حال انتقال دانلود به اپلیکیشن Documents...');
     };
 
@@ -5993,7 +6050,12 @@
       // Populate Cinema Header Banner (Zardfilm Style)
       const posterImg = document.getElementById('seriesPosterImg');
       if (posterImg) {
-        posterImg.src = item.poster || item.backdrop || 'https://image.tmdb.org/t/p/w780/zfaiO7QgpcvR8XDOMokWLRfKeTE.jpg';
+        let p = (item.poster || item.backdrop || '').trim();
+        if (p.startsWith('http://ninwinios.info')) p = p.replace('http://ninwinios.info', 'https://ninwinios.info');
+        else if (p.startsWith('http://')) p = p.replace('http://', 'https://');
+        if (!p) p = MEWVI_FALLBACK_POSTER;
+        posterImg.src = p;
+        posterImg.onerror = function() { this.onerror = null; this.src = MEWVI_FALLBACK_POSTER; };
       }
       const rBadge = document.getElementById('seriesRatingText');
       if (rBadge) rBadge.textContent = item.rating || '8.5';
@@ -6197,7 +6259,7 @@
       const season = currentSeriesSeasons[currentSeasonIndex];
       const ep = season?.episodes?.[epIdx];
       if (ep && currentActiveItem) {
-        handleWatchOnline(currentActiveItem, ep);
+        resolveMediaResource({ item: currentActiveItem, episode: ep }, 'play');
       }
     };
 
@@ -6205,13 +6267,7 @@
       const season = currentSeriesSeasons[currentSeasonIndex];
       const ep = season?.episodes?.[epIdx];
       if (ep && currentActiveItem) {
-        const dlUrl = ep.video_720 || ep.video_1080 || ep.video_480 || ep.video || (ep.download_links?.[0]?.url);
-        const title = `${currentActiveItem.title_fa || currentActiveItem.title_en} - ${ep.title || ('قسمت ' + (ep.number || epIdx + 1))}`;
-        if (!dlUrl) {
-          TermitoonStream.showToast('لینکی برای دانلود این قسمت ثبت نشده است.');
-          return;
-        }
-        handleDirectSmartDownload(dlUrl, title);
+        resolveMediaResource({ item: currentActiveItem, episode: ep }, 'download');
       }
     };
 
@@ -6358,28 +6414,39 @@
           TermitoonStream.showToast(successMsg || 'لینک کپی شد.');
         }
       };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(doToast).catch(() => {
-          fallbackClipboardExec(text);
-          doToast();
-        });
-      } else {
-        fallbackClipboardExec(text);
-        doToast();
-      }
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+            doToast();
+          }).catch(() => {
+            fallbackClipboardExec(text);
+            doToast();
+          });
+          return;
+        }
+      } catch (e) {}
+
+      fallbackClipboardExec(text);
+      doToast();
     }
 
     function fallbackClipboardExec(text) {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.left = '-9999px';
-      ta.style.top = '-9999px';
-      ta.setAttribute('readonly', '');
-      document.body.appendChild(ta);
-      ta.select();
-      try { document.execCommand('copy'); } catch(e) {}
-      document.body.removeChild(ta);
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.top = '0';
+        ta.style.left = '0';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        ta.remove();
+      } catch(e) {}
     }
 
     window.copyCurrentShareLink = function() {

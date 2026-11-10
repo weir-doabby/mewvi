@@ -3,7 +3,7 @@
  * Caches app shell, fonts, icons, and instant home showcase for blazing performance.
  */
 
-const CACHE_NAME = 'mewvi-pwa-v8';
+const CACHE_NAME = 'mewvi-pwa-v8.1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -16,7 +16,8 @@ const STATIC_ASSETS = [
   '/data/home_showcase.json',
   '/data/top_series_cache.json',
   '/js/tailwind.min.js',
-  '/js/qrcode.min.js'
+  '/js/qrcode.min.js',
+  '/js/stream.js'
 ];
 
 self.addEventListener('install', (event) => {
