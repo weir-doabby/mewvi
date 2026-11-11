@@ -1512,9 +1512,14 @@
           <span id="btnWatchPrimaryText">تماشا انلاین</span>
         </a>
 
-        <!-- Button 2: دانلود فایل (بدون وکتور) -->
-        <button id="btnDownloadSecondary" type="button" class="w-full h-12 px-6 bg-[#161620] hover:bg-[#20202c] active:scale-[0.98] border border-white/15 text-gray-200 hover:text-white font-bold text-sm sm:text-base rounded-2xl shadow-md flex items-center justify-center transition-all duration-200">
+        <!-- Button 2: دانلود فایل (لینک مستقیم سازگار با PWA جهت اجرای آنی در دانلود منیجر) -->
+        <a id="btnDownloadSecondary" href="#" target="_blank" rel="noopener noreferrer" class="w-full h-12 px-6 bg-[#161620] hover:bg-[#20202c] active:scale-[0.98] border border-white/15 text-gray-200 hover:text-white font-bold text-sm sm:text-base rounded-2xl shadow-md flex items-center justify-center transition-all duration-200 no-underline cursor-pointer">
           <span id="btnDownloadSecondaryText">دانلود فایل</span>
+        </a>
+
+        <!-- سایر کیفیت‌ها -->
+        <button onclick="openDownloadModal(currentActiveItem, currentSelectedEpisode)" type="button" class="w-full py-1 text-center text-xs text-gray-400 hover:text-white transition cursor-pointer">
+          مشاهده تمام کیفیت‌ها و نسخه‌های دانلود
         </button>
 
         <!-- Button 3: مشاهده تمام فصل‌ها و قسمت‌ها (مخصوص سریال) -->
@@ -4644,6 +4649,24 @@
       return cleanMediaUrl;
     }
 
+    function getDownloadHandoffUrl(mediaUrl) {
+      if (!mediaUrl) return '#';
+      const cleanMediaUrl = String(mediaUrl).trim();
+      const ua = navigator.userAgent || '';
+      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/i.test(ua);
+      if (isIOS) {
+        return cleanMediaUrl.startsWith('https://') 
+          ? 'rhttps://' + cleanMediaUrl.slice(8) 
+          : 'rhttp://' + cleanMediaUrl.slice(7);
+      } else if (isAndroid) {
+        const cleanUrl = cleanMediaUrl.replace(/^https?:\/\//i, '');
+        const scheme = cleanMediaUrl.startsWith('https://') ? 'https' : 'http';
+        return `intent://${cleanUrl}#Intent;action=android.intent.action.VIEW;type=video/*;scheme=${scheme};end`;
+      }
+      return cleanMediaUrl;
+    }
+
     function applyActiveVariant() {
       const v = currentStreamVariants[currentActiveVariantIndex];
       const selectedText = document.getElementById('detailVariantSelectedText');
@@ -4673,6 +4696,12 @@
         btnWatch.href = getVlcHandoffUrl(v.url);
         btnWatch.setAttribute('target', '_blank');
         btnWatch.setAttribute('rel', 'noopener noreferrer');
+      }
+      const btnDownload = document.getElementById('btnDownloadSecondary');
+      if (btnDownload && v.url) {
+        btnDownload.href = getDownloadHandoffUrl(v.url);
+        btnDownload.setAttribute('target', '_blank');
+        btnDownload.setAttribute('rel', 'noopener noreferrer');
       }
     }
 
@@ -4818,10 +4847,13 @@
         }
       };
 
-      // BUTTON 2: دانلود فایل (باز کردن پنجره جامع دانلود)
-      btnDownloadSecondary.onclick = () => {
-        const hasLinks = (item.download_links && item.download_links.length > 0) || (episode && episode.download_links && episode.download_links.length > 0) || item.video_720 || item.video;
-        if (!hasLinks && item.slug) {
+      // BUTTON 2: دانلود فایل (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در دانلود منیجر)
+      btnDownloadSecondary.onclick = (e) => {
+        const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
+        const mediaUrl = v?.url || item.video_720 || item.video_1080 || item.video;
+
+        if (!mediaUrl) {
+          e.preventDefault();
           TermitoonStream.showToast('در حال بارگذاری مشخصات دانلود...');
           fetchItemDetail(item.slug).then(full => {
             if (full) {
@@ -4832,8 +4864,19 @@
               openDownloadModal(item, episode);
             }
           });
-        } else {
-          openDownloadModal(item, episode);
+          return;
+        }
+
+        copyTextToClipboard(mediaUrl);
+        TermitoonStream.showToast('در حال انتقال به دانلود منیجر...');
+
+        const ua = navigator.userAgent || '';
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/i.test(ua);
+
+        if (!isIOS && !isAndroid) {
+          e.preventDefault();
+          triggerVideoDownload(mediaUrl, `${item.title_fa || item.title_en || 'video'}.mp4`);
         }
       };
     }
