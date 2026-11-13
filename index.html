@@ -1517,14 +1517,14 @@
       <!-- ===================================================================== -->
       <div id="detailMobileActionButtons" class="space-y-2.5 pt-1">
         <!-- Button 1: تماشا انلاین (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در VLC) -->
-        <button id="btnWatchPrimary" type="button" class="w-full h-12 px-6 bg-brandRed hover:bg-brandRedHover active:scale-[0.98] text-white font-black text-sm sm:text-base rounded-2xl shadow-lg shadow-brandRed/35 flex items-center justify-center transition-all duration-200 cursor-pointer">
+        <a id="btnWatchPrimary" href="#" target="_blank" rel="noopener noreferrer" class="w-full h-12 px-6 bg-brandRed hover:bg-brandRedHover active:scale-[0.98] text-white font-black text-sm sm:text-base rounded-2xl shadow-lg shadow-brandRed/35 flex items-center justify-center transition-all duration-200 cursor-pointer no-underline">
           <span id="btnWatchPrimaryText">تماشا انلاین</span>
-        </button>
+        </a>
 
         <!-- Button 2: دانلود فایل (سازگار با PWA جهت اجرای آنی در دانلود منیجر) -->
-        <button id="btnDownloadSecondary" type="button" class="w-full h-12 px-6 bg-[#161620] hover:bg-[#20202c] active:scale-[0.98] border border-white/15 text-gray-200 hover:text-white font-bold text-sm sm:text-base rounded-2xl shadow-md flex items-center justify-center transition-all duration-200 cursor-pointer">
+        <a id="btnDownloadSecondary" href="#" target="_blank" rel="noopener noreferrer" class="w-full h-12 px-6 bg-[#161620] hover:bg-[#20202c] active:scale-[0.98] border border-white/15 text-gray-200 hover:text-white font-bold text-sm sm:text-base rounded-2xl shadow-md flex items-center justify-center transition-all duration-200 cursor-pointer no-underline">
           <span id="btnDownloadSecondaryText">دانلود فایل</span>
-        </button>
+        </a>
 
         <!-- سایر کیفیت‌ها -->
         <button onclick="openDownloadModal(currentActiveItem, currentSelectedEpisode)" type="button" class="w-full py-1 text-center text-xs text-gray-400 hover:text-white transition cursor-pointer">
@@ -4803,7 +4803,22 @@
         desktopCopyDownloadText.textContent = `کپی لینک مستقیم دانلود (${v.qualityTag || v.label})`;
       }
 
-      // Native buttons without href prevent browser from bypassing JS guards
+      // Populate native hrefs so standalone PWA WebClip can dispatch custom schemes (VLC & Documents)
+      if (v.url) {
+        const vlcHandoff = getVlcHandoffUrl(v.url);
+        const dlHandoff = getDownloadHandoffUrl(v.url);
+        if (btnWatch) {
+          btnWatch.href = vlcHandoff;
+          btnWatch.setAttribute('target', '_blank');
+          btnWatch.setAttribute('rel', 'noopener noreferrer');
+        }
+        const btnDownload = document.getElementById('btnDownloadSecondary');
+        if (btnDownload) {
+          btnDownload.href = dlHandoff;
+          btnDownload.setAttribute('target', '_blank');
+          btnDownload.setAttribute('rel', 'noopener noreferrer');
+        }
+      }
     }
 
     // =========================================================================
@@ -4920,12 +4935,11 @@
 
       // BUTTON 1: تماشای آنلاین (اجرای مستقیم در VLC هم در مرورگر و هم در وب‌اپلیکیشن)
       btnWatchPrimary.onclick = (e) => {
-        if (e && e.preventDefault) e.preventDefault();
-
         const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
         const mediaUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
 
         if (!mediaUrl) {
+          if (e && e.preventDefault) e.preventDefault();
           TermitoonStream.showToast('در حال بارگذاری لینک‌های پخش...');
           fetchItemDetail(item.slug).then(full => {
             if (full) {
@@ -4945,18 +4959,32 @@
           return;
         }
 
-        const title = episode ? `${item.title_fa || item.title_en} - ${episode.title}` : (item.title_fa || item.title_en);
-        openVlcDirect(mediaUrl, title);
+        const ua = navigator.userAgent || '';
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/i.test(ua);
+
+        if (!isIOS && !isAndroid) {
+          if (e && e.preventDefault) e.preventDefault();
+          desktopCopyStreamLink();
+          return;
+        }
+
+        copyTextToClipboard(mediaUrl, 'لینک پخش در حافظه کپی شد');
+        TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
+
+        const vlcHandoff = getVlcHandoffUrl(mediaUrl);
+        btnWatchPrimary.href = vlcHandoff;
+        // On standalone PWA, also execute dynamic launch
+        openVlcDirect(mediaUrl, item.title_fa || item.title_en);
       };
 
       // BUTTON 2: دانلود فایل (اجرای مستقیم در دانلود منیجر هم در مرورگر و هم در وب‌اپلیکیشن)
       btnDownloadSecondary.onclick = (e) => {
-        if (e && e.preventDefault) e.preventDefault();
-
         const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
         const mediaUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
 
         if (!mediaUrl) {
+          if (e && e.preventDefault) e.preventDefault();
           TermitoonStream.showToast('در حال بارگذاری مشخصات دانلود...');
           fetchItemDetail(item.slug).then(full => {
             if (full) {
@@ -4976,8 +5004,22 @@
           return;
         }
 
-        const title = episode ? `${item.title_fa || item.title_en} - ${episode.title}` : (item.title_fa || item.title_en);
-        openDownloaderDirect(mediaUrl, title, item, episode);
+        const ua = navigator.userAgent || '';
+        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/i.test(ua);
+
+        if (!isIOS && !isAndroid) {
+          if (e && e.preventDefault) e.preventDefault();
+          desktopCopyDownloadLink();
+          return;
+        }
+
+        copyTextToClipboard(mediaUrl, 'لینک دانلود در حافظه کپی شد');
+
+        const dlHandoff = getDownloadHandoffUrl(mediaUrl);
+        btnDownloadSecondary.href = dlHandoff;
+        // On standalone PWA, also execute dynamic launch
+        openDownloaderDirect(mediaUrl, item.title_fa || item.title_en, item, episode);
       };
     }
 
@@ -7558,7 +7600,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=8.8').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=8.9').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
