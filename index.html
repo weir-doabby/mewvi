@@ -4918,12 +4918,12 @@
       renderItemCast(item, 'detail');
       renderItemRelated(item, 'detail');
 
-      // BUTTON 1: تماشای آنلاین (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در VLC)
+      // BUTTON 1: تماشای آنلاین (اجرای مستقیم در VLC هم در مرورگر و هم در وب‌اپلیکیشن)
       btnWatchPrimary.onclick = (e) => {
         if (e && e.preventDefault) e.preventDefault();
 
         const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
-        const mediaUrl = v?.url || item.video_720 || item.video_1080 || item.video;
+        const mediaUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
 
         if (!mediaUrl) {
           TermitoonStream.showToast('در حال بارگذاری لینک‌های پخش...');
@@ -4932,11 +4932,9 @@
               Object.assign(item, full);
               populateVariantSelector(item, episode);
               const newV = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
-              if (newV && newV.url) {
-                const targetVlc = getVlcHandoffUrl(newV.url);
-                copyTextToClipboard(newV.url);
-                TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
-                window.location.href = targetVlc;
+              const newUrl = newV?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
+              if (newUrl) {
+                openVlcDirect(newUrl, item.title_fa || item.title_en);
               } else {
                 TermitoonStream.showToast('لینکی برای پخش این عنوان یافت نشد.');
               }
@@ -4947,27 +4945,16 @@
           return;
         }
 
-        const ua = navigator.userAgent || '';
-        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const isAndroid = /Android/i.test(ua);
-
-        if (!isIOS && !isAndroid) {
-          desktopCopyStreamLink();
-          return;
-        }
-
-        copyTextToClipboard(mediaUrl);
-        TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
-        const targetVlc = getVlcHandoffUrl(mediaUrl);
-        window.location.href = targetVlc;
+        const title = episode ? `${item.title_fa || item.title_en} - ${episode.title}` : (item.title_fa || item.title_en);
+        openVlcDirect(mediaUrl, title);
       };
 
-      // BUTTON 2: دانلود فایل (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در دانلود منیجر)
+      // BUTTON 2: دانلود فایل (اجرای مستقیم در دانلود منیجر هم در مرورگر و هم در وب‌اپلیکیشن)
       btnDownloadSecondary.onclick = (e) => {
         if (e && e.preventDefault) e.preventDefault();
 
         const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
-        const mediaUrl = v?.url || item.video_720 || item.video_1080 || item.video;
+        const mediaUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
 
         if (!mediaUrl) {
           TermitoonStream.showToast('در حال بارگذاری مشخصات دانلود...');
@@ -4975,7 +4962,13 @@
             if (full) {
               Object.assign(item, full);
               populateVariantSelector(item, episode);
-              openDownloadModal(item, episode);
+              const newV = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
+              const newUrl = newV?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
+              if (newUrl) {
+                openDownloaderDirect(newUrl, item.title_fa || item.title_en, item, episode);
+              } else {
+                openDownloadModal(item, episode);
+              }
             } else {
               openDownloadModal(item, episode);
             }
@@ -4983,79 +4976,127 @@
           return;
         }
 
-        const ua = navigator.userAgent || '';
-        const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        const isAndroid = /Android/i.test(ua);
-
-        if (!isIOS && !isAndroid) {
-          desktopCopyDownloadLink();
-          return;
-        }
-
-        handleDirectSmartDownload(mediaUrl, item.title_fa || item.title_en);
+        const title = episode ? `${item.title_fa || item.title_en} - ${episode.title}` : (item.title_fa || item.title_en);
+        openDownloaderDirect(mediaUrl, title, item, episode);
       };
     }
 
-    window.handleDirectSmartDownload = function(url, title = '') {
-      if (!url) return;
+    // Direct VLC Launcher (iOS Scheme + Android Intent + Silent Clipboard Copy)
+    function openVlcDirect(mediaUrl, title = '') {
+      if (!mediaUrl) return;
+      const cleanUrl = String(mediaUrl).trim();
+      copyTextToClipboard(cleanUrl, 'لینک پخش در حافظه کپی شد');
+      TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
+
       const ua = navigator.userAgent || '';
-      const platform = navigator.platform || '';
-      const maxTouchPoints = navigator.maxTouchPoints || 0;
-      const isIOS = /iPhone|iPad|iPod/.test(ua) || (platform === 'MacIntel' && maxTouchPoints > 1) || (/Macintosh/.test(ua) && maxTouchPoints > 1);
+      const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       const isAndroid = /Android/i.test(ua);
 
       if (isIOS) {
-        // Direct launch to Documents by Readdle via rhttps:// scheme
-        const docUrl = url.replace(/^https:\/\//i, 'rhttps://').replace(/^http:\/\//i, 'rhttp://');
-        TermitoonStream.showToast('در حال انتقال لینک دانلود به Documents by Readdle...');
-        const a = document.createElement('a');
-        a.href = docUrl;
-        document.body.appendChild(a);
-        try { a.click(); } catch(e) {}
-        a.remove();
-
-        // Direct Safari browser download fallback if Documents is not installed
-        setTimeout(() => {
-          const directLink = document.createElement('a');
-          directLink.href = url;
-          directLink.download = (title || 'video').replace(/[/\\?%*:|"<>]/g, '_') + '.mp4';
-          directLink.target = '_blank';
-          document.body.appendChild(directLink);
-          try { directLink.click(); } catch(e) {}
-          directLink.remove();
-        }, 1200);
+        const vlcUrl = 'vlc-x-callback://x-callback-url/stream?url=' + encodeURIComponent(cleanUrl);
+        try {
+          const a = document.createElement('a');
+          a.href = vlcUrl;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => a.remove(), 1000);
+        } catch(e) {}
+        window.location.href = vlcUrl;
       } else if (isAndroid) {
-        // Direct launch to 1DM / ADM / Downloader on Android via intent
-        TermitoonStream.showToast('در حال انتقال لینک دانلود به 1DM / دانلود منیجر...');
-        const intent = `intent:${url}#Intent;action=android.intent.action.VIEW;type=video/*;end`;
-        const a = document.createElement('a');
-        a.href = intent;
-        document.body.appendChild(a);
-        try { a.click(); } catch(e) {}
-        a.remove();
+        const rawHostPath = cleanUrl.replace(/^https?:\/\//i, '');
+        const scheme = cleanUrl.startsWith('https://') ? 'https' : 'http';
+        const vlcIntent = `intent://${rawHostPath}#Intent;action=android.intent.action.VIEW;type=video/*;scheme=${scheme};package=org.videolan.vlc;end`;
+        try {
+          const a = document.createElement('a');
+          a.href = vlcIntent;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => a.remove(), 1000);
+        } catch(e) {}
+        window.location.href = vlcIntent;
+      } else {
+        desktopCopyStreamLink();
+      }
+    }
 
-        // Direct Chrome browser download fallback if downloader intent is not handled
+    // Direct Downloader Launcher (iOS Documents + Android 1DM / ADM + Direct Fallback)
+    function openDownloaderDirect(mediaUrl, title = '', item = null, episode = null) {
+      if (!mediaUrl) return;
+      const cleanUrl = String(mediaUrl).trim();
+      copyTextToClipboard(cleanUrl, 'لینک دانلود در حافظه کپی شد');
+
+      const ua = navigator.userAgent || '';
+      const platform = navigator.platform || '';
+      const maxTouchPoints = navigator.maxTouchPoints || 0;
+      const isIOS = /iPad|iPhone|iPod/.test(ua) || (platform === 'MacIntel' && maxTouchPoints > 1) || (/Macintosh/.test(ua) && maxTouchPoints > 1);
+      const isAndroid = /Android/i.test(ua);
+
+      if (isIOS) {
+        const docSchemeUrl = cleanUrl.startsWith('https://')
+          ? 'rhttps://' + cleanUrl.slice(8)
+          : 'rhttp://' + cleanUrl.slice(7);
+        TermitoonStream.showToast('در حال انتقال به اپلیکیشن Documents...');
+
+        try {
+          const a = document.createElement('a');
+          a.href = docSchemeUrl;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => a.remove(), 1000);
+        } catch(e) {}
+        window.location.href = docSchemeUrl;
+
+        // Fallback: If Documents is not installed, trigger Safari direct download after 1.5s
         setTimeout(() => {
           const directLink = document.createElement('a');
-          directLink.href = url;
-          directLink.download = (title || 'video').replace(/[/\\?%*:|"<>]/g, '_') + '.mp4';
+          directLink.href = cleanUrl;
+          directLink.download = (title || 'video').replace(/[/\?%*:|"<>]/g, '_') + '.mp4';
           directLink.target = '_blank';
           document.body.appendChild(directLink);
           try { directLink.click(); } catch(e) {}
           directLink.remove();
-        }, 1200);
+        }, 1500);
+
+      } else if (isAndroid) {
+        const rawHostPath = cleanUrl.replace(/^https?:\/\//i, '');
+        const scheme = cleanUrl.startsWith('https://') ? 'https' : 'http';
+        const intent1dm = `intent://${rawHostPath}#Intent;action=android.intent.action.VIEW;type=video/*;scheme=${scheme};package=idm.internet.download.manager;end`;
+
+        TermitoonStream.showToast('در حال انتقال به دانلود منیجر 1DM...');
+
+        try {
+          const a = document.createElement('a');
+          a.href = intent1dm;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => a.remove(), 1000);
+        } catch(e) {}
+        window.location.href = intent1dm;
+
+        // Fallback: trigger browser download after 1.5s
+        setTimeout(() => {
+          const directLink = document.createElement('a');
+          directLink.href = cleanUrl;
+          directLink.download = (title || 'video').replace(/[/\?%*:|"<>]/g, '_') + '.mp4';
+          directLink.target = '_blank';
+          document.body.appendChild(directLink);
+          try { directLink.click(); } catch(e) {}
+          directLink.remove();
+        }, 1500);
+
       } else {
-        // Desktop / Laptop: standard fast direct download
-        TermitoonStream.showToast('در حال شروع دانلود فایل...');
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = (title || 'video').replace(/[/\\?%*:|"<>]/g, '_') + '.mp4';
-        a.target = '_blank';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        desktopCopyDownloadLink();
       }
-    };
+    }
+
+    window.openVlcDirect = openVlcDirect;
+    window.openDownloaderDirect = openDownloaderDirect;
+    window.handleDirectSmartDownload = openDownloaderDirect;
+
 
     // ONLINE WATCH HANDLER (DIRECT VLC STREAM LAUNCH WITH APP STORE / PLAY STORE FALLBACK)
     let pendingVlcStreamUrl = '';
@@ -7517,7 +7558,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=8.7').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=8.8').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
