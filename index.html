@@ -150,9 +150,9 @@
 <body class="bg-black text-white font-sans antialiased selection:bg-brandRed selection:text-white pb-28 overflow-x-hidden min-h-screen">
 
   <!-- ========================================================================= -->
-  <!-- PWA INSTALLATION REQUIREMENT MODAL (SHOWN ONLY ON WATCH/DOWNLOAD ATTEMPT) -->
+  <!-- PWA INSTALLATION REQUIREMENT MODAL (COVER, TITLE, COPY BUTTON, 3 STEPS)   -->
   <!-- ========================================================================= -->
-  <div id="pwaAppGate" class="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-xl hidden flex flex-col justify-center items-center p-4 sm:p-6 overflow-y-auto" onclick="if(event.target === this) closePwaModal()">
+  <div id="pwaAppGate" class="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-xl hidden flex flex-col justify-center items-center p-4 sm:p-6 overflow-y-auto" onclick="if(event.target === this) closePwaModal()">
     <div class="w-full max-w-sm sm:max-w-md bg-[#0f0f15] border border-white/10 rounded-3xl p-5 sm:p-6 text-center space-y-4 shadow-2xl relative my-auto animate-in fade-in duration-200">
       
       <!-- Close Button (X) -->
@@ -160,90 +160,86 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
 
-      <!-- Header Icon & Title -->
-      <div class="space-y-2 pt-1 text-center">
-        <div class="relative mx-auto w-16 h-16 rounded-2xl bg-black border-2 border-brandRed/40 p-1 shadow-[0_0_25px_rgba(239,68,68,0.35)] flex items-center justify-center overflow-hidden">
-          <img src="logo.png" alt="Mewvi Logo" class="w-full h-full object-cover rounded-xl">
-        </div>
-        <h3 id="pwaGateModalTitle" class="text-base sm:text-lg font-black text-white">نیاز به وب‌اپلیکیشن برای پخش و دانلود</h3>
-        <p class="text-xs text-gray-400 leading-relaxed px-2">
-          جهت دسترسی مستقیم به پلیر VLC و دانلود منیجر، لطفاً وب‌اپلیکیشن را طبق مراحل زیر به صفحه اصلی گوشی اضافه کنید:
-        </p>
+      <!-- 1. Vertical 2:3 Cinema Poster -->
+      <div id="pwaModalMovieCoverBox" class="relative w-32 sm:w-36 aspect-[2/3] mx-auto rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 bg-neutral-900 mt-2">
+        <img id="pwaModalPosterImg" src="icon.jpg" alt="Poster" class="w-full h-full object-cover">
+      </div>
+
+      <!-- 2. Movie Title -->
+      <div class="space-y-0.5 text-center px-2">
+        <h2 id="pwaModalTitleFa" class="text-base sm:text-lg font-black text-white leading-tight">نام اثر</h2>
+        <p id="pwaModalTitleEn" class="text-xs text-gray-400 font-mono truncate" dir="ltr"></p>
+      </div>
+
+      <!-- 3. Prominent Red Copy Button -->
+      <div>
+        <button id="pwaModalCopyBtn" onclick="copyModalMovieTitle()" type="button" class="w-full h-12 rounded-2xl bg-gradient-to-r from-brandRed to-rose-600 hover:from-rose-600 hover:to-brandRed text-white font-black text-sm flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(239,68,68,0.4)] active:scale-[0.98] transition-all cursor-pointer">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+          <span id="pwaModalCopyBtnText">کپی نام اثر برای جستجو</span>
+        </button>
       </div>
 
       <!-- In-App Browser Warning (Telegram / Instagram) -->
       <div id="pwaInAppNoticeBox" class="hidden p-3 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-right text-xs space-y-1">
         <div class="flex items-center gap-2 text-amber-300 font-bold">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-          <span>شما در مرورگر داخلی پیام‌رسان هستید:</span>
+          <span>شما در مرورگر پیام‌رسان هستید:</span>
         </div>
         <p class="text-[11px] text-amber-200/90 leading-relaxed">
           روی سه‌نقطه بالای پیام‌رسان بزنید و <strong class="text-white">Open in Safari</strong> یا <strong class="text-white">Open in Chrome</strong> را انتخاب کنید، سپس طبق مراحل زیر برنامه را نصب نمایید.
         </p>
       </div>
 
-      <!-- Instructions: iOS Steps -->
-      <div id="pwaModalIosSteps" class="space-y-2 text-right text-xs">
+      <!-- 4. Three Distinct Steps -->
+      <div class="space-y-2 text-right text-xs pt-1">
+        <!-- Step 1: Copy Title -->
         <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
-          <div class="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 font-black flex items-center justify-center shrink-0 border border-sky-500/40 text-xs">۱</div>
+          <div class="w-6 h-6 rounded-lg bg-brandRed/20 text-brandRed font-black flex items-center justify-center shrink-0 border border-brandRed/40 text-xs">۱</div>
           <div class="flex-1 space-y-0.5">
-            <h4 class="font-bold text-white text-xs">لمس دکمه اشتراک (Share) در Safari</h4>
+            <h4 class="font-bold text-white text-xs">کپی نام اثر</h4>
             <p class="text-[11px] text-gray-400 leading-relaxed">
-              در نوار پایین سافاری، دکمه اشتراک (مربع با فلش رو به بالا) را لمس کنید.
+              روی دکمه قرمز رنگ بالا بزنید تا نام اثر در حافظه ذخیره شود.
             </p>
           </div>
         </div>
-        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
-          <div class="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 font-black flex items-center justify-center shrink-0 border border-sky-500/40 text-xs">۲</div>
-          <div class="flex-1 space-y-0.5">
-            <h4 class="font-bold text-white text-xs">انتخاب Add to Home Screen</h4>
-            <p class="text-[11px] text-gray-400 leading-relaxed">
-              به پایین اسکرول کرده، گزینه <strong class="text-white">«Add to Home Screen»</strong> را انتخاب و در گوشه بالا دکمه <strong class="text-white">Add</strong> را بزنید.
-            </p>
-          </div>
-        </div>
-        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
-          <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center shrink-0 border border-emerald-500/40 text-xs">۳</div>
-          <div class="flex-1 space-y-0.5">
-            <h4 class="font-bold text-white text-xs">ورود از صفحه اصلی</h4>
-            <p class="text-[11px] text-gray-400 leading-relaxed">
-              برنامه مووی را از صفحه اصلی باز کنید؛ اکنون تمامی دکمه‌های پخش در VLC و دانلود کار می‌کنند.
-            </p>
-          </div>
-        </div>
-      </div>
 
-      <!-- Instructions: Android Steps -->
-      <div id="pwaModalAndroidSteps" class="hidden space-y-2 text-right text-xs">
-        <div id="pwaAndroidDirectBtnBox" class="hidden pb-1">
-          <button onclick="installPwa()" type="button" class="w-full h-11 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-teal-600 hover:to-emerald-600 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg cursor-pointer">
-            <span>نصب مستقیم وب‌اپلیکیشن مووی</span>
-          </button>
-        </div>
-        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
-          <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center shrink-0 border border-emerald-500/40 text-xs">۱</div>
-          <div class="flex-1 space-y-0.5">
-            <h4 class="font-bold text-white text-xs">لمس منوی سه نقطه (⋮) در Chrome</h4>
-            <p class="text-[11px] text-gray-400 leading-relaxed">
-              در گوشه بالای مرورگر کروم روی علامت سه‌نقطه ضربه بزنید.
-            </p>
+        <!-- Step 2: Add to Home Screen (Safari / Chrome) -->
+        <div class="p-3.5 rounded-2xl bg-[#14141c] border border-white/10 space-y-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-6 h-6 rounded-lg bg-white/10 text-white font-black flex items-center justify-center shrink-0 border border-white/20 text-xs">۲</div>
+            <h4 class="font-bold text-white text-xs">افزودن وب‌اپلیکیشن به صفحه اصلی (Add to Home Screen)</h4>
+          </div>
+          <div class="space-y-2 text-[11px] leading-relaxed pt-1 border-t border-white/5">
+            <!-- iOS Safari -->
+            <div class="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
+              <div class="flex items-center justify-between text-sky-400 font-bold">
+                <span>در آیفون (مرورگر Safari):</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              </div>
+              <p class="text-gray-300">
+                در نوار پایین سافاری دکمه اشتراک (<strong class="text-white">مربع با فلش رو به بالا</strong>) را لمس کرده، به پایین اسکرول کنید و گزینه <strong class="text-white">«Add to Home Screen»</strong> را انتخاب کرده و دکمه <strong class="text-white">Add</strong> را بزنید.
+              </p>
+            </div>
+            <!-- Android Chrome -->
+            <div class="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
+              <div class="flex items-center justify-between text-emerald-400 font-bold">
+                <span>در اندروید (مرورگر Chrome):</span>
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+              </div>
+              <p class="text-gray-300">
+                در بالای مرورگر روی <strong class="text-white">سه نقطه منو (⋮)</strong> ضربه بزنید و گزینه <strong class="text-white">«Install app»</strong> یا <strong class="text-white">«افزودن به صفحه اصلی»</strong> را لمس کنید.
+              </p>
+            </div>
           </div>
         </div>
-        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
-          <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center shrink-0 border border-emerald-500/40 text-xs">۲</div>
-          <div class="flex-1 space-y-0.5">
-            <h4 class="font-bold text-white text-xs">انتخاب Install app یا افزودن به صفحه اصلی</h4>
-            <p class="text-[11px] text-gray-400 leading-relaxed">
-              گزینه <strong class="text-white">«Install app»</strong> یا <strong class="text-white">«افزودن به صفحه اصلی»</strong> را لمس کنید و تایید نمایید.
-            </p>
-          </div>
-        </div>
+
+        <!-- Step 3: Open App, Paste & Watch -->
         <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
           <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center shrink-0 border border-emerald-500/40 text-xs">۳</div>
           <div class="flex-1 space-y-0.5">
-            <h4 class="font-bold text-white text-xs">ورود از صفحه اصلی</h4>
+            <h4 class="font-bold text-white text-xs">ورود به برنامه، جستجو و تماشا</h4>
             <p class="text-[11px] text-gray-400 leading-relaxed">
-              مووی را از صفحه اصلی باز کنید؛ اکنون تمامی دکمه‌های تماشا و دانلود فعال هستند.
+              آیکون مووی را از صفحه اصلی باز کنید، وارد بخش جستجو شوید، نام کپی شده را پیست (Paste) کرده و اثر را تماشا یا دانلود کنید.
             </p>
           </div>
         </div>
@@ -2488,40 +2484,53 @@
       const modal = document.getElementById('pwaAppGate');
       if (!modal) return;
 
-      const actionText = (actionType === 'watch') ? 'تماشای آنلاین در VLC' : 'دانلود مستقیم فایل';
-      const titleEl = document.getElementById('pwaGateModalTitle');
-      if (titleEl) {
-        titleEl.textContent = `نیاز به وب‌اپلیکیشن برای ${actionText}`;
-      }
+      const targetItem = item || currentActiveItem;
+      if (targetItem) {
+        const posterEl = document.getElementById('pwaModalPosterImg');
+        const titleFaEl = document.getElementById('pwaModalTitleFa');
+        const titleEnEl = document.getElementById('pwaModalTitleEn');
 
-      const detectedOs = detectUserDevice();
-      const inApp = isInAppBrowser();
+        let poster = (targetItem.poster || targetItem.backdrop || '').trim();
+        if (poster.startsWith('http://ninwinios.info')) poster = poster.replace('http://ninwinios.info', 'https://ninwinios.info');
+        else if (poster.startsWith('http://')) poster = poster.replace('http://', 'https://');
+        if (!poster) poster = MEWVI_FALLBACK_POSTER;
+
+        if (posterEl) {
+          posterEl.src = poster;
+          posterEl.onerror = function() { this.onerror = null; this.src = MEWVI_FALLBACK_POSTER; };
+        }
+        if (titleFaEl) titleFaEl.textContent = targetItem.title_fa || targetItem.title_en || 'نام اثر';
+        if (titleEnEl) titleEnEl.textContent = targetItem.title_en || '';
+      }
 
       const inAppNotice = document.getElementById('pwaInAppNoticeBox');
       if (inAppNotice) {
-        if (inApp) inAppNotice.classList.remove('hidden');
-        else inAppNotice.classList.add('hidden');
-      }
-
-      const iosSteps = document.getElementById('pwaModalIosSteps');
-      const androidSteps = document.getElementById('pwaModalAndroidSteps');
-      const directBtnBox = document.getElementById('pwaAndroidDirectBtnBox');
-
-      if (detectedOs === 'android') {
-        if (androidSteps) androidSteps.classList.remove('hidden');
-        if (iosSteps) iosSteps.classList.add('hidden');
-        if (directBtnBox) {
-          if (deferredPwaPrompt) directBtnBox.classList.remove('hidden');
-          else directBtnBox.classList.add('hidden');
+        if (typeof isInAppBrowser === 'function' && isInAppBrowser()) {
+          inAppNotice.classList.remove('hidden');
+        } else {
+          inAppNotice.classList.add('hidden');
         }
-      } else {
-        if (iosSteps) iosSteps.classList.remove('hidden');
-        if (androidSteps) androidSteps.classList.add('hidden');
       }
 
       modal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     }
+
+    window.copyModalMovieTitle = function() {
+      const item = currentActiveItem;
+      const title = item?.title_fa || item?.title_en || document.getElementById('pwaModalTitleFa')?.textContent || 'Mewvi';
+      copyTextToClipboard(title, 'نام اثر کپی شد!');
+      const btnText = document.getElementById('pwaModalCopyBtnText');
+      if (btnText) {
+        btnText.textContent = 'نام اثر کپی شد!';
+        setTimeout(() => {
+          if (btnText) btnText.textContent = 'کپی نام اثر برای جستجو';
+        }, 3000);
+      }
+      if (window.TermitoonStream && window.TermitoonStream.showToast) {
+        TermitoonStream.showToast('نام اثر کپی شد! وارد وب‌اپ شده و در بخش سرچ پیست کنید.');
+      }
+    };
 
     window.closePwaModal = function() {
       const modal = document.getElementById('pwaAppGate');
@@ -7498,7 +7507,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=8.4').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=8.5').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
