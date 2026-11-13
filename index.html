@@ -1521,14 +1521,14 @@
       <!-- ===================================================================== -->
       <div id="detailMobileActionButtons" class="space-y-2.5 pt-1">
         <!-- Button 1: تماشا انلاین (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در VLC) -->
-        <a id="btnWatchPrimary" href="#" target="_blank" rel="noopener noreferrer" class="w-full h-12 px-6 bg-brandRed hover:bg-brandRedHover active:scale-[0.98] text-white font-black text-sm sm:text-base rounded-2xl shadow-lg shadow-brandRed/35 flex items-center justify-center transition-all duration-200 no-underline cursor-pointer">
+        <button id="btnWatchPrimary" type="button" class="w-full h-12 px-6 bg-brandRed hover:bg-brandRedHover active:scale-[0.98] text-white font-black text-sm sm:text-base rounded-2xl shadow-lg shadow-brandRed/35 flex items-center justify-center transition-all duration-200 cursor-pointer">
           <span id="btnWatchPrimaryText">تماشا انلاین</span>
-        </a>
+        </button>
 
         <!-- Button 2: دانلود فایل (سازگار با PWA جهت اجرای آنی در دانلود منیجر) -->
-        <a id="btnDownloadSecondary" href="#" target="_blank" rel="noopener noreferrer" class="w-full h-12 px-6 bg-[#161620] hover:bg-[#20202c] active:scale-[0.98] border border-white/15 text-gray-200 hover:text-white font-bold text-sm sm:text-base rounded-2xl shadow-md flex items-center justify-center transition-all duration-200 no-underline cursor-pointer">
+        <button id="btnDownloadSecondary" type="button" class="w-full h-12 px-6 bg-[#161620] hover:bg-[#20202c] active:scale-[0.98] border border-white/15 text-gray-200 hover:text-white font-bold text-sm sm:text-base rounded-2xl shadow-md flex items-center justify-center transition-all duration-200 cursor-pointer">
           <span id="btnDownloadSecondaryText">دانلود فایل</span>
-        </a>
+        </button>
 
         <!-- سایر کیفیت‌ها -->
         <button onclick="openDownloadModal(currentActiveItem, currentSelectedEpisode)" type="button" class="w-full py-1 text-center text-xs text-gray-400 hover:text-white transition cursor-pointer">
@@ -2237,12 +2237,23 @@
     }
 
     function isPwaStandalone() {
-      return (
-        window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone === true ||
-        document.referrer.includes('android-app://') ||
-        new URLSearchParams(window.location.search).get('pwa') === '1'
+      // 1. If inside Telegram, Instagram, WhatsApp or any in-app webview, NEVER standalone PWA!
+      const ua = (navigator.userAgent || navigator.vendor || window.opera || '').toLowerCase();
+      const inApp = /telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua);
+      if (inApp) {
+        return false;
+      }
+
+      // 2. Standard PWA display-mode query
+      const isStandaloneMedia = Boolean(
+        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+        (window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches)
       );
+
+      // 3. iOS Safari standalone flag
+      const isIosStandalone = Boolean(window.navigator && window.navigator.standalone === true);
+
+      return isStandaloneMedia || isIosStandalone;
     }
 
     async function fetchSharedItemPreview(slug) {
@@ -4755,17 +4766,7 @@
         desktopCopyDownloadText.textContent = `کپی لینک مستقیم دانلود (${v.qualityTag || v.label})`;
       }
 
-      if (btnWatch && v.url) {
-        btnWatch.href = getVlcHandoffUrl(v.url);
-        btnWatch.setAttribute('target', '_blank');
-        btnWatch.setAttribute('rel', 'noopener noreferrer');
-      }
-      const btnDownload = document.getElementById('btnDownloadSecondary');
-      if (btnDownload && v.url) {
-        btnDownload.href = getDownloadHandoffUrl(v.url);
-        btnDownload.setAttribute('target', '_blank');
-        btnDownload.setAttribute('rel', 'noopener noreferrer');
-      }
+      // Native buttons without href prevent browser from bypassing JS guards
     }
 
     // =========================================================================
@@ -4882,8 +4883,9 @@
 
       // BUTTON 1: تماشای آنلاین (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در VLC)
       btnWatchPrimary.onclick = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+
         if (isMobileOS() && !isPwaStandalone()) {
-          e.preventDefault();
           showPwaRequirementModal('watch', item);
           return;
         }
@@ -4892,7 +4894,6 @@
         const mediaUrl = v?.url || item.video_720 || item.video_1080 || item.video;
 
         if (!mediaUrl) {
-          e.preventDefault();
           TermitoonStream.showToast('در حال بارگذاری لینک‌های پخش...');
           fetchItemDetail(item.slug).then(full => {
             if (full) {
@@ -4900,8 +4901,11 @@
               populateVariantSelector(item, episode);
               const newV = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
               if (newV && newV.url) {
+                if (isMobileOS() && !isPwaStandalone()) {
+                  showPwaRequirementModal('watch', item);
+                  return;
+                }
                 const targetVlc = getVlcHandoffUrl(newV.url);
-                btnWatchPrimary.href = targetVlc;
                 copyTextToClipboard(newV.url);
                 TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
                 window.location.href = targetVlc;
@@ -4915,23 +4919,26 @@
           return;
         }
 
-        copyTextToClipboard(mediaUrl);
-        TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
-
         const ua = navigator.userAgent || '';
         const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const isAndroid = /Android/i.test(ua);
 
         if (!isIOS && !isAndroid) {
-          e.preventDefault();
           desktopCopyStreamLink();
+          return;
         }
+
+        copyTextToClipboard(mediaUrl);
+        TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
+        const targetVlc = getVlcHandoffUrl(mediaUrl);
+        window.location.href = targetVlc;
       };
 
       // BUTTON 2: دانلود فایل (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در دانلود منیجر)
       btnDownloadSecondary.onclick = (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+
         if (isMobileOS() && !isPwaStandalone()) {
-          e.preventDefault();
           showPwaRequirementModal('download', item);
           return;
         }
@@ -4940,12 +4947,15 @@
         const mediaUrl = v?.url || item.video_720 || item.video_1080 || item.video;
 
         if (!mediaUrl) {
-          e.preventDefault();
           TermitoonStream.showToast('در حال بارگذاری مشخصات دانلود...');
           fetchItemDetail(item.slug).then(full => {
             if (full) {
               Object.assign(item, full);
               populateVariantSelector(item, episode);
+              if (isMobileOS() && !isPwaStandalone()) {
+                showPwaRequirementModal('download', item);
+                return;
+              }
               openDownloadModal(item, episode);
             } else {
               openDownloadModal(item, episode);
@@ -4954,17 +4964,16 @@
           return;
         }
 
-        copyTextToClipboard(mediaUrl);
-        TermitoonStream.showToast('در حال انتقال به دانلود منیجر...');
-
         const ua = navigator.userAgent || '';
         const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         const isAndroid = /Android/i.test(ua);
 
         if (!isIOS && !isAndroid) {
-          e.preventDefault();
           desktopCopyDownloadLink();
+          return;
         }
+
+        handleDirectSmartDownload(mediaUrl, item.title_fa || item.title_en);
       };
     }
 
@@ -7489,7 +7498,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=8.4').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
