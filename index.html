@@ -150,120 +150,114 @@
 <body class="bg-black text-white font-sans antialiased selection:bg-brandRed selection:text-white pb-28 overflow-x-hidden min-h-screen">
 
   <!-- ========================================================================= -->
-  <!-- ENFORCED APP INSTALLATION GATE (MOBILE BANKING STYLE - VAZIR TYPOGRAPHY)  -->
+  <!-- PWA INSTALLATION REQUIREMENT MODAL (SHOWN ONLY ON WATCH/DOWNLOAD ATTEMPT) -->
   <!-- ========================================================================= -->
-  <div id="pwaAppGate" class="fixed inset-0 z-[99999] bg-[#07070a]/95 backdrop-blur-2xl hidden flex flex-col justify-center items-center p-4 sm:p-6 overflow-y-auto">
-    <div class="w-full max-w-sm bg-[#0f0f15] border border-white/10 rounded-3xl p-5 sm:p-6 text-center space-y-4 shadow-2xl relative my-auto animate-in fade-in duration-200">
+  <div id="pwaAppGate" class="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-xl hidden flex flex-col justify-center items-center p-4 sm:p-6 overflow-y-auto" onclick="if(event.target === this) closePwaModal()">
+    <div class="w-full max-w-sm sm:max-w-md bg-[#0f0f15] border border-white/10 rounded-3xl p-5 sm:p-6 text-center space-y-4 shadow-2xl relative my-auto animate-in fade-in duration-200">
       
-      <!-- MODE 1: Direct Entry (No Shared Item) -->
-      <div id="pwaGateDefaultLogo" class="space-y-4">
-        <div class="relative mx-auto w-20 h-20 sm:w-22 sm:h-22 rounded-3xl bg-black border-2 border-brandRed/40 p-1 shadow-[0_0_35px_rgba(239,68,68,0.35)] flex items-center justify-center overflow-hidden">
-          <img src="logo.png" alt="Mewvi Logo" class="w-full h-full object-cover rounded-2xl">
+      <!-- Close Button (X) -->
+      <button onclick="closePwaModal()" type="button" aria-label="بستن" class="absolute top-4 left-4 p-2 rounded-full bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+
+      <!-- Header Icon & Title -->
+      <div class="space-y-2 pt-1 text-center">
+        <div class="relative mx-auto w-16 h-16 rounded-2xl bg-black border-2 border-brandRed/40 p-1 shadow-[0_0_25px_rgba(239,68,68,0.35)] flex items-center justify-center overflow-hidden">
+          <img src="logo.png" alt="Mewvi Logo" class="w-full h-full object-cover rounded-xl">
         </div>
-        <div>
-          <h2 class="text-lg font-black text-white">وب‌اپلیکیشن اختصاصی مووی</h2>
-          <p class="text-xs text-gray-400 mt-1">سینمای آنلاین با کیفیت اصلی و بدون قطعی</p>
-        </div>
-        <div class="p-3.5 rounded-2xl bg-[#14141c] border border-white/10 text-right text-xs space-y-2">
-          <p class="text-gray-300 font-bold">جهت دسترسی روان و با بالاترین سرعت:</p>
-          <p class="text-[11px] text-gray-400">در آیفون (Safari): دکمه اشتراک (Share) را لمس کرده و گزینه Add to Home Screen را انتخاب کنید.</p>
-          <p class="text-[11px] text-gray-400">در اندروید (Chrome): منوی ۳ نقطه را لمس کرده و Install app یا Add to Home screen را بزنید.</p>
-        </div>
-        <button onclick="bypassPwaGateAndOpenItem()" type="button" class="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white font-bold text-xs border border-white/10 transition-all cursor-pointer">
-          ورود مستقیم در مرورگر
-        </button>
+        <h3 id="pwaGateModalTitle" class="text-base sm:text-lg font-black text-white">نیاز به وب‌اپلیکیشن برای پخش و دانلود</h3>
+        <p class="text-xs text-gray-400 leading-relaxed px-2">
+          جهت دسترسی مستقیم به پلیر VLC و دانلود منیجر، لطفاً وب‌اپلیکیشن را طبق مراحل زیر به صفحه اصلی گوشی اضافه کنید:
+        </p>
       </div>
 
-      <!-- MODE 2: Shared Movie / Series Item View (Vertical 2:3 Cover, Title, Copy Button, 3 Steps) -->
-      <div id="pwaSharedTitlePreview" class="hidden space-y-4">
-        <!-- 1. Vertical 2:3 Cinema Poster -->
-        <div class="relative w-36 sm:w-40 aspect-[2/3] mx-auto rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 bg-neutral-900">
-          <img id="pwaSharedPoster" src="icon.jpg" alt="Poster" class="w-full h-full object-cover">
+      <!-- In-App Browser Warning (Telegram / Instagram) -->
+      <div id="pwaInAppNoticeBox" class="hidden p-3 rounded-2xl bg-amber-950/40 border border-amber-500/30 text-right text-xs space-y-1">
+        <div class="flex items-center gap-2 text-amber-300 font-bold">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <span>شما در مرورگر داخلی پیام‌رسان هستید:</span>
         </div>
+        <p class="text-[11px] text-amber-200/90 leading-relaxed">
+          روی سه‌نقطه بالای پیام‌رسان بزنید و <strong class="text-white">Open in Safari</strong> یا <strong class="text-white">Open in Chrome</strong> را انتخاب کنید، سپس طبق مراحل زیر برنامه را نصب نمایید.
+        </p>
+      </div>
 
-        <!-- 2. Movie Title -->
-        <div class="space-y-1 text-center">
-          <h2 id="pwaSharedTitleFa" class="text-base sm:text-lg font-black text-white leading-tight">نام اثر</h2>
-          <p id="pwaSharedTitleEn" class="text-xs text-gray-400 font-mono truncate" dir="ltr"></p>
+      <!-- Instructions: iOS Steps -->
+      <div id="pwaModalIosSteps" class="space-y-2 text-right text-xs">
+        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 font-black flex items-center justify-center shrink-0 border border-sky-500/40 text-xs">۱</div>
+          <div class="flex-1 space-y-0.5">
+            <h4 class="font-bold text-white text-xs">لمس دکمه اشتراک (Share) در Safari</h4>
+            <p class="text-[11px] text-gray-400 leading-relaxed">
+              در نوار پایین سافاری، دکمه اشتراک (مربع با فلش رو به بالا) را لمس کنید.
+            </p>
+          </div>
         </div>
+        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 font-black flex items-center justify-center shrink-0 border border-sky-500/40 text-xs">۲</div>
+          <div class="flex-1 space-y-0.5">
+            <h4 class="font-bold text-white text-xs">انتخاب Add to Home Screen</h4>
+            <p class="text-[11px] text-gray-400 leading-relaxed">
+              به پایین اسکرول کرده، گزینه <strong class="text-white">«Add to Home Screen»</strong> را انتخاب و در گوشه بالا دکمه <strong class="text-white">Add</strong> را بزنید.
+            </p>
+          </div>
+        </div>
+        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center shrink-0 border border-emerald-500/40 text-xs">۳</div>
+          <div class="flex-1 space-y-0.5">
+            <h4 class="font-bold text-white text-xs">ورود از صفحه اصلی</h4>
+            <p class="text-[11px] text-gray-400 leading-relaxed">
+              برنامه مووی را از صفحه اصلی باز کنید؛ اکنون تمامی دکمه‌های پخش در VLC و دانلود کار می‌کنند.
+            </p>
+          </div>
+        </div>
+      </div>
 
-        <!-- 3. Prominent Copy Name Button -->
-        <div>
-          <input id="pwaCopyTitleInput" type="hidden" value="">
-          <button onclick="copySharedTitleForSearch()" type="button" class="w-full h-12 rounded-2xl bg-gradient-to-r from-brandRed to-rose-600 hover:from-rose-600 hover:to-brandRed text-white font-black text-sm flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(239,68,68,0.4)] active:scale-[0.98] transition-all cursor-pointer">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-            <span id="pwaCopyBtnText">کپی نام اثر برای جستجو</span>
+      <!-- Instructions: Android Steps -->
+      <div id="pwaModalAndroidSteps" class="hidden space-y-2 text-right text-xs">
+        <div id="pwaAndroidDirectBtnBox" class="hidden pb-1">
+          <button onclick="installPwa()" type="button" class="w-full h-11 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-teal-600 hover:to-emerald-600 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg cursor-pointer">
+            <span>نصب مستقیم وب‌اپلیکیشن مووی</span>
           </button>
         </div>
-
-        <!-- 4. Three Steps -->
-        <div class="space-y-2 text-right text-xs pt-1">
-          <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
-            <div class="w-6 h-6 rounded-lg bg-brandRed/20 text-brandRed font-black flex items-center justify-center shrink-0 border border-brandRed/40 text-xs">
-              ۱
-            </div>
-            <div class="flex-1 space-y-0.5">
-              <h4 class="font-bold text-white text-xs">کپی نام اثر</h4>
-              <p class="text-[11px] text-gray-400 leading-relaxed">
-                روی دکمه قرمز رنگ بالا بزنید تا نام اثر در حافظه ذخیره شود.
-              </p>
-            </div>
+        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center shrink-0 border border-emerald-500/40 text-xs">۱</div>
+          <div class="flex-1 space-y-0.5">
+            <h4 class="font-bold text-white text-xs">لمس منوی سه نقطه (⋮) در Chrome</h4>
+            <p class="text-[11px] text-gray-400 leading-relaxed">
+              در گوشه بالای مرورگر کروم روی علامت سه‌نقطه ضربه بزنید.
+            </p>
           </div>
-
-          <!-- گام ۲: آموزش افزودن به صفحه اصلی (Add to Home Screen) -->
-          <div class="p-3.5 rounded-2xl bg-[#14141c] border border-white/10 space-y-2.5">
-            <div class="flex items-center gap-2.5">
-              <div class="w-6 h-6 rounded-lg bg-white/10 text-white font-black flex items-center justify-center shrink-0 border border-white/20 text-xs">
-                ۲
-              </div>
-              <h4 class="font-bold text-white text-xs">افزودن وب‌اپلیکیشن به صفحه اصلی (Add to Home Screen)</h4>
-            </div>
-
-            <!-- راهنمای آیفون و اندروید -->
-            <div class="space-y-2 text-[11px] leading-relaxed pt-1 border-t border-white/5">
-              <!-- آیفون -->
-              <div class="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
-                <div class="flex items-center justify-between text-sky-400 font-bold">
-                  <span>در آیفون (مرورگر Safari):</span>
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                </div>
-                <p class="text-gray-300">
-                  در نوار پایین سافاری دکمه اشتراک (<strong class="text-white">مربع با فلش رو به بالا</strong>) را لمس کرده، به پایین اسکرول کنید و گزینه <strong class="text-white">«Add to Home Screen»</strong> را انتخاب کرده و دکمه <strong class="text-white">Add</strong> را بزنید.
-                </p>
-              </div>
-
-              <!-- اندروید -->
-              <div class="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
-                <div class="flex items-center justify-between text-emerald-400 font-bold">
-                  <span>در اندروید (مرورگر Chrome):</span>
-                  <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
-                </div>
-                <p class="text-gray-300">
-                  در بالای مرورگر روی <strong class="text-white">سه نقطه منو (⋮)</strong> ضربه بزنید و گزینه <strong class="text-white">«Install app»</strong> یا <strong class="text-white">«افزودن به صفحه اصلی»</strong> را لمس کنید.
-                </p>
-              </div>
-            </div>
+        </div>
+        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center shrink-0 border border-emerald-500/40 text-xs">۲</div>
+          <div class="flex-1 space-y-0.5">
+            <h4 class="font-bold text-white text-xs">انتخاب Install app یا افزودن به صفحه اصلی</h4>
+            <p class="text-[11px] text-gray-400 leading-relaxed">
+              گزینه <strong class="text-white">«Install app»</strong> یا <strong class="text-white">«افزودن به صفحه اصلی»</strong> را لمس کنید و تایید نمایید.
+            </p>
           </div>
-
-          <!-- گام ۳: ورود به برنامه، پیست نام اثر در جستجو و تماشا -->
-          <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
-            <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center shrink-0 border border-emerald-500/40 text-xs">
-              ۳
-            </div>
-            <div class="flex-1 space-y-0.5">
-              <h4 class="font-bold text-white text-xs">ورود به برنامه و جستجوی اثر</h4>
-              <p class="text-[11px] text-gray-400 leading-relaxed">
-                آیکون مووی را از صفحه اصلی باز کنید، وارد بخش جستجو شوید، نام کپی شده را پیست (Paste) کرده و اثر را تماشا یا دانلود کنید.
-              </p>
-            </div>
+        </div>
+        <div class="p-3 rounded-2xl bg-[#14141c] border border-white/10 flex items-start gap-3">
+          <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-black flex items-center justify-center shrink-0 border border-emerald-500/40 text-xs">۳</div>
+          <div class="flex-1 space-y-0.5">
+            <h4 class="font-bold text-white text-xs">ورود از صفحه اصلی</h4>
+            <p class="text-[11px] text-gray-400 leading-relaxed">
+              مووی را از صفحه اصلی باز کنید؛ اکنون تمامی دکمه‌های تماشا و دانلود فعال هستند.
+            </p>
           </div>
         </div>
       </div>
+
+      <!-- Action / Dismiss Button -->
+      <button onclick="closePwaModal()" type="button" class="w-full py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-[0.98] text-white font-bold text-xs transition cursor-pointer">
+        متوجه شدم / بازگشت به مووی
+      </button>
 
     </div>
   </div>
 
-<!-- ========================================================================= -->
+  <!-- ========================================================================= -->
   <!-- TOP APP HEADER (SHARED ACROSS VIEWS)                                      -->
   <!-- ========================================================================= -->
   <header class="sticky top-0 z-40 bg-black/95 backdrop-blur-md px-4 pt-safe pb-3 border-b border-white/5">
@@ -1523,15 +1517,15 @@
       </div>
 
       <!-- ===================================================================== -->
-      <!-- ACTION BUTTONS: WATCH ONLINE (VLC) & DOWNLOAD FILE                     -->
+      <!-- ACTION BUTTONS: MOBILE (WATCH ONLINE VLC & DOWNLOAD)                  -->
       <!-- ===================================================================== -->
-      <div class="space-y-2.5 pt-1">
-        <!-- Button 1: تماشا انلاین (لینک مستقیم سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در VLC) -->
+      <div id="detailMobileActionButtons" class="space-y-2.5 pt-1">
+        <!-- Button 1: تماشا انلاین (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در VLC) -->
         <a id="btnWatchPrimary" href="#" target="_blank" rel="noopener noreferrer" class="w-full h-12 px-6 bg-brandRed hover:bg-brandRedHover active:scale-[0.98] text-white font-black text-sm sm:text-base rounded-2xl shadow-lg shadow-brandRed/35 flex items-center justify-center transition-all duration-200 no-underline cursor-pointer">
           <span id="btnWatchPrimaryText">تماشا انلاین</span>
         </a>
 
-        <!-- Button 2: دانلود فایل (لینک مستقیم سازگار با PWA جهت اجرای آنی در دانلود منیجر) -->
+        <!-- Button 2: دانلود فایل (سازگار با PWA جهت اجرای آنی در دانلود منیجر) -->
         <a id="btnDownloadSecondary" href="#" target="_blank" rel="noopener noreferrer" class="w-full h-12 px-6 bg-[#161620] hover:bg-[#20202c] active:scale-[0.98] border border-white/15 text-gray-200 hover:text-white font-bold text-sm sm:text-base rounded-2xl shadow-md flex items-center justify-center transition-all duration-200 no-underline cursor-pointer">
           <span id="btnDownloadSecondaryText">دانلود فایل</span>
         </a>
@@ -1546,6 +1540,58 @@
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
           <span>مشاهده تمام فصل‌ها و قسمت‌های این سریال</span>
         </button>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- ACTION BUTTONS: DESKTOP (COPY STREAMING / DOWNLOAD LINK + QUICK GUIDE) -->
+      <!-- ===================================================================== -->
+      <div id="detailDesktopActionBlock" class="hidden space-y-3 pt-1 text-right">
+        <!-- Desktop Button 1: Copy Streaming Link for VLC -->
+        <button id="btnDesktopCopyStream" type="button" onclick="desktopCopyStreamLink()" class="w-full h-12 px-6 bg-brandRed hover:bg-brandRedHover active:scale-[0.98] text-white font-black text-sm rounded-2xl shadow-lg shadow-brandRed/35 flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+          <span id="btnDesktopCopyStreamText">کپی لینک تماشای آنلاین (VLC)</span>
+        </button>
+
+        <!-- Desktop Button 2: Copy Direct Download Link -->
+        <button id="btnDesktopCopyDownload" type="button" onclick="desktopCopyDownloadLink()" class="w-full h-12 px-6 bg-[#161620] hover:bg-[#20202c] active:scale-[0.98] border border-white/15 text-gray-200 hover:text-white font-bold text-sm rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span id="btnDesktopCopyDownloadText">کپی لینک مستقیم دانلود (IDM / مرورگر)</span>
+        </button>
+
+        <!-- سایر کیفیت‌ها برای دسکتاپ -->
+        <button onclick="openDownloadModal(currentActiveItem, currentSelectedEpisode)" type="button" class="w-full py-1 text-center text-xs text-gray-400 hover:text-white transition cursor-pointer">
+          مشاهده تمام کیفیت‌ها و نسخه‌های دانلود
+        </button>
+
+        <!-- Button: مشاهده تمام فصل‌ها و قسمت‌ها در دسکتاپ (مخصوص سریال) -->
+        <button id="btnAllSeasonsEpisodesDesktop" onclick="openSeriesEpisodesView(currentActiveItem)" type="button" class="hidden w-full h-11 px-6 bg-white/5 hover:bg-white/10 active:scale-[0.98] border border-white/15 text-indigo-300 hover:text-white font-bold text-xs sm:text-sm rounded-2xl shadow-md flex items-center justify-center gap-2 transition-all duration-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+          <span>مشاهده تمام فصل‌ها و قسمت‌های این سریال</span>
+        </button>
+
+        <!-- Desktop Visual Tutorial Card -->
+        <div class="p-3.5 rounded-2xl bg-[#12121a] border border-white/10 space-y-2.5 text-xs text-gray-300 leading-relaxed shadow-lg">
+          <div class="flex items-center gap-2 font-bold text-white border-b border-white/10 pb-2">
+            <svg class="w-4 h-4 text-brandRed shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span>راهنمای تماشا و دانلود در کامپیوتر و لپ‌تاپ:</span>
+          </div>
+
+          <div class="space-y-2 text-[11px]">
+            <div class="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
+              <div class="text-rose-400 font-bold">۱. تماشای آنلاین در VLC Media Player:</div>
+              <p class="text-gray-300">
+                روی دکمه قرمز <strong class="text-white">«کپی لینک تماشای آنلاین»</strong> کلیک کنید. نرم‌افزار VLC را در رایانه باز کرده، کلیدهای میانبر <strong class="text-white font-mono" dir="ltr">Ctrl + N</strong> (در مک <strong class="text-white font-mono" dir="ltr">Cmd + N</strong>) را فشار دهید، آدرس کپی شده را پیست نموده و <strong class="text-white">Play</strong> را بزنید تا فیلم فوراً با بالاترین کیفیت و زیرنویس پخش شود.
+              </p>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-black/40 border border-white/5 space-y-1">
+              <div class="text-emerald-400 font-bold">۲. دانلود پرسرعت با دانلود منیجر:</div>
+              <p class="text-gray-300">
+                روی دکمه <strong class="text-white">«کپی لینک مستقیم دانلود»</strong> کلیک کنید. سپس لینک را در نرم‌افزار دانلود منیجر (مانند IDM ، Free Download Manager یا در تب جدید مرورگر) پیست نمایید تا فایل با حداکثر سرعت و ترافیک نیم‌بهاء دانلود شود.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Synopsis Description with Interactive "بیشتر" Toggle -->
@@ -2427,126 +2473,123 @@
       }
     };
 
-    function checkPwaGate() {
-      const gate = document.getElementById('pwaAppGate');
-      if (!gate) return;
+    function showPwaRequirementModal(actionType = 'watch', item = null) {
+      const modal = document.getElementById('pwaAppGate');
+      if (!modal) return;
 
-      // Invalidate any legacy bypass from previous tests
-      try { localStorage.removeItem('mewvi_web_preview_bypassed'); } catch(e) {}
-
-      const params = new URLSearchParams(window.location.search);
-      const hashSlug = window.location.hash.startsWith('#item/') ? decodeURIComponent(window.location.hash.replace('#item/', '')) : null;
-      const targetItem = params.get('item') || params.get('movie') || params.get('series') || params.get('watch') || hashSlug;
-      if (targetItem) {
-        try { localStorage.setItem('pending_pwa_item', targetItem); } catch(e) {}
+      const actionText = (actionType === 'watch') ? 'تماشای آنلاین در VLC' : 'دانلود مستقیم فایل';
+      const titleEl = document.getElementById('pwaGateModalTitle');
+      if (titleEl) {
+        titleEl.textContent = `نیاز به وب‌اپلیکیشن برای ${actionText}`;
       }
 
-      // Standalone PWA Mode (or developer override ?dev=1): Grant full access!
-      const isDevBypass = params.get('dev') === '1';
-      if (isPwaStandalone() || isDevBypass) {
-        gate.classList.add('hidden');
+      const detectedOs = detectUserDevice();
+      const inApp = isInAppBrowser();
+
+      const inAppNotice = document.getElementById('pwaInAppNoticeBox');
+      if (inAppNotice) {
+        if (inApp) inAppNotice.classList.remove('hidden');
+        else inAppNotice.classList.add('hidden');
+      }
+
+      const iosSteps = document.getElementById('pwaModalIosSteps');
+      const androidSteps = document.getElementById('pwaModalAndroidSteps');
+      const directBtnBox = document.getElementById('pwaAndroidDirectBtnBox');
+
+      if (detectedOs === 'android') {
+        if (androidSteps) androidSteps.classList.remove('hidden');
+        if (iosSteps) iosSteps.classList.add('hidden');
+        if (directBtnBox) {
+          if (deferredPwaPrompt) directBtnBox.classList.remove('hidden');
+          else directBtnBox.classList.add('hidden');
+        }
+      } else {
+        if (iosSteps) iosSteps.classList.remove('hidden');
+        if (androidSteps) androidSteps.classList.add('hidden');
+      }
+
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    window.closePwaModal = function() {
+      const modal = document.getElementById('pwaAppGate');
+      if (modal) modal.classList.add('hidden');
+      document.body.style.overflow = '';
+    };
+
+    function isInAppBrowser() {
+      const ua = (navigator.userAgent || navigator.vendor || window.opera || '').toLowerCase();
+      return /telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua);
+    }
+
+    function checkPwaGate() {
+      // Intentionally empty on page load.
+      // Website loads cleanly so users can search and check movie cards.
+      // PWA Requirement Modal is triggered ONLY when watch/download is tapped on mobile outside PWA.
+    }
+
+    window.desktopCopyStreamLink = function() {
+      const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
+      const item = currentActiveItem;
+      const mediaUrl = v?.url || item?.video_720 || item?.video_1080 || item?.video;
+
+      if (!mediaUrl) {
+        TermitoonStream.showToast('در حال دریافت لینک پخش...');
+        if (item && item.slug) {
+          fetchItemDetail(item.slug).then(full => {
+            if (full) {
+              Object.assign(item, full);
+              populateVariantSelector(item, currentSelectedEpisode);
+              desktopCopyStreamLink();
+            } else {
+              TermitoonStream.showToast('لینکی برای پخش این عنوان یافت نشد.');
+            }
+          });
+        }
         return;
       }
 
-      // Auto-detect exact user device (iOS Safari vs Android Chrome vs Desktop)
-      const detectedOs = detectUserDevice();
-      switchPwaOsTab(detectedOs);
-
-      // Check if Android direct install prompt is ready
-      const directInstallContainer = document.getElementById('pwaAndroidDirectInstallContainer');
-      if (directInstallContainer && deferredPwaPrompt) {
-        directInstallContainer.classList.remove('hidden');
+      copyTextToClipboard(mediaUrl, 'لینک پخش آنلاین در کلیپ‌بورد کپی شد!');
+      const btnText = document.getElementById('btnDesktopCopyStreamText');
+      if (btnText) {
+        const orig = btnText.textContent;
+        btnText.textContent = 'لینک پخش کپی شد!';
+        setTimeout(() => { if (btnText) btnText.textContent = orig; }, 3000);
       }
+      TermitoonStream.showToast('لینک پخش کپی شد! در نرم‌افزار VLC کلیدهای Ctrl+N را بزنید و پیست کنید.');
+    };
 
-      // In Normal Web Browser: STRICTLY ENFORCE PWA GATE (NO BYPASS)
-      const defaultLogo = document.getElementById('pwaGateDefaultLogo');
-      const previewBox = document.getElementById('pwaSharedTitlePreview');
-      const titleEl = document.getElementById('pwaGateTitle');
-      const descEl = document.getElementById('pwaGateSubtitle');
+    window.desktopCopyDownloadLink = function() {
+      const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
+      const item = currentActiveItem;
+      const mediaUrl = v?.url || item?.video_720 || item?.video_1080 || item?.video;
 
-      const iosStepCopy = document.getElementById('pwaIosStepCopy');
-      const androidStepCopy = document.getElementById('pwaAndroidStepCopy');
-      const desktopStepCopy = document.getElementById('pwaDesktopStepCopy');
-
-      const iosStep1 = document.getElementById('pwaIosStepNum1');
-      const iosStep2 = document.getElementById('pwaIosStepNum2');
-      const iosStep3 = document.getElementById('pwaIosStepNum3');
-
-      const androidStep1 = document.getElementById('pwaAndroidStepNum1');
-      const androidStep2 = document.getElementById('pwaAndroidStepNum2');
-      const androidStep3 = document.getElementById('pwaAndroidStepNum3');
-
-      const desktopStep1 = document.getElementById('pwaDesktopStepNum1');
-      const desktopStep2 = document.getElementById('pwaDesktopStepNum2');
-      const desktopStep3 = document.getElementById('pwaDesktopStepNum3');
-
-      const iosFinalDesc = document.getElementById('pwaIosFinalDesc');
-      const androidFinalDesc = document.getElementById('pwaAndroidFinalDesc');
-      const desktopFinalDesc = document.getElementById('pwaDesktopFinalDesc');
-
-      if (targetItem) {
-        // Mode 1: Opened from a Shared Movie/Series Link
-        if (defaultLogo) defaultLogo.classList.add('hidden');
-        if (previewBox) {
-          previewBox.classList.remove('hidden');
-          fetchSharedItemPreview(targetItem);
+      if (!mediaUrl) {
+        TermitoonStream.showToast('در حال دریافت مشخصات دانلود...');
+        if (item && item.slug) {
+          fetchItemDetail(item.slug).then(full => {
+            if (full) {
+              Object.assign(item, full);
+              populateVariantSelector(item, currentSelectedEpisode);
+              desktopCopyDownloadLink();
+            } else {
+              TermitoonStream.showToast('لینکی برای دانلود این عنوان یافت نشد.');
+            }
+          });
         }
-        if (titleEl) titleEl.textContent = 'نحوه مشاهده و تماشا در وب‌اپلیکیشن';
-        if (descEl) descEl.textContent = 'این اثر با کیفیت اصلی در وب‌اپلیکیشن اختصاصی ما قابل پخش است:';
-
-        // Show Copy Step as Step 1
-        if (iosStepCopy) iosStepCopy.classList.remove('hidden');
-        if (androidStepCopy) androidStepCopy.classList.remove('hidden');
-        if (desktopStepCopy) desktopStepCopy.classList.remove('hidden');
-
-        // Number subsequent steps 2, 3, 4
-        if (iosStep1) iosStep1.textContent = '۲';
-        if (iosStep2) iosStep2.textContent = '۳';
-        if (iosStep3) iosStep3.textContent = '۴';
-
-        if (androidStep1) androidStep1.textContent = '۲';
-        if (androidStep2) androidStep2.textContent = '۳';
-        if (androidStep3) androidStep3.textContent = '۴';
-
-        if (desktopStep1) desktopStep1.textContent = '۲';
-        if (desktopStep2) desktopStep2.textContent = '۳';
-        if (desktopStep3) desktopStep3.textContent = '۴';
-
-        if (iosFinalDesc) iosFinalDesc.textContent = 'آیکون برنامه را از صفحه اصلی گوشی باز کنید، وارد بخش جستجو شوید و نام کپی شده را جای‌گذاری (Paste) کنید!';
-        if (androidFinalDesc) androidFinalDesc.textContent = 'آیکون برنامه را از صفحه اصلی باز کنید، وارد بخش جستجو شده و نام کپی شده را برای تماشا پیست کنید!';
-        if (desktopFinalDesc) desktopFinalDesc.textContent = 'آیکون وب‌اپلیکیشن را باز کرده، وارد بخش جستجو شده و نام کپی شده را برای تماشا پیست نمایید!';
-      } else {
-        // Mode 2: Opened Directly (Root / Homepage)
-        if (defaultLogo) defaultLogo.classList.remove('hidden');
-        if (previewBox) previewBox.classList.add('hidden');
-        if (titleEl) titleEl.textContent = 'ورود اختصاصی از طریق وب‌اپلیکیشن';
-        if (descEl) descEl.textContent = 'جهت استفاده پرسرعت و بدون قطعی، لطفاً برنامه را به صفحه اصلی گوشی یا رایانه خود اضافه کنید:';
-
-        // Hide Copy Step completely
-        if (iosStepCopy) iosStepCopy.classList.add('hidden');
-        if (androidStepCopy) androidStepCopy.classList.add('hidden');
-        if (desktopStepCopy) desktopStepCopy.classList.add('hidden');
-
-        // Number steps ۱, ۲, ۳ cleanly from 1!
-        if (iosStep1) iosStep1.textContent = '۱';
-        if (iosStep2) iosStep2.textContent = '۲';
-        if (iosStep3) iosStep3.textContent = '۳';
-
-        if (androidStep1) androidStep1.textContent = '۱';
-        if (androidStep2) androidStep2.textContent = '۲';
-        if (androidStep3) androidStep3.textContent = '۳';
-
-        if (desktopStep1) desktopStep1.textContent = '۱';
-        if (desktopStep2) desktopStep2.textContent = '۲';
-        if (desktopStep3) desktopStep3.textContent = '۳';
-
-        if (iosFinalDesc) iosFinalDesc.textContent = 'در گوشه بالا سمت راست دکمه «Add» را لمس کنید. سپس وب‌اپلیکیشن را از صفحه اصلی باز کرده و لذت ببرید!';
-        if (androidFinalDesc) androidFinalDesc.textContent = 'پیام تایید را لمس کنید تا وب‌اپلیکیشن روی گوشی شما قرار گیرد و با یک لمس باز شود!';
-        if (desktopFinalDesc) desktopFinalDesc.textContent = 'این پلتفرم اختصاصاً برای وب‌اپلیکیشن طراحی شده است. می‌توانید همین نشانی را در مرورگر گوشی باز کرده و طبق راهنما استفاده فرمایید!';
+        return;
       }
 
-      gate.classList.remove('hidden');
-    }
+      copyTextToClipboard(mediaUrl, 'لینک مستقیم دانلود در کلیپ‌بورد کپی شد!');
+      const btnText = document.getElementById('btnDesktopCopyDownloadText');
+      if (btnText) {
+        const orig = btnText.textContent;
+        btnText.textContent = 'لینک دانلود کپی شد!';
+        setTimeout(() => { if (btnText) btnText.textContent = orig; }, 3000);
+      }
+      TermitoonStream.showToast('لینک دانلود کپی شد! در IDM یا مرورگر پیست نمایید.');
+    };
 
     window.bypassPwaGateAndOpenItem = function() {
       const gate = document.getElementById('pwaAppGate');
@@ -2634,14 +2677,7 @@
         const isInApp = /telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua);
         if (!isInApp) return;
 
-        // Auto-transfer to Chrome / installed WebAPK on Android
-        const isAndroid = /android/i.test(ua);
-        if (isAndroid && !sessionStorage.getItem('mewvi_intent_tried')) {
-          sessionStorage.setItem('mewvi_intent_tried', '1');
-          const cleanHostAndPath = window.location.host + window.location.pathname + window.location.search + window.location.hash;
-          const intentUrl = 'intent://' + cleanHostAndPath + '#Intent;scheme=https;package=com.android.chrome;end';
-          window.location.replace(intentUrl);
-        }
+        // Keep user inside in-app browser smoothly so they can browse, search and see cards freely
 
         // Cache pending item in localStorage so standalone PWA can open it on launch
         const params = new URLSearchParams(window.location.search);
@@ -2682,7 +2718,6 @@
     // =========================================================================
     async function init() {
       try { checkInAppBrowser(); } catch(e) {}
-      try { checkPwaGate(); } catch(e) {}
       checkAuthSession().catch(() => {});
       loadActorsCatalogAsync().catch(() => {});
       try {
@@ -4711,6 +4746,15 @@
         btnDownloadText.textContent = `دانلود فایل (${v.qualityTag})`;
       }
 
+      const desktopCopyStreamText = document.getElementById('btnDesktopCopyStreamText');
+      const desktopCopyDownloadText = document.getElementById('btnDesktopCopyDownloadText');
+      if (desktopCopyStreamText) {
+        desktopCopyStreamText.textContent = `کپی لینک تماشای آنلاین (${v.qualityTag || v.label})`;
+      }
+      if (desktopCopyDownloadText) {
+        desktopCopyDownloadText.textContent = `کپی لینک مستقیم دانلود (${v.qualityTag || v.label})`;
+      }
+
       if (btnWatch && v.url) {
         btnWatch.href = getVlcHandoffUrl(v.url);
         btnWatch.setAttribute('target', '_blank');
@@ -4740,12 +4784,28 @@
       recordWatchHistory(item, episode);
       updateDetailBookmarkBtn();
 
-      // Show / Hide All Seasons button for series
+      // Responsive Action Blocks: Desktop vs Mobile
+      const isMobile = isMobileOS();
+      const mobileActions = document.getElementById('detailMobileActionButtons');
+      const desktopActions = document.getElementById('detailDesktopActionBlock');
       const btnAllSeasons = document.getElementById('btnAllSeasonsEpisodes');
+      const btnAllSeasonsDesktop = document.getElementById('btnAllSeasonsEpisodesDesktop');
       const isSeriesItem = episode || (item.category_type === 'series') || (item.category_type === 'anime' && (item.seasons_count > 0 || (item.seasons && item.seasons.length > 0))) || (item.seasons_count && item.seasons_count > 0);
-      if (btnAllSeasons) {
-        if (isSeriesItem) btnAllSeasons.classList.remove('hidden');
-        else btnAllSeasons.classList.add('hidden');
+
+      if (isMobile) {
+        if (mobileActions) mobileActions.classList.remove('hidden');
+        if (desktopActions) desktopActions.classList.add('hidden');
+        if (btnAllSeasons) {
+          if (isSeriesItem) btnAllSeasons.classList.remove('hidden');
+          else btnAllSeasons.classList.add('hidden');
+        }
+      } else {
+        if (mobileActions) mobileActions.classList.add('hidden');
+        if (desktopActions) desktopActions.classList.remove('hidden');
+        if (btnAllSeasonsDesktop) {
+          if (isSeriesItem) btnAllSeasonsDesktop.classList.remove('hidden');
+          else btnAllSeasonsDesktop.classList.add('hidden');
+        }
       }
 
       // Poster Image & Ambient Glow (HTTPS Normalized with Error Fallbacks)
@@ -4822,6 +4882,12 @@
 
       // BUTTON 1: تماشای آنلاین (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در VLC)
       btnWatchPrimary.onclick = (e) => {
+        if (isMobileOS() && !isPwaStandalone()) {
+          e.preventDefault();
+          showPwaRequirementModal('watch', item);
+          return;
+        }
+
         const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
         const mediaUrl = v?.url || item.video_720 || item.video_1080 || item.video;
 
@@ -4858,16 +4924,18 @@
 
         if (!isIOS && !isAndroid) {
           e.preventDefault();
-          if (typeof openPlayerModal === 'function') {
-            openPlayerModal(mediaUrl, item.title_fa || item.title_en);
-          } else {
-            window.open(mediaUrl, '_blank');
-          }
+          desktopCopyStreamLink();
         }
       };
 
       // BUTTON 2: دانلود فایل (سازگار با وب‌اپلیکیشن PWA جهت اجرای آنی در دانلود منیجر)
       btnDownloadSecondary.onclick = (e) => {
+        if (isMobileOS() && !isPwaStandalone()) {
+          e.preventDefault();
+          showPwaRequirementModal('download', item);
+          return;
+        }
+
         const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
         const mediaUrl = v?.url || item.video_720 || item.video_1080 || item.video;
 
@@ -4895,7 +4963,7 @@
 
         if (!isIOS && !isAndroid) {
           e.preventDefault();
-          triggerVideoDownload(mediaUrl, `${item.title_fa || item.title_en || 'video'}.mp4`);
+          desktopCopyDownloadLink();
         }
       };
     }
@@ -5481,10 +5549,10 @@
             const intentAdm = `intent://${cleanUrl}#Intent;action=android.intent.action.VIEW;scheme=${scheme};type=video/*;package=com.dv.adm;end`;
             osButtonHtml = `
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <a href="${intent1dm}" target="_blank" rel="noopener noreferrer" onclick="copyTextToClipboard('${rawUrl}'); TermitoonStream.showToast('در حال انتقال به 1DM...');" class="w-full py-2.5 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-1.5 no-underline">
+                <a href="${intent1dm}" target="_blank" rel="noopener noreferrer" onclick="if(!isPwaStandalone()){event.preventDefault(); showPwaRequirementModal('download'); return false;} copyTextToClipboard('${rawUrl}'); TermitoonStream.showToast('در حال انتقال به 1DM...');" class="w-full py-2.5 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-1.5 no-underline">
                   <span>انتقال مستقیم به 1DM</span>
                 </a>
-                <a href="${intentAdm}" target="_blank" rel="noopener noreferrer" onclick="copyTextToClipboard('${rawUrl}'); TermitoonStream.showToast('در حال انتقال به ADM...');" class="w-full py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 active:scale-98 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 no-underline">
+                <a href="${intentAdm}" target="_blank" rel="noopener noreferrer" onclick="if(!isPwaStandalone()){event.preventDefault(); showPwaRequirementModal('download'); return false;} copyTextToClipboard('${rawUrl}'); TermitoonStream.showToast('در حال انتقال به ADM...');" class="w-full py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 active:scale-98 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 no-underline">
                   <span>انتقال به ADM</span>
                 </a>
               </div>
@@ -5495,20 +5563,20 @@
               ? 'rhttps://' + cleanUrl.slice(8) 
               : 'rhttp://' + cleanUrl.slice(7);
             osButtonHtml = `
-              <a href="${docSchemeUrl}" target="_blank" rel="noopener noreferrer" onclick="copyTextToClipboard('${cleanUrl}'); TermitoonStream.showToast('در حال انتقال به اپلیکیشن Documents...');" class="w-full py-2.5 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-1.5 no-underline">
+              <a href="${docSchemeUrl}" target="_blank" rel="noopener noreferrer" onclick="if(!isPwaStandalone()){event.preventDefault(); showPwaRequirementModal('download'); return false;} copyTextToClipboard('${cleanUrl}'); TermitoonStream.showToast('در حال انتقال به اپلیکیشن Documents...');" class="w-full py-2.5 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-1.5 no-underline">
                 <span>انتقال به اپلیکیشن Documents (مخصوص آیفون)</span>
               </a>
             `;
           } else if (userOS === 'windows') {
             osButtonHtml = `
-              <button onclick="launchWindowsIdm('${rawUrl}', '${cleanFilename}')" type="button" class="w-full py-2.5 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-1.5">
-                <span>انتقال به IDM (Internet Download Manager)</span>
+              <button onclick="launchWindowsIdm('${rawUrl}', '${cleanFilename}')" type="button" class="w-full py-2.5 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>کپی لینک دانلود برای IDM (Internet Download Manager)</span>
               </button>
             `;
           } else {
             osButtonHtml = `
-              <button onclick="copyDownloadDirectUrl('${rawUrl}')" type="button" class="w-full py-2.5 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-1.5">
-                <span>کپی لینک مستقیم برای NeatDM / Folx</span>
+              <button onclick="copyDownloadDirectUrl('${rawUrl}')" type="button" class="w-full py-2.5 px-3 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white text-xs font-bold shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>کپی لینک مستقیم دانلود (${srcObj.quality})</span>
               </button>
             `;
           }
