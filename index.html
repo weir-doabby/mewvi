@@ -2233,23 +2233,24 @@
     }
 
     function isPwaStandalone() {
-      // 1. If inside Telegram, Instagram, WhatsApp or any in-app webview, NEVER standalone PWA!
+      // 1. In-app browsers (Telegram, Instagram, etc.) are NEVER standalone PWAs
       const ua = (navigator.userAgent || navigator.vendor || window.opera || '').toLowerCase();
-      const inApp = /telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua);
-      if (inApp) {
+      if (/telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua)) {
         return false;
       }
 
-      // 2. Standard PWA display-mode query
-      const isStandaloneMedia = Boolean(
-        (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
-        (window.matchMedia && window.matchMedia('(display-mode: fullscreen)').matches)
-      );
+      // 2. iOS Safari: ONLY true when launched directly from the Apple Home Screen icon!
+      if (window.navigator && window.navigator.standalone === true) {
+        return true;
+      }
 
-      // 3. iOS Safari standalone flag
-      const isIosStandalone = Boolean(window.navigator && window.navigator.standalone === true);
+      // 3. Android Chrome WebAPK: strictly standalone display-mode (never fullscreen)
+      if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) {
+        return true;
+      }
 
-      return isStandaloneMedia || isIosStandalone;
+      // In any regular browser (Safari, Chrome, Telegram, etc.) return false!
+      return false;
     }
 
     async function fetchSharedItemPreview(slug) {
@@ -2505,14 +2506,21 @@
 
       const inAppNotice = document.getElementById('pwaInAppNoticeBox');
       if (inAppNotice) {
-        if (typeof isInAppBrowser === 'function' && isInAppBrowser()) {
+        const ua = (navigator.userAgent || navigator.vendor || window.opera || '').toLowerCase();
+        const inApp = /telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua);
+        if (inApp) {
           inAppNotice.classList.remove('hidden');
+          inAppNotice.style.display = 'block';
         } else {
           inAppNotice.classList.add('hidden');
+          inAppNotice.style.display = 'none';
         }
       }
 
+      // Explicitly enforce visibility via inline CSS so no class collision can hide it
       modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+      modal.style.zIndex = '999999';
       document.body.style.overflow = 'hidden';
     }
 
@@ -2534,7 +2542,10 @@
 
     window.closePwaModal = function() {
       const modal = document.getElementById('pwaAppGate');
-      if (modal) modal.classList.add('hidden');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
       document.body.style.overflow = '';
     };
 
@@ -2550,6 +2561,10 @@
     }
 
     window.desktopCopyStreamLink = function() {
+      if (!isPwaStandalone()) {
+        showPwaRequirementModal('watch', currentActiveItem);
+        return;
+      }
       const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
       const item = currentActiveItem;
       const mediaUrl = v?.url || item?.video_720 || item?.video_1080 || item?.video;
@@ -2581,6 +2596,10 @@
     };
 
     window.desktopCopyDownloadLink = function() {
+      if (!isPwaStandalone()) {
+        showPwaRequirementModal('download', currentActiveItem);
+        return;
+      }
       const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
       const item = currentActiveItem;
       const mediaUrl = v?.url || item?.video_720 || item?.video_1080 || item?.video;
@@ -4894,7 +4913,7 @@
       btnWatchPrimary.onclick = (e) => {
         if (e && e.preventDefault) e.preventDefault();
 
-        if (isMobileOS() && !isPwaStandalone()) {
+        if (!isPwaStandalone()) {
           showPwaRequirementModal('watch', item);
           return;
         }
@@ -4947,7 +4966,7 @@
       btnDownloadSecondary.onclick = (e) => {
         if (e && e.preventDefault) e.preventDefault();
 
-        if (isMobileOS() && !isPwaStandalone()) {
+        if (!isPwaStandalone()) {
           showPwaRequirementModal('download', item);
           return;
         }
@@ -7507,7 +7526,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=8.5').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=8.6').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
