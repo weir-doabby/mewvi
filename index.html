@@ -144,6 +144,7 @@
     .animate-cat-paw {
       animation: catPawPull 2.2s cubic-bezier(0.42, 0, 0.25, 1) infinite;
     }
+    .adsense-slot{box-sizing:border-box;width:100%;max-width:100%;margin:12px auto;padding:0 12px;text-align:center;overflow:hidden;display:flex;justify-content:center;align-items:center;min-height:0}.adsense-slot script,.adsense-slot iframe{max-width:100%}@media(max-width:600px){.adsense-slot{margin:8px auto;padding:0 8px;min-height:0;max-height:180px;overflow:hidden}}
   </style>
 
 </head>
@@ -292,7 +293,11 @@
     </div>
   </header>
 
-
+  <!-- Third-party ad network placement: homepage -->
+  <div class="adsense-slot adsense-home-top mx-auto my-3 px-4 max-w-6xl" style="max-width:100%;overflow:hidden;text-align:center;" data-adsense-slot="HOME_TOP" aria-label="تبلیغات">
+    <script async="async" data-cfasync="false" src="https://bancadeltempoidea.org/21/a804e3761d220c4edc78e441555b50e2"></script>
+    <div id="container-a804e3761d220c4edc78e441555b50e2"></div>
+  </div>
 
   <!-- ========================================================================= -->
   <!-- VIEW 1: MAIN HOMEPAGE (CLEAN HEADER, ZERO COVER OVERLAYS, RED ACCENTS)    -->
@@ -7703,7 +7708,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=9.0').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=9.1').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
