@@ -145,7 +145,7 @@
       animation: catPawPull 2.2s cubic-bezier(0.42, 0, 0.25, 1) infinite;
     }
   </style>
-<style>.adsense-slot{box-sizing:border-box;width:100%;max-width:100%;margin:12px auto;padding:0 12px;text-align:center;overflow:hidden;display:flex;justify-content:center;align-items:center;min-height:0}.adsense-slot script,.adsense-slot iframe{max-width:100%}@media(max-width:600px){.adsense-slot{margin:8px auto;padding:0 8px;min-height:0;max-height:180px;overflow:hidden}}</style>
+
 </head>
 <body class="bg-black text-white font-sans antialiased selection:bg-brandRed selection:text-white pb-28 overflow-x-hidden min-h-screen">
 
@@ -292,11 +292,7 @@
     </div>
   </header>
 
-  <!-- Third-party ad network placement: homepage -->
-  <div class="adsense-slot adsense-home-top mx-auto my-4 px-4 max-w-6xl" style="max-width:100%;overflow:hidden;text-align:center;" data-adsense-slot="HOME_TOP" aria-label="تبلیغات">
-    <script async="async" data-cfasync="false" src="https://bancadeltempoidea.org/21/12c584ad817bf04e04651ce022b75c1c"></script>
-    <div id="container-12c584ad817bf04e04651ce022b75c1c"></div>
-  </div>
+
 
   <!-- ========================================================================= -->
   <!-- VIEW 1: MAIN HOMEPAGE (CLEAN HEADER, ZERO COVER OVERLAYS, RED ACCENTS)    -->
@@ -510,7 +506,7 @@
         </div>
         <div id="rowCurrentlyAiring" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowRecentlyReleasedSection" class="transition-all duration-300">
+      <section id="rowRecentlyReleasedSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('recently_released', 'جدیدترین فیلم‌های منتشر شده (۲۰۲۴-۲۰۲۶)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -523,7 +519,7 @@
         </div>
         <div id="rowRecentlyReleased" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowLatest2026Section" class="transition-all duration-300">
+      <section id="rowLatest2026Section" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('latest_2026', 'تازه‌ترین عناوین افزوده شده')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -536,7 +532,7 @@
         </div>
         <div id="rowLatest2026" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowNolanSection" class="transition-all duration-300">
+      <section id="rowNolanSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('nolan', 'شاهکارهای کریستوفر نولان (Christopher Nolan)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -549,7 +545,7 @@
         </div>
         <div id="rowNolan" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowScorseseSection" class="transition-all duration-300">
+      <section id="rowScorseseSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('scorsese', 'آثار ماندگار مارتین اسکورسیزی (Martin Scorsese)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -562,7 +558,7 @@
         </div>
         <div id="rowScorsese" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowTarantinoSection" class="transition-all duration-300">
+      <section id="rowTarantinoSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('tarantino', 'سینمای کوئنتین تارانتینو (Quentin Tarantino)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -575,7 +571,7 @@
         </div>
         <div id="rowTarantino" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowFincherSection" class="transition-all duration-300">
+      <section id="rowFincherSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('fincher', 'سینمای دیوید فینچر (David Fincher)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -588,7 +584,7 @@
         </div>
         <div id="rowFincher" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowVilleneuveSection" class="transition-all duration-300">
+      <section id="rowVilleneuveSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('villeneuve', 'جهان سینمایی دنی ویلنوو (Denis Villeneuve)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -601,7 +597,7 @@
         </div>
         <div id="rowVilleneuve" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowSpielbergSection" class="transition-all duration-300">
+      <section id="rowSpielbergSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('spielberg', 'شاهکارهای استیون اسپیلبرگ (Steven Spielberg)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -614,7 +610,7 @@
         </div>
         <div id="rowSpielberg" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowDicaprioSection" class="transition-all duration-300">
+      <section id="rowDicaprioSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('dicaprio', 'فیلم‌های برتر لئوناردو دی‌کاپریو (Leonardo DiCaprio)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -627,7 +623,7 @@
         </div>
         <div id="rowDicaprio" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowKeanuSection" class="transition-all duration-300">
+      <section id="rowKeanuSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('keanu', 'فیلم‌های برتر کیانو ریوز (Keanu Reeves)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -640,7 +636,7 @@
         </div>
         <div id="rowKeanu" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowTomHardySection" class="transition-all duration-300">
+      <section id="rowTomHardySection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('tom_hardy', 'فیلم‌های برتر تام هاردی (Tom Hardy)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -653,7 +649,7 @@
         </div>
         <div id="rowTomHardy" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowCillianSection" class="transition-all duration-300">
+      <section id="rowCillianSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('cillian', 'آثار برگزیده کیلین مورفی (Cillian Murphy)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -666,7 +662,7 @@
         </div>
         <div id="rowCillian" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowPacinoDeNiroSection" class="transition-all duration-300">
+      <section id="rowPacinoDeNiroSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('pacino_deniro', 'آثار آل پاچینو و رابرت دنیرو (Al Pacino & Robert De Niro)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -679,7 +675,7 @@
         </div>
         <div id="rowPacinoDeNiro" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowMarvelSection" class="transition-all duration-300">
+      <section id="rowMarvelSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('marvel', 'دنیای سینمایی مارول و اونجرز (Marvel Cinematic Universe)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -692,7 +688,7 @@
         </div>
         <div id="rowMarvel" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowBatmanSection" class="transition-all duration-300">
+      <section id="rowBatmanSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('batman', 'جهان سینمایی بتمن و گاتهام (Batman Universe)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -705,7 +701,7 @@
         </div>
         <div id="rowBatman" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowLotrSection" class="transition-all duration-300">
+      <section id="rowLotrSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('lotr', 'دنیای حماسی ارباب حلقه‌ها و هابیت (Middle-earth)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -718,7 +714,7 @@
         </div>
         <div id="rowLotr" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowHarryPotterSection" class="transition-all duration-300">
+      <section id="rowHarryPotterSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('harrypotter', 'دنیای جادویی هری پاتر و هاگوارتز (Harry Potter)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -731,7 +727,7 @@
         </div>
         <div id="rowHarryPotter" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowStarWarsSection" class="transition-all duration-300">
+      <section id="rowStarWarsSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('starwars', 'دنیای حماسی جنگ ستارگان (Star Wars)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -744,7 +740,7 @@
         </div>
         <div id="rowStarWars" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowFastFuriousSection" class="transition-all duration-300">
+      <section id="rowFastFuriousSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('fastfurious', 'مجموعه فیلم‌های سریع و خشن (Fast & Furious)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -757,7 +753,7 @@
         </div>
         <div id="rowFastFurious" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowMissionImpossibleSection" class="transition-all duration-300">
+      <section id="rowMissionImpossibleSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('missionimpossible', 'مجموعه ماموریت غیرممکن (Mission: Impossible)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -770,7 +766,7 @@
         </div>
         <div id="rowMissionImpossible" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowJamesBondSection" class="transition-all duration-300">
+      <section id="rowJamesBondSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('jamesbond', 'مجموعه فیلم‌های جیمز باند ۰۰۷ (James Bond 007)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -783,7 +779,7 @@
         </div>
         <div id="rowJamesBond" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowGhibliSection" class="transition-all duration-300">
+      <section id="rowGhibliSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('ghibli', 'شاهکارهای استودیو جیبلی (Studio Ghibli)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -796,7 +792,7 @@
         </div>
         <div id="rowGhibli" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowAnimationHitsSection" class="transition-all duration-300">
+      <section id="rowAnimationHitsSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('animation_hits', 'انیمیشن‌های شاهکار دیزنی و پیکسار')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -809,7 +805,7 @@
         </div>
         <div id="rowAnimationHits" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowAnimeSeriesSection" class="transition-all duration-300">
+      <section id="rowAnimeSeriesSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('anime_series', 'محبوب‌ترین انیمه‌های سریالی جهان')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -822,7 +818,7 @@
         </div>
         <div id="rowAnimeSeries" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowAnimeMoviesSection" class="transition-all duration-300">
+      <section id="rowAnimeMoviesSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('anime_movies', 'برترین فیلم‌های سینمایی انیمه')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -835,7 +831,7 @@
         </div>
         <div id="rowAnimeMovies" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowOscarWinnersSection" class="transition-all duration-300">
+      <section id="rowOscarWinnersSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('oscar_winners', 'فیلم‌های برنده جایزه اسکار')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -848,7 +844,7 @@
         </div>
         <div id="rowOscarWinners" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowMindbendingSection" class="transition-all duration-300">
+      <section id="rowMindbendingSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('mindbending', 'شاهکارهای روانشناختی و ذهن‌فریب')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -861,7 +857,7 @@
         </div>
         <div id="rowMindbending" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowMafiaSection" class="transition-all duration-300">
+      <section id="rowMafiaSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('mafia', 'سینمای مافیایی و گانگستری')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -874,7 +870,7 @@
         </div>
         <div id="rowMafia" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowMysterySection" class="transition-all duration-300">
+      <section id="rowMysterySection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('mystery', 'فیلم‌های کارآگاهی، جنایی و معمایی')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -887,7 +883,7 @@
         </div>
         <div id="rowMystery" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowScifiSection" class="transition-all duration-300">
+      <section id="rowScifiSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('scifi', 'برترین فیلم‌های علمی تخیلی (Sci-Fi)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -900,7 +896,7 @@
         </div>
         <div id="rowScifi" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowHorrorSection" class="transition-all duration-300">
+      <section id="rowHorrorSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('horror', 'ترسناک‌ترین فیلم‌های سینما (Horror)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -913,7 +909,7 @@
         </div>
         <div id="rowHorror" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowWarEpicsSection" class="transition-all duration-300">
+      <section id="rowWarEpicsSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('war_epics', 'سینمای حماسی و جنگی ماندگار')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -926,7 +922,7 @@
         </div>
         <div id="rowWarEpics" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowRomanceClassicsSection" class="transition-all duration-300">
+      <section id="rowRomanceClassicsSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('romance_classics', 'عاشقانه‌های ماندگار تاریخ سینما')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -939,7 +935,7 @@
         </div>
         <div id="rowRomanceClassics" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowActionHitsSection" class="transition-all duration-300">
+      <section id="rowActionHitsSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('action_hits', 'مهیج‌ترین فیلم‌های اکشن و هیجان‌انگیز')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -952,7 +948,7 @@
         </div>
         <div id="rowActionHits" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowComedyHitsSection" class="transition-all duration-300">
+      <section id="rowComedyHitsSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('comedy_hits', 'کمدی‌های خنده‌دار و سرگرم‌کننده')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -965,7 +961,7 @@
         </div>
         <div id="rowComedyHits" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowKdramaSection" class="transition-all duration-300">
+      <section id="rowKdramaSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('kdrama', 'شاهکارهای سینما و سریال کره جنوبی (K-Drama)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -978,7 +974,7 @@
         </div>
         <div id="rowKdrama" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowMiniseriesSection" class="transition-all duration-300">
+      <section id="rowMiniseriesSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('miniseries', 'برترین مینی‌سریال‌های شاهکار')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -991,7 +987,7 @@
         </div>
         <div id="rowMiniseries" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowDubbedSection" class="transition-all duration-300">
+      <section id="rowDubbedSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('dubbed', 'جدیدترین عناوین دوبله اختصاصی پارسی')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -1004,7 +1000,7 @@
         </div>
         <div id="rowDubbed" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowCultClassicsSection" class="transition-all duration-300">
+      <section id="rowCultClassicsSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('cult_classics', 'فیلم‌های کالت و شاهکارهای مهجور (Cult Classics)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -1017,7 +1013,7 @@
         </div>
         <div id="rowCultClassics" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowBlockbustersSection" class="transition-all duration-300">
+      <section id="rowBlockbustersSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openCatalogWithCollection('blockbusters', 'بلاک‌باسترهای مدرن سینما (۲۰۲۰-۲۰۲۶)')" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -1030,7 +1026,7 @@
         </div>
         <div id="rowBlockbusters" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
-      <section id="rowActorsSection" class="transition-all duration-300">
+      <section id="rowActorsSection" class="hidden transition-all duration-300">
         <div class="px-4 flex items-center justify-between mb-2.5">
           <button type="button" onclick="openActorsView()" class="group cursor-pointer text-right">
             <h2 class="text-base sm:text-lg font-bold tracking-tight text-white group-hover:text-brandRed transition">
@@ -1043,6 +1039,15 @@
         </div>
         <div id="rowActors" class="flex gap-3.5 overflow-x-auto no-scrollbar px-4 snap-x snap-mandatory"></div>
       </section>
+
+      <!-- Home Rows Progressive Scroll Sentinel & Loader (Lazy load 5 rows per chunk) -->
+      <div id="homeRowsLoadMoreContainer" class="w-full py-8 flex flex-col items-center justify-center gap-2.5 transition-all duration-300">
+        <span id="homeRowsProgressText" class="text-xs text-gray-400"></span>
+        <button id="btnHomeLoadMore" onclick="renderNextHomeRowsBatch()" type="button" class="px-6 py-2.5 rounded-2xl bg-[#1e1e26] hover:bg-brandRed border border-white/10 hover:border-brandRed text-white text-xs font-bold transition shadow-lg flex items-center gap-2 active:scale-95 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          <span>نمایش ردیف‌های بیشتر</span>
+        </button>
+      </div>
     </main>
   </div>
 
@@ -1237,8 +1242,6 @@
   <!-- VIEW 2: SERIES EPISODES SELECTOR VIEW                                     -->
   <!-- ========================================================================= -->
   <div id="seriesEpisodesView" class="view-panel hidden min-h-screen pb-32">
-    <!-- AdSense placement: SERIES_EPISODES. -->
-    
     
     <!-- Top Back Bar -->
     <div class="sticky top-0 z-40 bg-black/90 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-white/5 max-w-4xl mx-auto">
@@ -2040,9 +2043,7 @@
     </aside>
   </div>
 
-  <!-- AdSense placement: HOME_BOTTOM. Paste your approved AdSense ad-unit snippet here when provided. -->
   
-
   <!-- ========================================================================= -->
   <!-- BOTTOM NAVIGATION DOCK                                                    -->
   <!-- ========================================================================= -->
@@ -3104,6 +3105,132 @@
     }
 
     
+    // =========================================================================
+    // PROGRESSIVE HOME ROWS INFINITE SCROLL & CHUNK LOADING (5 ROWS PER BATCH)
+    // =========================================================================
+    let homeShowcaseEntries = [];
+    let homeRowsCurrentIndex = 0;
+    const HOME_ROWS_BATCH_SIZE = 5;
+    let isRenderingHomeBatch = false;
+    let homeRowsObserver = null;
+
+    function updateHomeLoadMoreContainer(isDone) {
+      const container = document.getElementById('homeRowsLoadMoreContainer');
+      if (!container) return;
+      const progressText = document.getElementById('homeRowsProgressText');
+      const btn = document.getElementById('btnHomeLoadMore');
+
+      if (isDone || (homeShowcaseEntries.length > 0 && homeRowsCurrentIndex >= homeShowcaseEntries.length)) {
+        if (progressText) progressText.textContent = '';
+        if (btn) btn.classList.add('hidden');
+        container.innerHTML = `
+          <span class="text-xs text-gray-500 py-3">تمامی بخش‌های صفحه اصلی بارگذاری شدند</span>
+        `;
+        if (homeRowsObserver) {
+          homeRowsObserver.disconnect();
+          homeRowsObserver = null;
+        }
+      } else {
+        const total = homeShowcaseEntries.length;
+        const current = Math.min(homeRowsCurrentIndex, total);
+        if (progressText) {
+          progressText.textContent = `نمایش ${current.toLocaleString('fa-IR')} از ${total.toLocaleString('fa-IR')} ردیف موضوعی`;
+        }
+        if (btn) {
+          btn.classList.remove('hidden');
+        }
+      }
+    }
+
+    function renderNextHomeRowsBatch() {
+      if (isRenderingHomeBatch) return;
+      if (!homeShowcaseEntries || homeShowcaseEntries.length === 0) return;
+      if (homeRowsCurrentIndex >= homeShowcaseEntries.length) {
+        updateHomeLoadMoreContainer(true);
+        return;
+      }
+      isRenderingHomeBatch = true;
+
+      const nextBatch = homeShowcaseEntries.slice(homeRowsCurrentIndex, homeRowsCurrentIndex + HOME_ROWS_BATCH_SIZE);
+
+      for (const [rowId, list] of nextBatch) {
+        const el = document.getElementById(rowId);
+        const sec = document.getElementById(rowId + 'Section');
+        if (sec) {
+          if (Array.isArray(list) && list.length > 0) {
+            sec.classList.remove('hidden');
+            if (el && !el.hasChildNodes()) {
+              el.innerHTML = list.map(item => createCardHtml(item)).join('');
+            }
+          } else {
+            sec.classList.add('hidden');
+          }
+        }
+      }
+
+      homeRowsCurrentIndex += nextBatch.length;
+
+      // When all movie and series rows are populated, reveal top actors row
+      if (homeRowsCurrentIndex >= homeShowcaseEntries.length) {
+        const showcase = window._homeShowcaseData || {};
+        const elActors = document.getElementById('rowActors');
+        const secActors = document.getElementById('rowActorsSection');
+        if (secActors && Array.isArray(showcase.top_actors) && showcase.top_actors.length > 0) {
+          secActors.classList.remove('hidden');
+          if (elActors && !elActors.hasChildNodes()) {
+            elActors.innerHTML = showcase.top_actors.map(act => createActorCardHtml(act)).join('');
+          }
+        }
+        updateHomeLoadMoreContainer(true);
+      } else {
+        updateHomeLoadMoreContainer(false);
+      }
+
+      isRenderingHomeBatch = false;
+    }
+
+    function initHomeRowsObserver() {
+      const container = document.getElementById('homeRowsLoadMoreContainer');
+      if (!container) return;
+
+      if ('IntersectionObserver' in window) {
+        if (homeRowsObserver) {
+          homeRowsObserver.disconnect();
+        }
+        homeRowsObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const homeView = document.getElementById('homeView');
+              const searchSec = document.getElementById('searchResultsSection');
+              if (homeView && !homeView.classList.contains('hidden') && (!searchSec || searchSec.classList.contains('hidden'))) {
+                renderNextHomeRowsBatch();
+              }
+            }
+          });
+        }, {
+          root: null,
+          rootMargin: '450px',
+          threshold: 0.05
+        });
+        homeRowsObserver.observe(container);
+      }
+
+      // Passive scroll listener fallback for fluid responsiveness
+      window.addEventListener('scroll', () => {
+        if (!homeShowcaseEntries || homeRowsCurrentIndex >= homeShowcaseEntries.length) return;
+        const homeView = document.getElementById('homeView');
+        const searchSec = document.getElementById('searchResultsSection');
+        if (!homeView || homeView.classList.contains('hidden')) return;
+        if (searchSec && !searchSec.classList.contains('hidden')) return;
+
+        const scrollPos = window.innerHeight + window.scrollY;
+        const docHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+        if (scrollPos >= docHeight - 650) {
+          renderNextHomeRowsBatch();
+        }
+      }, { passive: true });
+    }
+
     function renderHomeRowsFromShowcase(data) {
       if (!data) return;
       hasRenderedShowcase = true;
@@ -3187,48 +3314,24 @@
         rowBlockbusters: showcase.blockbusters
       };
 
-      const entries = Object.entries(rowMap);
+      const isFirstInit = (homeRowsCurrentIndex === 0);
+      homeShowcaseEntries = Object.entries(rowMap);
 
-      // 1. Ultra-fast initial render of above-the-fold rows (<20ms)
-      const immediateRows = entries.slice(0, 4);
-      for (const [rowId, list] of immediateRows) {
-        const el = document.getElementById(rowId);
-        if (el && Array.isArray(list) && list.length > 0) {
-          el.innerHTML = list.map(item => createCardHtml(item)).join('');
-        }
-      }
-
-      // 2. High-speed progressive idle render of below-the-fold rows (main-thread stays 60fps)
-      const remainingRows = entries.slice(4);
-      let rIdx = 0;
-      function renderRemainingChunks() {
-        const end = Math.min(rIdx + 6, remainingRows.length);
-        for (; rIdx < end; rIdx++) {
-          const [rowId, list] = remainingRows[rIdx];
-          const el = document.getElementById(rowId);
-          if (el && Array.isArray(list) && list.length > 0) {
-            el.innerHTML = list.map(item => createCardHtml(item)).join('');
-          }
-        }
-        if (rIdx < remainingRows.length) {
-          if ('requestIdleCallback' in window) {
-            requestIdleCallback(renderRemainingChunks, { timeout: 100 });
-          } else {
-            setTimeout(renderRemainingChunks, 16);
-          }
-        } else {
-          // Render top actors
-          const elActors = document.getElementById('rowActors');
-          if (elActors && Array.isArray(showcase.top_actors) && showcase.top_actors.length > 0) {
-            elActors.innerHTML = showcase.top_actors.map(act => createActorCardHtml(act)).join('');
-          }
-        }
-      }
-
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(renderRemainingChunks, { timeout: 50 });
+      if (isFirstInit) {
+        renderNextHomeRowsBatch();
+        initHomeRowsObserver();
       } else {
-        setTimeout(renderRemainingChunks, 16);
+        // Re-sync already rendered rows with latest incoming data
+        for (let i = 0; i < homeRowsCurrentIndex && i < homeShowcaseEntries.length; i++) {
+          const [rowId, list] = homeShowcaseEntries[i];
+          const el = document.getElementById(rowId);
+          const sec = document.getElementById(rowId + 'Section');
+          if (sec && Array.isArray(list) && list.length > 0) {
+            sec.classList.remove('hidden');
+            if (el) el.innerHTML = list.map(item => createCardHtml(item)).join('');
+          }
+        }
+        updateHomeLoadMoreContainer(homeRowsCurrentIndex >= homeShowcaseEntries.length);
       }
     }
 
@@ -7600,7 +7703,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=8.9').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=9.0').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
