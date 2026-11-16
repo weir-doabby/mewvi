@@ -2937,7 +2937,9 @@
         const pending = localStorage.getItem('pending_pwa_item');
         if (pending && (isPwaStandalone() || localStorage.getItem('mewvi_web_preview_bypassed') === 'true')) {
           localStorage.removeItem('pending_pwa_item');
-          handleCardClick(pending);
+          if (!currentActiveItem || currentActiveItem.slug !== pending) {
+            handleCardClick(pending);
+          }
         }
       }
     });
@@ -2946,7 +2948,9 @@
       const pending = localStorage.getItem('pending_pwa_item');
       if (pending && (isPwaStandalone() || localStorage.getItem('mewvi_web_preview_bypassed') === 'true')) {
         localStorage.removeItem('pending_pwa_item');
-        handleCardClick(pending);
+        if (!currentActiveItem || currentActiveItem.slug !== pending) {
+          handleCardClick(pending);
+        }
       }
     });
 
@@ -3321,8 +3325,9 @@
         if (Array.isArray(showcase[k])) {
           showcase[k].forEach(i => {
             if (i && i.slug) {
+              if (i.v7 && !i.video_720) i.video_720 = i.v7;
               homeShowcaseMap.set(i.slug, i);
-              if (i.seasons && i.seasons.length > 0) {
+              if (i.seasons?.length || i.download_links?.length || i.video_720 || i.video_1080) {
                 itemDetailsCache.set(i.slug, i);
               }
             }
@@ -3485,6 +3490,9 @@
       try {
         const cached = await getLocalCachedCatalog();
         if (Array.isArray(cached) && cached.length >= 36000) {
+          cached.forEach(ci => {
+            if (ci && ci.v7 && !ci.video_720) ci.video_720 = ci.v7;
+          });
           allItems = cached;
           isCatalogLoading = false;
           console.log(`Loaded ${allItems.length} titles from IndexedDB for search & catalog`);
@@ -3510,6 +3518,9 @@
           if (res.ok) {
             const freshItems = await res.json();
             if (Array.isArray(freshItems) && freshItems.length > 0) {
+              freshItems.forEach(fi => {
+                if (fi && fi.v7 && !fi.video_720) fi.video_720 = fi.v7;
+              });
               allItems = freshItems;
               isCatalogLoading = false;
               setLocalCachedCatalog(freshItems);
@@ -3962,6 +3973,13 @@
 
       // If viewing Series Seasons View:
       if (seriesEpisodesView && !seriesEpisodesView.classList.contains('hidden')) {
+        const posterImg = document.getElementById('seriesPosterImg');
+        if (posterImg && (fullItem.poster || fullItem.backdrop)) {
+          let p = (fullItem.poster || fullItem.backdrop || '').trim();
+          if (p.startsWith('http://ninwinios.info')) p = p.replace('http://ninwinios.info', 'https://ninwinios.info');
+          else if (p.startsWith('http://')) p = p.replace('http://', 'https://');
+          if (p) posterImg.src = p;
+        }
         if (Array.isArray(fullItem.seasons) && fullItem.seasons.length > 0) {
           currentSeriesSeasons = fullItem.seasons;
           populateSeasonDropdown();
@@ -3983,6 +4001,7 @@
       let item = itemDetailsCache.get(slug);
       if (!item) {
         item = allItems.find(i => i.slug === slug) || homeShowcaseMap.get(slug);
+        if (item && item.v7 && !item.video_720) item.video_720 = item.v7;
       }
 
       // Merge cached shard details if available
@@ -3991,6 +4010,7 @@
         if (!item) item = { ...cached };
         else Object.assign(item, cached);
       }
+      if (item && item.v7 && !item.video_720) item.video_720 = item.v7;
 
       // Deep link URL sync
       try {
@@ -4889,11 +4909,11 @@
       if (!currentStreamVariants || currentStreamVariants.length === 0) {
         const isAwaitingShard = !item.download_links && !item.video_720 && !item.video_1080 && (!item.seasons || item.seasons.length === 0);
         if (selectedText) {
-          selectedText.textContent = isAwaitingShard ? 'در حال دریافت کیفیت‌ها...' : 'کیفیت مستقیم (خودکار)';
+          selectedText.textContent = isAwaitingShard ? 'در حال آماده‌سازی کیفیت‌ها...' : 'کیفیت مستقیم (خودکار)';
         }
         if (menu) {
           menu.innerHTML = isAwaitingShard
-            ? '<div class="p-3.5 text-center text-xs text-gray-300 flex items-center justify-center gap-2"><div class="w-3.5 h-3.5 border-2 border-brandRed border-t-transparent rounded-full animate-spin"></div><span>در حال دریافت کیفیت‌های پخش...</span></div>'
+            ? '<div class="p-3.5 text-center text-xs text-gray-300 flex flex-col items-center justify-center gap-2"><div class="flex items-center gap-2"><div class="w-3.5 h-3.5 border-2 border-brandRed border-t-transparent rounded-full animate-spin"></div><span>در حال آماده‌سازی کیفیت‌ها (۹۵٪)...</span></div><div class="w-full bg-white/10 rounded-full h-1.5 overflow-hidden mt-1"><div class="bg-brandRed h-full rounded-full animate-pulse" style="width: 95%"></div></div></div>'
             : '<div class="p-3 text-center text-xs text-gray-400">لینک مستقیمی برای این اثر ثبت نشده است.</div>';
         }
         applyActiveVariant();
@@ -5006,9 +5026,9 @@
       if (!v) {
         const item = currentActiveItem;
         const isAwaiting = item && !item.download_links && !item.video_720 && !item.video_1080 && (!item.seasons || item.seasons.length === 0);
-        if (selectedText) selectedText.textContent = isAwaiting ? 'در حال دریافت کیفیت‌ها...' : 'کیفیت مستقیم';
-        if (btnWatchText) btnWatchText.textContent = 'تماشا انلاین';
-        if (btnDownloadText) btnDownloadText.textContent = 'دانلود فایل';
+        if (selectedText) selectedText.textContent = isAwaiting ? 'در حال آماده‌سازی کیفیت‌ها...' : 'کیفیت مستقیم';
+        if (btnWatchText) btnWatchText.textContent = isAwaiting ? 'آماده‌سازی تماشا...' : 'تماشا انلاین';
+        if (btnDownloadText) btnDownloadText.textContent = isAwaiting ? 'آماده‌سازی دانلود...' : 'دانلود فایل';
         if (btnWatch) btnWatch.removeAttribute('href');
         return;
       }
@@ -5202,7 +5222,6 @@
 
         if (!isIOS && !isAndroid) {
           if (e && e.preventDefault) e.preventDefault();
-          if (mediaUrl) copyTextToClipboard(mediaUrl, 'لینک در حافظه کپی شد.');
           AdPrerollManager.show({
             actionType: 'play',
             mediaUrl: mediaUrl,
@@ -5269,7 +5288,6 @@
 
         if (!isIOS && !isAndroid) {
           if (e && e.preventDefault) e.preventDefault();
-          if (mediaUrl) copyTextToClipboard(mediaUrl, 'لینک در حافظه کپی شد.');
           AdPrerollManager.show({
             actionType: 'download',
             mediaUrl: mediaUrl,
@@ -5608,10 +5626,6 @@
       const item = currentActiveItem;
       const mediaUrl = v?.url || item?.video_720 || item?.video_1080 || item?.video;
 
-      if (mediaUrl) {
-        copyTextToClipboard(mediaUrl, 'لینک در حافظه کپی شد.');
-      }
-
       AdPrerollManager.show({
         actionType: 'play',
         mediaUrl: mediaUrl || '',
@@ -5627,10 +5641,6 @@
       const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
       const item = currentActiveItem;
       const mediaUrl = v?.url || item?.video_720 || item?.video_1080 || item?.video;
-
-      if (mediaUrl) {
-        copyTextToClipboard(mediaUrl, 'لینک در حافظه کپی شد.');
-      }
 
       AdPrerollManager.show({
         actionType: 'download',
@@ -6911,13 +6921,14 @@
         epCard.className = 'w-full group cursor-pointer space-y-2 select-none';
         epCard.onclick = () => openDetailView(currentActiveItem, ep);
 
-        const thumb = ep.thumb || ep.poster || currentActiveItem.poster || currentActiveItem.backdrop || 'https://image.tmdb.org/t/p/w780/zfaiO7QgpcvR8XDOMokWLRfKeTE.jpg';
+        const fallbackArtwork = (currentActiveItem && (currentActiveItem.poster || currentActiveItem.backdrop)) || MEWVI_FALLBACK_POSTER;
+        const thumb = ep.thumb || ep.poster || fallbackArtwork;
         const epNum = ep.number || (epIdx + 1);
 
         epCard.innerHTML = `
           <!-- VERTICAL 2:3 CINEMA POSTER CARD FOR EPISODE (ZARDFILM STYLE) -->
           <div class="relative w-full aspect-[2/3] rounded-2xl overflow-hidden bg-neutral-900 border border-white/10 group-hover:border-brandRed/60 transition duration-200 shadow-lg">
-            <img src="${thumb}" alt="${ep.title || ('قسمت ' + epNum)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://image.tmdb.org/t/p/w780/zfaiO7QgpcvR8XDOMokWLRfKeTE.jpg'" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <img src="${thumb}" alt="${ep.title || ('قسمت ' + epNum)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${fallbackArtwork}'" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
             
             <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
 
