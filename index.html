@@ -1838,7 +1838,68 @@
   <!-- ========================================================================= -->
   <!-- VIDEO PLAYER MODAL (OPTIONAL FALLBACK WEB PLAYER)                         -->
   <!-- ========================================================================= -->
-  <div id="playerModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl hidden flex flex-col justify-center items-center p-4">
+  <!-- ========================================================================= -->
+  <!-- IN-STREAM VIDEO PREROLL AD MODAL (HILLTOPADS VAST 3.0)                    -->
+  <!-- ========================================================================= -->
+  <div id="videoAdModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-3 sm:p-4 select-none">
+    <div class="w-full max-w-xl bg-[#111116] border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col text-right relative">
+      
+      <!-- Ad Top Bar -->
+      <div class="px-4 py-3 bg-white/[0.04] border-b border-white/10 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="px-2 py-0.5 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold text-[11px] shrink-0">
+            پیام بازرگانی
+          </span>
+          <span id="adTimerText" class="text-xs text-gray-400 font-medium truncate">
+            امکان رد کردن پس از ۵ ثانیه
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Skip Button (Active after 5 seconds) -->
+          <a id="adSkipBtn" href="#" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-xl bg-white/10 text-gray-400 text-xs font-bold transition flex items-center gap-1.5 pointer-events-none opacity-50 cursor-not-allowed no-underline">
+            <span id="adSkipBtnText">۵ ثانیه...</span>
+          </a>
+          <!-- Close button (X) -->
+          <button id="adCloseBtn" type="button" aria-label="بستن تبلیغ" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Video Canvas Area -->
+      <div class="relative w-full aspect-video bg-black flex items-center justify-center overflow-hidden">
+        <video id="adVideoPlayer" class="w-full h-full object-contain" playsinline webkit-playsinline></video>
+        
+        <!-- Click-Through overlay (clickable to sponsor website) -->
+        <a id="adClickOverlay" href="#" target="_blank" rel="noopener noreferrer" class="absolute inset-x-0 top-0 bottom-12 z-10 cursor-pointer" title="مشاهده وب‌سایت حامی"></a>
+
+        <!-- Sound Toggle Button -->
+        <button id="adMuteToggleBtn" type="button" class="absolute bottom-3 right-3 z-20 px-2.5 py-1.5 rounded-xl bg-black/75 backdrop-blur-md border border-white/15 text-white text-xs flex items-center gap-1.5 hover:bg-black/90 transition shadow-lg">
+          <svg id="adMuteIconMuted" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+          <svg id="adMuteIconUnmuted" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+          <span id="adMuteLabel">صدا</span>
+        </button>
+
+        <!-- Progress bar at bottom of video -->
+        <div class="absolute bottom-0 inset-x-0 h-1 bg-white/10 z-20">
+          <div id="adProgressBar" class="h-full bg-brandRed w-0 transition-[width] duration-200"></div>
+        </div>
+      </div>
+
+      <!-- Bottom Sponsor Bar -->
+      <div class="px-4 py-2.5 bg-white/[0.02] border-t border-white/5 flex items-center justify-between text-xs">
+        <a id="adWebsiteLink" href="#" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 transition flex items-center gap-1 font-medium">
+          <span>مشاهده وب‌سایت حامی</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+        <span class="text-gray-500 text-[10px]">حامی پخش رایگان فیلم‌ها</span>
+      </div>
+
+    </div>
+  </div>
+
+    <div id="playerModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl hidden flex flex-col justify-center items-center p-4">
     <div class="w-full max-w-4xl relative">
       <div class="flex items-center justify-between pb-3 text-white">
         <span id="playerModalTitle" class="text-sm font-bold truncate">در حال پخش...</span>
@@ -4930,6 +4991,7 @@
     // VIEW 3: DETAIL VIEW (VERTICAL 2:3 CINEMA CARD - ZARDFILM STYLE)
     // =========================================================================
     function openDetailView(item, episode = null) {
+      preloadNextVastAd();
       saveCurrentViewScroll();
       hideAllViews();
       detailView.classList.remove('hidden');
@@ -5038,7 +5100,7 @@
       renderItemCast(item, 'detail');
       renderItemRelated(item, 'detail');
 
-      // BUTTON 1: تماشای آنلاین (اجرای مستقیم در VLC هم در مرورگر و هم در وب‌اپلیکیشن)
+      // BUTTON 1: تماشای آنلاین (اجرای مستقیم در VLC هم در مرورگر و هم در وب‌اپلیکیشن با پری‌رول ویدیویی)
       btnWatchPrimary.onclick = (e) => {
         const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
         const mediaUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
@@ -5053,7 +5115,14 @@
               const newV = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
               const newUrl = newV?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
               if (newUrl) {
-                openVlcDirect(newUrl, item.title_fa || item.title_en);
+                const vlcH = getVlcHandoffUrl(newUrl);
+                AdPrerollManager.show({
+                  actionType: 'play',
+                  mediaUrl: newUrl,
+                  title: item.title_fa || item.title_en,
+                  handoffUrl: vlcH,
+                  onComplete: () => openVlcDirect(newUrl, item.title_fa || item.title_en)
+                });
               } else {
                 TermitoonStream.showToast('لینکی برای پخش این عنوان یافت نشد.');
               }
@@ -5070,20 +5139,34 @@
 
         if (!isIOS && !isAndroid) {
           if (e && e.preventDefault) e.preventDefault();
-          desktopCopyStreamLink();
+          AdPrerollManager.show({
+            actionType: 'play',
+            mediaUrl: mediaUrl,
+            title: item.title_fa || item.title_en,
+            handoffUrl: '#',
+            onComplete: () => desktopCopyStreamLink()
+          });
           return;
         }
 
-        copyTextToClipboard(mediaUrl, 'لینک پخش در حافظه کپی شد');
-        TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
-
         const vlcHandoff = getVlcHandoffUrl(mediaUrl);
         btnWatchPrimary.href = vlcHandoff;
-        // On standalone PWA, also execute dynamic launch
-        openVlcDirect(mediaUrl, item.title_fa || item.title_en);
+
+        if (e && e.preventDefault) e.preventDefault();
+        AdPrerollManager.show({
+          actionType: 'play',
+          mediaUrl: mediaUrl,
+          title: item.title_fa || item.title_en,
+          handoffUrl: vlcHandoff,
+          onComplete: () => {
+            copyTextToClipboard(mediaUrl, 'لینک پخش در حافظه کپی شد');
+            TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
+            openVlcDirect(mediaUrl, item.title_fa || item.title_en);
+          }
+        });
       };
 
-      // BUTTON 2: دانلود فایل (اجرای مستقیم در دانلود منیجر هم در مرورگر و هم در وب‌اپلیکیشن)
+      // BUTTON 2: دانلود فایل (اجرای مستقیم در دانلود منیجر هم در مرورگر و هم در وب‌اپلیکیشن با پری‌رول ویدیویی)
       btnDownloadSecondary.onclick = (e) => {
         const v = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
         const mediaUrl = v?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
@@ -5098,7 +5181,14 @@
               const newV = currentStreamVariants[currentActiveVariantIndex] || currentStreamVariants[0];
               const newUrl = newV?.url || episode?.video_720 || episode?.video_1080 || episode?.video || item.video_720 || item.video_1080 || item.video;
               if (newUrl) {
-                openDownloaderDirect(newUrl, item.title_fa || item.title_en, item, episode);
+                const dlH = getDownloadHandoffUrl(newUrl);
+                AdPrerollManager.show({
+                  actionType: 'download',
+                  mediaUrl: newUrl,
+                  title: item.title_fa || item.title_en,
+                  handoffUrl: dlH,
+                  onComplete: () => openDownloaderDirect(newUrl, item.title_fa || item.title_en, item, episode)
+                });
               } else {
                 openDownloadModal(item, episode);
               }
@@ -5115,18 +5205,303 @@
 
         if (!isIOS && !isAndroid) {
           if (e && e.preventDefault) e.preventDefault();
-          desktopCopyDownloadLink();
+          AdPrerollManager.show({
+            actionType: 'download',
+            mediaUrl: mediaUrl,
+            title: item.title_fa || item.title_en,
+            handoffUrl: '#',
+            onComplete: () => desktopCopyDownloadLink()
+          });
           return;
         }
 
-        copyTextToClipboard(mediaUrl, 'لینک دانلود در حافظه کپی شد');
-
         const dlHandoff = getDownloadHandoffUrl(mediaUrl);
         btnDownloadSecondary.href = dlHandoff;
-        // On standalone PWA, also execute dynamic launch
-        openDownloaderDirect(mediaUrl, item.title_fa || item.title_en, item, episode);
+
+        if (e && e.preventDefault) e.preventDefault();
+        AdPrerollManager.show({
+          actionType: 'download',
+          mediaUrl: mediaUrl,
+          title: item.title_fa || item.title_en,
+          handoffUrl: dlHandoff,
+          onComplete: () => {
+            copyTextToClipboard(mediaUrl, 'لینک دانلود در حافظه کپی شد');
+            openDownloaderDirect(mediaUrl, item.title_fa || item.title_en, item, episode);
+          }
+        });
       };
     }
+
+    // =========================================================================
+    // IN-STREAM VIDEO PREROLL AD MANAGER (HILLTOPADS VAST 3.0)
+    // =========================================================================
+    const HILLTOP_VAST_TAG = 'https://troubled-entertainment.com/dSmTFKz.dhGqN/v/ZuGqUD/MeemB9EufZtUSl/kUPhTVcb2JMwz/ANxgM-THcWtLNBzhYyznMqDIEQyFM-Qz';
+    const AD_COOLDOWN_MS = 25000;
+
+    let adLastShownTime = 0;
+    let cachedVastAd = null;
+    let isFetchingVast = false;
+
+    async function fetchVastAdData() {
+      if (cachedVastAd) {
+        const item = cachedVastAd;
+        cachedVastAd = null;
+        return item;
+      }
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        const res = await fetch(HILLTOP_VAST_TAG, {
+          cache: 'no-store',
+          signal: controller.signal,
+          headers: { 'Accept': 'application/xml, text/xml, */*' }
+        });
+        clearTimeout(timeoutId);
+        if (!res.ok) return null;
+        const text = await res.text();
+        if (!text || !text.includes('<VAST')) return null;
+
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, 'text/xml');
+
+        const mediaNodes = xml.querySelectorAll('MediaFile');
+        if (!mediaNodes || mediaNodes.length === 0) return null;
+
+        let videoUrl = '';
+        for (const m of mediaNodes) {
+          const type = (m.getAttribute('type') || '').toLowerCase();
+          const val = (m.textContent || '').trim();
+          if (!val) continue;
+          if (type.includes('mp4')) {
+            videoUrl = val;
+            break;
+          }
+          if (!videoUrl) videoUrl = val;
+        }
+        if (!videoUrl) return null;
+
+        const impressions = [];
+        xml.querySelectorAll('Impression').forEach(node => {
+          const u = (node.textContent || '').trim();
+          if (u && !impressions.includes(u)) impressions.push(u);
+        });
+        xml.querySelectorAll('Tracking[event="start"]').forEach(node => {
+          const u = (node.textContent || '').trim();
+          if (u && !impressions.includes(u)) impressions.push(u);
+        });
+
+        let clickThrough = '';
+        const clickNode = xml.querySelector('ClickThrough');
+        if (clickNode) clickThrough = (clickNode.textContent || '').trim();
+
+        return { videoUrl, impressions, clickThrough };
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function preloadNextVastAd() {
+      if (cachedVastAd || isFetchingVast) return;
+      isFetchingVast = true;
+      fetchVastAdData().then(data => {
+        if (data) cachedVastAd = data;
+        isFetchingVast = false;
+      }).catch(() => {
+        isFetchingVast = false;
+      });
+    }
+
+    const AdPrerollManager = {
+      show({ actionType = 'play', mediaUrl = '', title = '', handoffUrl = '', onComplete }) {
+        const now = Date.now();
+        if (now - adLastShownTime < AD_COOLDOWN_MS) {
+          if (typeof onComplete === 'function') onComplete();
+          return;
+        }
+
+        const modal = document.getElementById('videoAdModal');
+        const video = document.getElementById('adVideoPlayer');
+        const timerText = document.getElementById('adTimerText');
+        const skipBtn = document.getElementById('adSkipBtn');
+        const skipBtnText = document.getElementById('adSkipBtnText');
+        const closeBtn = document.getElementById('adCloseBtn');
+        const clickOverlay = document.getElementById('adClickOverlay');
+        const websiteLink = document.getElementById('adWebsiteLink');
+        const muteToggleBtn = document.getElementById('adMuteToggleBtn');
+        const muteIconMuted = document.getElementById('adMuteIconMuted');
+        const muteIconUnmuted = document.getElementById('adMuteIconUnmuted');
+        const progressBar = document.getElementById('adProgressBar');
+
+        if (!modal || !video) {
+          if (typeof onComplete === 'function') onComplete();
+          return;
+        }
+
+        let completed = false;
+        let countdownTimer = null;
+        let safetyTimeout = null;
+        let countdown = 5;
+
+        function finishAndProceed(userClicked = false) {
+          if (completed) return;
+          completed = true;
+          adLastShownTime = Date.now();
+
+          if (countdownTimer) {
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+          }
+          if (safetyTimeout) {
+            clearTimeout(safetyTimeout);
+            safetyTimeout = null;
+          }
+
+          try {
+            video.pause();
+            video.removeAttribute('src');
+            video.load();
+          } catch(e) {}
+
+          modal.classList.add('hidden');
+          setTimeout(preloadNextVastAd, 3000);
+
+          if (typeof onComplete === 'function') {
+            onComplete();
+          }
+        }
+
+        TermitoonStream.showToast('در حال آماده‌سازی پخش...');
+
+        fetchVastAdData().then(adData => {
+          if (!adData || !adData.videoUrl) {
+            finishAndProceed();
+            return;
+          }
+
+          const targetClick = adData.clickThrough || '#';
+          if (clickOverlay) clickOverlay.href = targetClick;
+          if (websiteLink) websiteLink.href = targetClick;
+
+          video.src = adData.videoUrl;
+          video.currentTime = 0;
+          video.muted = true;
+
+          function updateMuteUI() {
+            if (video.muted) {
+              if (muteIconMuted) muteIconMuted.classList.remove('hidden');
+              if (muteIconUnmuted) muteIconUnmuted.classList.add('hidden');
+            } else {
+              if (muteIconMuted) muteIconMuted.classList.add('hidden');
+              if (muteIconUnmuted) muteIconUnmuted.classList.remove('hidden');
+            }
+          }
+          updateMuteUI();
+
+          if (muteToggleBtn) {
+            muteToggleBtn.onclick = (e) => {
+              e.stopPropagation();
+              video.muted = !video.muted;
+              updateMuteUI();
+            };
+          }
+
+          countdown = 5;
+          skipBtn.className = 'px-3.5 py-1.5 rounded-xl bg-white/10 text-gray-400 text-xs font-bold transition flex items-center gap-1.5 pointer-events-none opacity-50 cursor-not-allowed no-underline';
+          skipBtnText.textContent = countdown + ' ثانیه...';
+          skipBtn.href = handoffUrl || '#';
+          timerText.textContent = 'امکان رد کردن پس از ' + countdown + ' ثانیه';
+
+          function enableSkipButton() {
+            skipBtn.className = 'px-3.5 py-1.5 rounded-xl bg-brandRed hover:bg-brandRedHover active:scale-98 text-white text-xs font-bold transition flex items-center gap-1.5 pointer-events-auto cursor-pointer shadow-lg shadow-brandRed/40 animate-pulse no-underline';
+            if (actionType === 'play') {
+              skipBtnText.textContent = 'رد کردن تبلیغ و ورود به VLC';
+            } else {
+              skipBtnText.textContent = 'رد کردن تبلیغ و دانلود فایل';
+            }
+            timerText.textContent = 'آماده ورود به پخش';
+            skipBtn.href = handoffUrl || '#';
+          }
+
+          skipBtn.onclick = (e) => {
+            finishAndProceed(true);
+          };
+
+          if (closeBtn) {
+            closeBtn.onclick = (e) => {
+              e.stopPropagation();
+              finishAndProceed(true);
+            };
+          }
+
+          countdownTimer = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+              skipBtnText.textContent = countdown + ' ثانیه...';
+              timerText.textContent = 'امکان رد کردن پس از ' + countdown + ' ثانیه';
+            } else {
+              clearInterval(countdownTimer);
+              countdownTimer = null;
+              enableSkipButton();
+            }
+          }, 1000);
+
+          let impressionSent = false;
+          video.onplay = () => {
+            if (!impressionSent && adData.impressions) {
+              impressionSent = true;
+              adData.impressions.forEach(u => {
+                try {
+                  const img = new Image();
+                  img.src = u;
+                } catch(e) {}
+                try {
+                  fetch(u, { mode: 'no-cors', cache: 'no-store' }).catch(() => {});
+                } catch(e) {}
+              });
+            }
+          };
+
+          video.ontimeupdate = () => {
+            if (progressBar && video.duration) {
+              const pct = (video.currentTime / video.duration) * 100;
+              progressBar.style.width = pct + '%';
+            }
+          };
+
+          video.onended = () => {
+            enableSkipButton();
+            if (actionType === 'play') {
+              skipBtnText.textContent = 'انتقال به VLC (کلیک کنید)';
+            } else {
+              skipBtnText.textContent = 'شروع دانلود (کلیک کنید)';
+            }
+            setTimeout(() => finishAndProceed(false), 500);
+          };
+
+          video.onerror = () => {
+            finishAndProceed();
+          };
+
+          safetyTimeout = setTimeout(() => {
+            if (video.paused && video.currentTime === 0) {
+              finishAndProceed();
+            }
+          }, 5000);
+
+          modal.classList.remove('hidden');
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              video.muted = true;
+              updateMuteUI();
+              video.play().catch(() => finishAndProceed());
+            });
+          }
+        }).catch(() => {
+          finishAndProceed();
+        });
+      }
+    };
 
     // Direct VLC Launcher (iOS Scheme + Android Intent + Silent Clipboard Copy)
     function openVlcDirect(mediaUrl, title = '') {
@@ -7705,7 +8080,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=9.2').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=9.3').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
