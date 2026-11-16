@@ -7864,123 +7864,156 @@
       `).join('');
     }
 
+    function normalizeGenre(g) {
+      if (!g) return '';
+      if (typeof g === 'string') return g.trim().toLowerCase();
+      if (typeof g === 'object') return (g.title || g.name || '').trim().toLowerCase();
+      return String(g).trim().toLowerCase();
+    }
+
+    function getFranchiseKey(title, slug) {
+      const s = ((title || '') + ' ' + (slug || '')).toLowerCase();
+      if (s.includes('fast') && (s.includes('furious') || s.includes('f9') || s.includes('hobbs') || s.includes('tokyo drift'))) return 'fast_and_furious';
+      if (s.includes('harry potter') || s.includes('harry-potter') || s.includes('hogwarts') || s.includes('fantastic beasts')) return 'harry_potter';
+      if (s.includes('lord of the rings') || s.includes('lotr') || s.includes('the hobbit') || s.includes('middle-earth')) return 'lotr';
+      if (s.includes('batman') || s.includes('dark knight') || s.includes('gotham') || s.includes('joker')) return 'batman';
+      if (s.includes('spider-man') || s.includes('spiderman') || s.includes('spider man')) return 'spiderman';
+      if (s.includes('star wars') || s.includes('mandalorian') || s.includes('skywalker') || s.includes('darth')) return 'star_wars';
+      if (s.includes('breaking bad') || s.includes('better call saul') || s.includes('el camino')) return 'breaking_bad';
+      if (s.includes('game of thrones') || s.includes('house of the dragon')) return 'got';
+      if ((s.includes('dune') || s.includes('arrakis')) && !s.includes('journal dune femme')) return 'dune';
+      if (s.includes('john wick') || s.includes('continental') || s.includes('ballerina')) return 'john_wick';
+      if (s.includes('mission impossible') || s.includes('mission-impossible')) return 'mission_impossible';
+      if (s.includes('avengers') || s.includes('iron man') || s.includes('captain america') || s.includes('thor') || s.includes('guardians of the galaxy')) return 'marvel';
+      return null;
+    }
+
     function renderItemRelated(item, viewType) {
       const container = document.getElementById(viewType === 'series' ? 'seriesRelatedCarousel' : 'detailRelatedCarousel');
       const section = document.getElementById(viewType === 'series' ? 'seriesRelatedSection' : 'detailRelatedSection');
-      if (!container || !section || !Array.isArray(allItems)) return;
+      if (!container || !section) return;
 
-      const targetGenres = Array.isArray(item.genres) ? item.genres.map(g => (g || '').trim().toLowerCase()) : [];
-      const targetActors = Array.isArray(item.actors) ? item.actors.map(a => (typeof a === 'string' ? a : a.name || '').trim().toLowerCase()) : (typeof item.actors === 'string' ? item.actors.split(/[,،]/).map(s => s.trim().toLowerCase()) : []);
-      const targetDir = (item.director || '').trim().toLowerCase();
-      const targetSlug = item.slug || '';
-      const targetCat = item.category_type || 'movies';
+      container.innerHTML = '';
 
-      // Determine safety profiles
-      const isTargetAnimation = (targetCat === 'animation' || targetCat === 'anime' || targetGenres.some(g => g.includes('انیمیشن') || g.includes('کارتون') || g.includes('انیمه') || g.includes('کودک')));
-      const isTargetHorror = targetGenres.some(g => g.includes('وحشت') || g.includes('ترسناک') || g.includes('اسلشر'));
-
-      // Franchise detection: extract significant franchise tokens (min 4 chars, skip common stopwords)
-      const stopWords = new Set(['the', 'and', 'part', 'chapter', 'season', 'movie', 'series', 'film', 'with', 'from', 'dead', 'dark', 'life', 'love', 'city', 'time', 'world', 'story', 'night', 'king', 'last', 'house', 'black', 'white', 'blood', 'good', 'boys', 'girl', 'tale']);
-      const cleanTargetTitle = (item.title_en || targetSlug).toLowerCase().replace(/[-_0-9]+/g, ' ');
-      const targetTokens = cleanTargetTitle.split(/\s+/).filter(w => w.length >= 4 && !stopWords.has(w));
-
-      const scored = [];
-      for (let i = 0; i < allItems.length; i++) {
-        const c = allItems[i];
-        if (c.slug === targetSlug) continue;
-
-        const cCat = c.category_type || 'movies';
-        const cGenres = Array.isArray(c.genres) ? c.genres.map(g => (g || '').trim().toLowerCase()) : [];
-        const isCandidateAnimation = (cCat === 'animation' || cCat === 'anime' || cGenres.some(g => g.includes('انیمیشن') || g.includes('کارتون') || g.includes('انیمه') || g.includes('کودک')));
-        const isCandidateHorror = cGenres.some(g => g.includes('وحشت') || g.includes('ترسناک') || g.includes('اسلشر'));
-
-        // 1. STRICT SAFETY MATRIX: NEVER show horror under animation or vice versa!
-        if (isTargetAnimation && (isCandidateHorror || (!isCandidateAnimation && cCat !== 'animation' && cCat !== 'anime'))) {
-          continue; // Block non-animation/horror under animation
-        }
-        if (isTargetHorror && isCandidateAnimation) {
-          continue; // Block cartoon under horror
-        }
-
-        // 2. Category Affinity
-        let categoryBonus = 0;
-        if (targetCat === cCat) {
-          categoryBonus = 35;
-        } else if ((targetCat === 'animation' || targetCat === 'anime') && (cCat === 'animation' || cCat === 'anime')) {
-          categoryBonus = 25;
-        } else if ((targetCat === 'movies' || targetCat === 'series') && (cCat === 'movies' || cCat === 'series')) {
-          categoryBonus = 5;
-        }
-
-        let score = categoryBonus;
-
-        // 3. Shared Genres Scoring
-        let sharedGenreCount = 0;
-        if (targetGenres.length > 0 && cGenres.length > 0) {
-          for (const tg of targetGenres) {
-            if (cGenres.some(cg => cg.includes(tg) || tg.includes(cg))) {
-              sharedGenreCount++;
-              score += 30;
-            }
-          }
-        }
-
-        // 4. Director Matching (+100)
-        let isSameDirector = false;
-        if (targetDir && c.director) {
-          const cDir = c.director.toLowerCase();
-          if (cDir.includes(targetDir) || targetDir.includes(cDir)) {
-            score += 100;
-            isSameDirector = true;
-          }
-        }
-
-        // 5. Shared Cast Matching (+60 per actor)
-        let sharedActorCount = 0;
-        if (targetActors.length > 0 && c.actors) {
-          const cActors = Array.isArray(c.actors) ? c.actors.map(a => (typeof a === 'string' ? a : a.name || '').toLowerCase()) : [String(c.actors).toLowerCase()];
-          for (const ta of targetActors) {
-            if (ta.length > 2 && cActors.some(ca => ca.includes(ta) || ta.includes(ca))) {
-              sharedActorCount++;
-              score += 60;
-            }
-          }
-        }
-
-        // 6. Franchise / Exact Stem Matching (+90)
-        let isFranchise = false;
-        if (targetTokens.length > 0) {
-          const cTitle = (c.title_en || c.slug || '').toLowerCase();
-          for (const token of targetTokens) {
-            if (cTitle.includes(token)) {
-              score += 90;
-              isFranchise = true;
-              break;
-            }
-          }
-        }
-
-        // Quality rating boost
-        score += (parseFloat(c.rating || 0) * 2);
-
-        // RELEVANCE THRESHOLD:
-        const isQualified = isFranchise || isSameDirector || (sharedActorCount > 0 && sharedGenreCount > 0) || (sharedGenreCount >= 2) || (isTargetAnimation && isCandidateAnimation && sharedGenreCount >= 1);
-
-        if (isQualified && score >= 55) {
-          scored.push({ item: c, score });
-        }
-      }
-
-      scored.sort((a, b) => b.score - a.score || (parseFloat(b.item.rating) || 0) - (parseFloat(a.item.rating) || 0));
-      const finalList = scored.slice(0, 10).map(s => s.item);
-
-      if (finalList.length === 0) {
+      if (!item || !Array.isArray(allItems) || allItems.length === 0) {
         section.classList.add('hidden');
         return;
       }
 
-      section.classList.remove('hidden');
-      container.innerHTML = finalList.map(rel => createCardHtml(rel, false)).join('');
+      try {
+        const targetGenres = Array.isArray(item.genres) ? item.genres.map(normalizeGenre).filter(Boolean) : [];
+        const targetActors = Array.isArray(item.actors) ? item.actors.map(a => (typeof a === 'string' ? a : a.name || '').trim().toLowerCase()).filter(a => a.length >= 4) : (typeof item.actors === 'string' ? item.actors.split(/[,،]/).map(s => s.trim().toLowerCase()).filter(a => a.length >= 4) : []);
+        const targetDir = (item.director || '').trim().toLowerCase();
+        const targetSlug = item.slug || '';
+        const targetCat = item.category_type || 'movies';
+        const targetFranchise = getFranchiseKey(item.title_en, item.slug);
+
+        // Determine safety profiles
+        const isTargetAnimation = (targetCat === 'animation' || targetCat === 'anime' || targetGenres.some(g => g.includes('انیمیشن') || g.includes('کارتون') || g.includes('انیمه') || g.includes('کودک')));
+        const isTargetHorror = targetGenres.some(g => g.includes('وحشت') || g.includes('ترسناک') || g.includes('اسلشر'));
+
+        // Franchise detection: extract significant franchise tokens
+        const stopWords = new Set(['the', 'and', 'part', 'chapter', 'season', 'movie', 'series', 'film', 'with', 'from', 'dead', 'dark', 'life', 'love', 'city', 'time', 'world', 'story', 'night', 'king', 'last', 'house', 'black', 'white', 'blood', 'good', 'boys', 'girl', 'tale']);
+        const cleanTargetTitle = (item.title_en || targetSlug).toLowerCase().replace(/[-_0-9]+/g, ' ');
+        const targetTokens = cleanTargetTitle.split(/\s+/).filter(w => w.length >= 4 && !stopWords.has(w));
+
+        const scored = [];
+        for (let i = 0; i < allItems.length; i++) {
+          const c = allItems[i];
+          if (c.slug === targetSlug) continue;
+
+          const cCat = c.category_type || 'movies';
+          const cGenres = Array.isArray(c.genres) ? c.genres.map(normalizeGenre).filter(Boolean) : [];
+          const isCandidateAnimation = (cCat === 'animation' || cCat === 'anime' || cGenres.some(g => g.includes('انیمیشن') || g.includes('کارتون') || g.includes('انیمه') || g.includes('کودک')));
+          const isCandidateHorror = cGenres.some(g => g.includes('وحشت') || g.includes('ترسناک') || g.includes('اسلشر'));
+
+          // 1. Strict safety matrix: never show horror under animation or vice versa
+          if (isTargetAnimation && (isCandidateHorror || (!isCandidateAnimation && cCat !== 'animation' && cCat !== 'anime'))) {
+            continue;
+          }
+          if (isTargetHorror && isCandidateAnimation) {
+            continue;
+          }
+
+          let categoryBonus = (targetCat === cCat) ? 35 : ((targetCat === 'animation' || targetCat === 'anime') && (cCat === 'animation' || cCat === 'anime')) ? 25 : 5;
+          let score = categoryBonus;
+
+          // 2. High-precision Franchise Matching (+220)
+          let isFranchise = false;
+          const cFranchise = getFranchiseKey(c.title_en, c.slug);
+          if (targetFranchise && cFranchise && targetFranchise === cFranchise) {
+            score += 220;
+            isFranchise = true;
+          } else if (targetTokens.length > 0) {
+            const cTitle = (c.title_en || c.slug || '').toLowerCase();
+            for (const token of targetTokens) {
+              const regex = new RegExp('\\b' + token + '\\b', 'i');
+              if (regex.test(cTitle)) {
+                score += 85;
+                isFranchise = true;
+                break;
+              }
+            }
+          }
+
+          // 3. Shared Genres Scoring (+25 per genre)
+          let sharedGenreCount = 0;
+          if (targetGenres.length > 0 && cGenres.length > 0) {
+            for (const tg of targetGenres) {
+              if (cGenres.some(cg => cg === tg || cg.includes(tg) || tg.includes(cg))) {
+                sharedGenreCount++;
+                score += 25;
+              }
+            }
+          }
+
+          // 4. Director Matching (only if length >= 4)
+          let isSameDirector = false;
+          if (targetDir.length >= 4 && c.director && c.director.trim().length >= 4) {
+            const cDir = c.director.trim().toLowerCase();
+            if (cDir === targetDir || (cDir.length >= 5 && targetDir.length >= 5 && (cDir.includes(targetDir) || targetDir.includes(cDir)))) {
+              score += 90;
+              isSameDirector = true;
+            }
+          }
+
+          // 5. Shared Cast Matching
+          let sharedActorCount = 0;
+          if (targetActors.length > 0 && c.actors) {
+            const cActors = Array.isArray(c.actors) ? c.actors.map(a => (typeof a === 'string' ? a : a.name || '').toLowerCase()).filter(a => a.length >= 4) : [String(c.actors).toLowerCase()];
+            for (const ta of targetActors) {
+              if (cActors.some(ca => ca === ta || (ca.length >= 5 && ta.length >= 5 && (ca.includes(ta) || ta.includes(ca))))) {
+                sharedActorCount++;
+                score += 50;
+              }
+            }
+          }
+
+          // Quality rating boost
+          score += (parseFloat(c.rating || 0) * 1.5);
+
+          // Relevance threshold
+          const isQualified = isFranchise || isSameDirector || (sharedActorCount > 0 && sharedGenreCount > 0) || (sharedGenreCount >= 2) || (isTargetAnimation && isCandidateAnimation && sharedGenreCount >= 1);
+
+          if (isQualified && score >= 55) {
+            scored.push({ item: c, score });
+          }
+        }
+
+        scored.sort((a, b) => b.score - a.score || (parseFloat(b.item.rating || 0) - parseFloat(a.item.rating || 0)));
+        const finalList = scored.slice(0, 10).map(s => s.item);
+
+        if (finalList.length === 0) {
+          section.classList.add('hidden');
+          return;
+        }
+
+        section.classList.remove('hidden');
+        container.innerHTML = finalList.map(rel => createCardHtml(rel, false)).join('');
+      } catch(err) {
+        console.warn('renderItemRelated encountered an error:', err);
+        section.classList.add('hidden');
+      }
     }
 
     let previousViewBeforeActor = 'home';
