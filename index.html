@@ -1891,9 +1891,9 @@
           </div>
 
           <!-- Icon-Only Skip Button (Active after 10s) -->
-          <a id="adSkipBtn" href="#" target="_blank" rel="noopener noreferrer" aria-label="رد کردن آگهی" class="hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-neutral-100 active:scale-90 text-black shadow-2xl transition flex items-center justify-center cursor-pointer no-underline select-none">
+          <button id="adSkipBtn" type="button" aria-label="رد کردن آگهی" class="hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white hover:bg-neutral-100 active:scale-90 text-black shadow-2xl transition flex items-center justify-center cursor-pointer select-none">
             <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M5 4l10 8-10 8V4zm11 0h3v16h-3V4z"/></svg>
-          </a>
+          </button>
         </div>
 
       </div>
@@ -2909,7 +2909,12 @@
 
       if (watchSlug) {
         try { localStorage.removeItem('pending_pwa_item'); } catch(e) {}
-        handleCardClick(watchSlug);
+        const cleanSlug = String(watchSlug).trim().replace(/^#/, '');
+        if (!cleanSlug || cleanSlug === 'null' || cleanSlug === 'undefined') return;
+        if (currentActiveItem && currentActiveItem.slug === cleanSlug) {
+          return;
+        }
+        handleCardClick(cleanSlug);
       } else if (cat) {
         openCatalogView(cat);
       }
@@ -3485,7 +3490,6 @@
           console.log(`Loaded ${allItems.length} titles from IndexedDB for search & catalog`);
           setTimeout(indexAllItemsSearch, 30);
           applyCatalogFilters();
-          handleUrlParameters();
           if (!hasRenderedShowcase) renderHomeRows();
           return;
         }
@@ -3512,7 +3516,6 @@
               console.log(`Cached all ${freshItems.length} titles in background`);
               setTimeout(indexAllItemsSearch, 30);
               applyCatalogFilters();
-              handleUrlParameters();
               if (!hasRenderedShowcase) renderHomeRows();
               break;
             }
@@ -3972,7 +3975,9 @@
 
     // Card Click Handler (Async with on-demand details fetching & deep linking)
     window.handleCardClick = function(slug) {
-      if (!slug) return;
+      if (!slug || typeof slug !== 'string') return;
+      slug = slug.trim().replace(/^#/, '');
+      if (!slug || slug === 'null' || slug === 'undefined') return;
 
       // 1. Check in-memory caches (0ms instant!)
       let item = itemDetailsCache.get(slug);
@@ -4005,7 +4010,11 @@
               TermitoonStream.showToast('عنوان مورد نظر یافت نشد.');
             }
           })
-          .catch(() => TermitoonStream.showToast('خطا در بارگذاری مشخصات عنوان'));
+          .catch(() => {
+            if (slug && slug.length > 1) {
+              TermitoonStream.showToast('خطا در بارگذاری مشخصات عنوان');
+            }
+          });
         return;
       }
 
@@ -5193,11 +5202,12 @@
 
         if (!isIOS && !isAndroid) {
           if (e && e.preventDefault) e.preventDefault();
+          if (mediaUrl) copyTextToClipboard(mediaUrl, 'لینک در حافظه کپی شد.');
           AdPrerollManager.show({
             actionType: 'play',
             mediaUrl: mediaUrl,
             title: item.title_fa || item.title_en,
-            handoffUrl: '#',
+            handoffUrl: '',
             onComplete: () => desktopCopyStreamLink()
           });
           return;
@@ -5259,11 +5269,12 @@
 
         if (!isIOS && !isAndroid) {
           if (e && e.preventDefault) e.preventDefault();
+          if (mediaUrl) copyTextToClipboard(mediaUrl, 'لینک در حافظه کپی شد.');
           AdPrerollManager.show({
             actionType: 'download',
             mediaUrl: mediaUrl,
             title: item.title_fa || item.title_en,
-            handoffUrl: '#',
+            handoffUrl: '',
             onComplete: () => desktopCopyDownloadLink()
           });
           return;
@@ -5477,7 +5488,6 @@
           if (timerPill) timerPill.classList.remove('hidden');
           if (skipBtn) {
             skipBtn.classList.add('hidden');
-            skipBtn.href = handoffUrl || '#';
           }
           if (skipCountdownText) skipCountdownText.textContent = countdown + ' ثانیه';
 
@@ -5485,12 +5495,15 @@
             if (timerPill) timerPill.classList.add('hidden');
             if (skipBtn) {
               skipBtn.classList.remove('hidden');
-              skipBtn.href = handoffUrl || '#';
             }
           }
 
           if (skipBtn) {
             skipBtn.onclick = (e) => {
+              if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+              }
               finishAndProceed(true);
             };
           }
@@ -5595,11 +5608,15 @@
       const item = currentActiveItem;
       const mediaUrl = v?.url || item?.video_720 || item?.video_1080 || item?.video;
 
+      if (mediaUrl) {
+        copyTextToClipboard(mediaUrl, 'لینک در حافظه کپی شد.');
+      }
+
       AdPrerollManager.show({
         actionType: 'play',
         mediaUrl: mediaUrl || '',
         title: item?.title_fa || item?.title_en || '',
-        handoffUrl: '#',
+        handoffUrl: '',
         onComplete: () => {
           desktopCopyStreamLink();
         }
@@ -5611,11 +5628,15 @@
       const item = currentActiveItem;
       const mediaUrl = v?.url || item?.video_720 || item?.video_1080 || item?.video;
 
+      if (mediaUrl) {
+        copyTextToClipboard(mediaUrl, 'لینک در حافظه کپی شد.');
+      }
+
       AdPrerollManager.show({
         actionType: 'download',
         mediaUrl: mediaUrl || '',
         title: item?.title_fa || item?.title_en || '',
-        handoffUrl: '#',
+        handoffUrl: '',
         onComplete: () => {
           desktopCopyDownloadLink();
         }
@@ -6793,7 +6814,9 @@
             if (currentActiveItem && currentActiveItem.slug === item.slug) {
               currentSeriesSeasons = fullItem.seasons;
               populateSeasonDropdown();
-              selectSeason(0);
+              if (seriesEpisodesView && !seriesEpisodesView.classList.contains('hidden')) {
+                selectSeason(0);
+              }
             }
           } else if (Array.isArray(fullItem.episodes) && fullItem.episodes.length > 0) {
             const s = [{ season_number: 1, title: 'فصل ۱', episodes: fullItem.episodes }];
@@ -6802,10 +6825,14 @@
             if (currentActiveItem && currentActiveItem.slug === item.slug) {
               currentSeriesSeasons = s;
               populateSeasonDropdown();
-              selectSeason(0);
+              if (seriesEpisodesView && !seriesEpisodesView.classList.contains('hidden')) {
+                selectSeason(0);
+              }
             }
           } else {
-            openDetailView(fullItem, null);
+            if (seriesEpisodesView && !seriesEpisodesView.classList.contains('hidden') && !currentSelectedEpisode) {
+              openDetailView(fullItem, null);
+            }
           }
         });
       }
@@ -7161,9 +7188,11 @@
       const params = new URLSearchParams(window.location.search);
       const hashSlug = window.location.hash.startsWith('#item/') ? decodeURIComponent(window.location.hash.replace('#item/', '')) : null;
       const slug = params.get('item') || params.get('movie') || params.get('series') || params.get('watch') || hashSlug;
-      if (slug) {
-        handleCardClick(slug);
-      } else {
+      const cleanSlug = (slug || '').trim().replace(/^#/, '');
+      if (cleanSlug && cleanSlug !== 'null' && cleanSlug !== 'undefined') {
+        if (currentActiveItem && currentActiveItem.slug === cleanSlug) return;
+        handleCardClick(cleanSlug);
+      } else if (!window.location.search && (!window.location.hash || window.location.hash === '#')) {
         hideAllViews();
         homeView.classList.remove('hidden');
       }
@@ -8210,7 +8239,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=9.7').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=9.8').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
