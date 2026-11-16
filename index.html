@@ -3150,11 +3150,18 @@
           for (const slug in cache) {
             const entry = cache[slug];
             if (!entry || !entry.seasons) continue;
+            const baseItem = homeShowcaseMap.get(slug) || allItems.find(x => x.slug === slug);
+            if (baseItem) {
+              if (!entry.poster && baseItem.poster) entry.poster = baseItem.poster;
+              if (!entry.backdrop && baseItem.backdrop) entry.backdrop = baseItem.backdrop;
+            }
             if (itemDetailsCache.has(slug)) {
               const existing = itemDetailsCache.get(slug);
               if (!existing.seasons || existing.seasons.length === 0) {
                 existing.seasons = entry.seasons;
               }
+              if (!existing.poster && entry.poster) existing.poster = entry.poster;
+              if (!existing.backdrop && entry.backdrop) existing.backdrop = entry.backdrop;
             } else {
               itemDetailsCache.set(slug, entry);
             }
@@ -3959,10 +3966,12 @@
       // If viewing Series Seasons View:
       if (seriesEpisodesView && !seriesEpisodesView.classList.contains('hidden')) {
         const posterImg = document.getElementById('seriesPosterImg');
-        if (posterImg && (fullItem.poster || fullItem.backdrop)) {
-          let p = (fullItem.poster || fullItem.backdrop || '').trim();
+        let p = (fullItem.poster || fullItem.backdrop || currentActiveItem?.poster || currentActiveItem?.backdrop || '').trim();
+        if (posterImg && p) {
           if (p.startsWith('http://ninwinios.info')) p = p.replace('http://ninwinios.info', 'https://ninwinios.info');
           else if (p.startsWith('http://')) p = p.replace('http://', 'https://');
+          if (p.includes('/w500/')) p = p.replace('/w500/', '/w780/');
+          else if (p.includes('/w342/')) p = p.replace('/w342/', '/w780/');
           if (p) posterImg.src = p;
         }
         if (Array.isArray(fullItem.seasons) && fullItem.seasons.length > 0) {
@@ -3987,17 +3996,31 @@
       if (!slug || slug === 'null' || slug === 'undefined') return;
 
       // 1. Check in-memory caches (0ms instant!)
+      const catalogItem = homeShowcaseMap.get(slug) || allItems.find(i => i.slug === slug);
       let item = itemDetailsCache.get(slug);
-      if (!item) {
-        item = allItems.find(i => i.slug === slug) || homeShowcaseMap.get(slug);
-        if (item && item.v7 && !item.video_720) item.video_720 = item.v7;
+
+      if (item && catalogItem) {
+        if (!item.poster && catalogItem.poster) item.poster = catalogItem.poster;
+        if (!item.backdrop && catalogItem.backdrop) item.backdrop = catalogItem.backdrop;
+        if (!item.genres && catalogItem.genres) item.genres = catalogItem.genres;
+        if (!item.year && catalogItem.year) item.year = catalogItem.year;
+        if (!item.country && catalogItem.country) item.country = catalogItem.country;
+      } else if (!item) {
+        item = catalogItem;
       }
+      if (item && item.v7 && !item.video_720) item.video_720 = item.v7;
 
       // Merge cached shard details if available
       const cached = itemDetailsCache.get(slug);
       if (cached) {
         if (!item) item = { ...cached };
-        else Object.assign(item, cached);
+        else {
+          const preservedPoster = item.poster;
+          const preservedBackdrop = item.backdrop;
+          Object.assign(item, cached);
+          if (!item.poster && preservedPoster) item.poster = preservedPoster;
+          if (!item.backdrop && preservedBackdrop) item.backdrop = preservedBackdrop;
+        }
       }
       if (item && item.v7 && !item.video_720) item.video_720 = item.v7;
 
@@ -5097,9 +5120,17 @@
       }
 
       // Poster Image & Ambient Glow (HTTPS Normalized with Error Fallbacks)
-      let posterSrc = (episode?.thumb || item.poster || item.backdrop || '').trim();
+      let rawPoster = (episode?.thumb || item.poster || item.backdrop || '').trim();
+      if (!rawPoster) {
+        const fallbackItem = homeShowcaseMap.get(item?.slug) || allItems.find(x => x.slug === item?.slug);
+        rawPoster = (fallbackItem?.poster || fallbackItem?.backdrop || '').trim();
+        if (fallbackItem?.poster && item && !item.poster) item.poster = fallbackItem.poster;
+      }
+      let posterSrc = rawPoster;
       if (posterSrc.startsWith('http://ninwinios.info')) posterSrc = posterSrc.replace('http://ninwinios.info', 'https://ninwinios.info');
       else if (posterSrc.startsWith('http://')) posterSrc = posterSrc.replace('http://', 'https://');
+      if (posterSrc.includes('/w500/')) posterSrc = posterSrc.replace('/w500/', '/w780/');
+      else if (posterSrc.includes('/w342/')) posterSrc = posterSrc.replace('/w342/', '/w780/');
       if (!posterSrc) posterSrc = MEWVI_FALLBACK_POSTER;
 
       detailHeroImg.src = posterSrc;
@@ -6754,8 +6785,16 @@
       const posterImg = document.getElementById('seriesPosterImg');
       if (posterImg) {
         let p = (item.poster || item.backdrop || '').trim();
+        if (!p) {
+          const fallbackItem = homeShowcaseMap.get(item.slug) || allItems.find(x => x.slug === item.slug);
+          p = (fallbackItem?.poster || fallbackItem?.backdrop || '').trim();
+          if (fallbackItem?.poster && !item.poster) item.poster = fallbackItem.poster;
+          if (fallbackItem?.backdrop && !item.backdrop) item.backdrop = fallbackItem.backdrop;
+        }
         if (p.startsWith('http://ninwinios.info')) p = p.replace('http://ninwinios.info', 'https://ninwinios.info');
         else if (p.startsWith('http://')) p = p.replace('http://', 'https://');
+        if (p.includes('/w500/')) p = p.replace('/w500/', '/w780/');
+        else if (p.includes('/w342/')) p = p.replace('/w342/', '/w780/');
         if (!p) p = MEWVI_FALLBACK_POSTER;
         posterImg.src = p;
         posterImg.onerror = function() { this.onerror = null; this.src = MEWVI_FALLBACK_POSTER; };
@@ -6916,14 +6955,31 @@
         epCard.className = 'w-full group cursor-pointer space-y-2 select-none';
         epCard.onclick = () => openDetailView(currentActiveItem, ep);
 
-        const fallbackArtwork = (currentActiveItem && (currentActiveItem.poster || currentActiveItem.backdrop)) || MEWVI_FALLBACK_POSTER;
-        const thumb = ep.thumb || ep.poster || fallbackArtwork;
+        let rawPoster = (currentActiveItem && (currentActiveItem.poster || currentActiveItem.backdrop)) || '';
+        if (!rawPoster) {
+          const fallbackItem = homeShowcaseMap.get(currentActiveItem?.slug) || allItems.find(x => x.slug === currentActiveItem?.slug);
+          rawPoster = (fallbackItem?.poster || fallbackItem?.backdrop || '').trim();
+          if (fallbackItem?.poster && currentActiveItem && !currentActiveItem.poster) currentActiveItem.poster = fallbackItem.poster;
+        }
+        let fallbackArtwork = (rawPoster || '').trim();
+        if (fallbackArtwork.startsWith('http://ninwinios.info')) fallbackArtwork = fallbackArtwork.replace('http://ninwinios.info', 'https://ninwinios.info');
+        else if (fallbackArtwork.startsWith('http://')) fallbackArtwork = fallbackArtwork.replace('http://', 'https://');
+        if (fallbackArtwork.includes('/w500/')) fallbackArtwork = fallbackArtwork.replace('/w500/', '/w780/');
+        else if (fallbackArtwork.includes('/w342/')) fallbackArtwork = fallbackArtwork.replace('/w342/', '/w780/');
+        if (!fallbackArtwork) fallbackArtwork = MEWVI_FALLBACK_POSTER;
+
+        let thumb = (ep.thumb || ep.poster || fallbackArtwork).trim();
+        if (thumb.startsWith('http://ninwinios.info')) thumb = thumb.replace('http://ninwinios.info', 'https://ninwinios.info');
+        else if (thumb.startsWith('http://')) thumb = thumb.replace('http://', 'https://');
+        if (thumb.includes('/w500/')) thumb = thumb.replace('/w500/', '/w780/');
+        else if (thumb.includes('/w342/')) thumb = thumb.replace('/w342/', '/w780/');
+        if (!thumb) thumb = fallbackArtwork;
         const epNum = ep.number || (epIdx + 1);
 
         epCard.innerHTML = `
           <!-- VERTICAL 2:3 CINEMA POSTER CARD FOR EPISODE (ZARDFILM STYLE) -->
           <div class="relative w-full aspect-[2/3] rounded-2xl overflow-hidden bg-neutral-900 border border-white/10 group-hover:border-brandRed/60 transition duration-200 shadow-lg">
-            <img src="${thumb}" alt="${ep.title || ('قسمت ' + epNum)}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${fallbackArtwork}'" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <img src="${thumb}" alt="${ep.title || ('قسمت ' + epNum)}" loading="lazy" decoding="async" onerror="if(this.src!=='${fallbackArtwork}'){this.src='${fallbackArtwork}';}else{this.onerror=null;this.src='${MEWVI_FALLBACK_POSTER}';}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
             
             <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent pointer-events-none"></div>
 
@@ -8278,7 +8334,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=10.2').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=10.3').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
