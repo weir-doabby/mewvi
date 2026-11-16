@@ -2338,7 +2338,7 @@
         try {
           let h = 0;
           for (let i = 0; i < slug.length; i++) h = ((h * 31) + slug.charCodeAt(i)) >>> 0;
-          const shardId = String(h % 100).padStart(2, '0');
+          const shardId = String(h % 500).padStart(3, '0');
           const res = await fetch(`data/shards/shard_${shardId}.json`);
           if (res.ok) {
             const shardData = await res.json();
@@ -3032,14 +3032,25 @@
 
     // Unified Zero-Delay Item Details Engine (Static JSON First <15ms + SQLite API Fallback)
     // =========================================================================
-    // CLOUDFLARE ULTRA-FAST SHARD DETAIL LOADER (100 SHARDS)
+    // Bulletproof Series Detection Helper (Works across Shards, Catalog & Showcase)
+    function isItemSeries(item) {
+      if (!item) return false;
+      if (item.is_series === 1 || item.is_series === true) return true;
+      if (item.category_type === 'series') return true;
+      if (Array.isArray(item.seasons) && item.seasons.length > 0) return true;
+      if (Array.isArray(item.episodes) && item.episodes.length > 0) return true;
+      if (item.seasons_count && item.seasons_count > 0 && item.category_type !== 'movies') return true;
+      return false;
+    }
+
+    // CLOUDFLARE ULTRA-FAST SHARD DETAIL LOADER (500 SHARDS ~600KB EACH)
     // =========================================================================
     function getShardIdForSlug(slug) {
       let h = 0;
       for (let i = 0; i < slug.length; i++) {
         h = ((h * 31) + slug.charCodeAt(i)) >>> 0;
       }
-      return String(h % 100).padStart(2, '0');
+      return String(h % 500).padStart(3, '0');
     }
 
     const loadedShardMap = new Map();
@@ -3847,7 +3858,7 @@
 
       // Meta text under poster
       let metaSub = year;
-      if (item.category_type === 'series' || item.category_type === 'anime') {
+      if (isItemSeries(item)) {
         const seasonsCount = (item.seasons || []).length || item.seasons_count || 1;
         metaSub = `${year} • ${seasonsCount} فصل`;
       }
@@ -3932,7 +3943,7 @@
           detailAgeRating.textContent = `رده: ${fullItem.age_rating}`;
         }
 
-        const isSeriesItem = currentSelectedEpisode || (fullItem.category_type === 'series') || (fullItem.seasons && fullItem.seasons.length > 0) || (fullItem.seasons_count > 0);
+        const isSeriesItem = currentSelectedEpisode || isItemSeries(fullItem) || isItemSeries(currentActiveItem);
         const btnAllSeasons = document.getElementById('btnAllSeasonsEpisodes');
         const btnAllSeasonsDesktop = document.getElementById('btnAllSeasonsEpisodesDesktop');
         if (btnAllSeasons) {
@@ -3956,6 +3967,10 @@
         }
         if (Array.isArray(fullItem.seasons) && fullItem.seasons.length > 0) {
           currentSeriesSeasons = fullItem.seasons;
+          populateSeasonDropdown();
+          selectSeason(0);
+        } else if (Array.isArray(fullItem.episodes) && fullItem.episodes.length > 0) {
+          currentSeriesSeasons = [{ season_number: 1, title: 'فصل ۱', episodes: fullItem.episodes }];
           populateSeasonDropdown();
           selectSeason(0);
         }
@@ -4016,7 +4031,7 @@
       openViewForActiveItem(item);
 
       // 3. Background fetch full streaming links or series seasons if missing
-      const isSeriesLike = (item.category_type === 'series') || (item.category_type === 'anime');
+      const isSeriesLike = isItemSeries(item);
       const needsFullDetails = isSeriesLike
         ? (!item.seasons || item.seasons.length === 0)
         : (!item.download_links || item.download_links.length === 0);
@@ -4036,11 +4051,7 @@
 
     function openViewForActiveItem(item) {
       currentActiveItem = item;
-      const isMovieCategory = (item.category_type === 'movies') || (item.category_type === 'animation');
-      const hasRealEpisodes = !isMovieCategory && Array.isArray(item.seasons) && item.seasons.length > 0 && item.seasons.some(s => Array.isArray(s.episodes) && s.episodes.length > 0);
-      const isSeriesCategory = !isMovieCategory && ((item.category_type === 'series') || (item.category_type === 'anime' && (item.seasons_count > 1 || (item.seasons && item.seasons.length > 0))));
-
-      if (!isMovieCategory && (hasRealEpisodes || isSeriesCategory)) {
+      if (isItemSeries(item)) {
         openSeriesEpisodesView(item);
       } else {
         openDetailView(item, null);
@@ -5067,7 +5078,7 @@
       const desktopActions = document.getElementById('detailDesktopActionBlock');
       const btnAllSeasons = document.getElementById('btnAllSeasonsEpisodes');
       const btnAllSeasonsDesktop = document.getElementById('btnAllSeasonsEpisodesDesktop');
-      const isSeriesItem = episode || (item.category_type === 'series') || (item.category_type === 'anime' && (item.seasons_count > 0 || (item.seasons && item.seasons.length > 0))) || (item.seasons_count && item.seasons_count > 0);
+      const isSeriesItem = episode || isItemSeries(item);
 
       if (isMobile) {
         if (mobileActions) mobileActions.classList.remove('hidden');
@@ -6717,6 +6728,12 @@
         `;
       }
       episodesCarousel.innerHTML = `
+        <div class="w-full col-span-full py-2 px-1 text-center">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300 text-xs mb-2 animate-pulse">
+            <svg class="w-3.5 h-3.5 animate-spin text-brandRed" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+            <span>در حال بارگذاری قسمت‌های سریال...</span>
+          </div>
+        </div>
         <div class="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1 w-full col-span-full">
           ${skeletons}
         </div>
@@ -6814,8 +6831,12 @@
               }
             }
           } else {
-            if (seriesEpisodesView && !seriesEpisodesView.classList.contains('hidden') && !currentSelectedEpisode) {
-              openDetailView(fullItem, null);
+            if (episodesCarousel && seriesEpisodesView && !seriesEpisodesView.classList.contains('hidden')) {
+              episodesCarousel.innerHTML = `
+                <div class="p-8 text-center text-xs text-gray-400 w-full col-span-full">
+                  قسمتی برای این سریال ثبت نشده است.
+                </div>
+              `;
             }
           }
         });
@@ -7025,7 +7046,7 @@
     };
 
     window.goBackFromDetail = function() {
-      if (currentActiveItem && (currentActiveItem.category_type === 'series' || currentActiveItem.category_type === 'anime' || (currentActiveItem.seasons && currentActiveItem.seasons.length > 0) || (currentActiveItem.episodes && currentActiveItem.episodes.length > 0))) {
+      if (currentActiveItem && (isItemSeries(currentActiveItem) || currentSelectedEpisode)) {
         hideAllViews();
         seriesEpisodesView.classList.remove('hidden');
         restoreViewScroll('seriesEpisodes');
@@ -8257,7 +8278,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=10.1').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=10.2').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
