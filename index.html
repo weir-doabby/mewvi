@@ -1857,20 +1857,12 @@
       <!-- Invisible Click-Through Overlay (Middle Area Only) -->
       <a id="adClickOverlay" href="#" target="_blank" rel="noopener noreferrer" class="absolute inset-x-0 top-14 bottom-16 z-10 cursor-pointer" title="مشاهده وب‌سایت حامی"></a>
 
-      <!-- Top Overlay: Minimal Badge & 10s Countdown (Top-Right) -->
-      <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-20 flex items-center gap-2 pointer-events-none select-none">
+      <!-- Top Overlay: Minimal Badge (Top-Right) -->
+      <div class="absolute top-3 sm:top-4 right-3 sm:right-4 z-20 flex items-center pointer-events-none select-none">
         <span class="px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-white/15 text-amber-400 font-bold text-xs sm:text-sm shadow-lg">
           آگهی
         </span>
-        <span id="adTimerText" class="px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-white/15 text-white font-mono font-bold text-xs sm:text-sm shadow-lg">
-          ۱۰ ثانیه
-        </span>
       </div>
-
-      <!-- Top Overlay: Close Button X (Top-Left) -->
-      <button id="adCloseBtn" type="button" aria-label="بستن" class="absolute top-3 sm:top-4 left-3 sm:left-4 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/80 backdrop-blur-md border border-white/15 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-95 shadow-lg cursor-pointer">
-        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
 
       <!-- Bottom Controls Bar: Left (Icon-Only Skip) & Right (Mute + Visit) -->
       <div class="absolute bottom-3 sm:bottom-4 inset-x-3 sm:inset-x-4 z-20 flex items-center justify-between gap-2 pointer-events-none">
@@ -5295,10 +5287,16 @@
     }
 
     // =========================================================================
-    // IN-STREAM VIDEO PREROLL AD MANAGER (HILLTOPADS VAST 3.0)
+    // IN-STREAM VIDEO PREROLL AD MANAGER (HILLTOPADS VAST 3.0 & INSTAGRAM RESILIENT)
     // =========================================================================
     const HILLTOP_VAST_TAG = 'https://troubled-entertainment.com/dSmTFKz.dhGqN/v/ZuGqUD/MeemB9EufZtUSl/kUPhTVcb2JMwz/ANxgM-THcWtLNBzhYyznMqDIEQyFM-Qz';
-    const AD_COOLDOWN_MS = 25000;
+    const AD_COOLDOWN_MS = 10000;
+
+    const FALLBACK_VAST_AD = {
+      videoUrl: 'https://www.dismal-library.pro/360312/974363/1329362_5d4bfy.mp4',
+      clickThrough: 'https://troubled-entertainment.com/dSmTFKz.dhGqN/v/ZuGqUD/MeemB9EufZtUSl/kUPhTVcb2JMwz/ANxgM-THcWtLNBzhYyznMqDIEQyFM-Qz',
+      impressions: []
+    };
 
     let adLastShownTime = 0;
     let cachedVastAd = null;
@@ -5312,7 +5310,7 @@
       }
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 7000);
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
         const res = await fetch(HILLTOP_VAST_TAG, {
           cache: 'no-store',
           signal: controller.signal,
@@ -5326,11 +5324,15 @@
         const parser = new DOMParser();
         const xml = parser.parseFromString(text, 'text/xml');
 
-        const mediaNodes = xml.querySelectorAll('MediaFile');
+        let mediaNodes = xml.getElementsByTagName('MediaFile');
+        if (!mediaNodes || mediaNodes.length === 0) {
+          mediaNodes = xml.querySelectorAll('MediaFile');
+        }
         if (!mediaNodes || mediaNodes.length === 0) return null;
 
         let videoUrl = '';
-        for (const m of mediaNodes) {
+        for (let i = 0; i < mediaNodes.length; i++) {
+          const m = mediaNodes[i];
           const type = (m.getAttribute('type') || '').toLowerCase();
           const val = (m.textContent || '').trim();
           if (!val) continue;
@@ -5343,18 +5345,24 @@
         if (!videoUrl) return null;
 
         const impressions = [];
-        xml.querySelectorAll('Impression').forEach(node => {
-          const u = (node.textContent || '').trim();
+        const impressionNodes = xml.getElementsByTagName('Impression');
+        for (let i = 0; i < impressionNodes.length; i++) {
+          const u = (impressionNodes[i].textContent || '').trim();
           if (u && !impressions.includes(u)) impressions.push(u);
-        });
-        xml.querySelectorAll('Tracking[event="start"]').forEach(node => {
-          const u = (node.textContent || '').trim();
-          if (u && !impressions.includes(u)) impressions.push(u);
-        });
+        }
+        const trackingNodes = xml.getElementsByTagName('Tracking');
+        for (let i = 0; i < trackingNodes.length; i++) {
+          if (trackingNodes[i].getAttribute('event') === 'start') {
+            const u = (trackingNodes[i].textContent || '').trim();
+            if (u && !impressions.includes(u)) impressions.push(u);
+          }
+        }
 
         let clickThrough = '';
-        const clickNode = xml.querySelector('ClickThrough');
-        if (clickNode) clickThrough = (clickNode.textContent || '').trim();
+        const clickNodes = xml.getElementsByTagName('ClickThrough');
+        if (clickNodes && clickNodes.length > 0) {
+          clickThrough = (clickNodes[0].textContent || '').trim();
+        }
 
         return { videoUrl, impressions, clickThrough };
       } catch (err) {
@@ -5384,12 +5392,9 @@
         const modal = document.getElementById('videoAdModal');
         const video = document.getElementById('adVideoPlayer');
         const tapToPlayOverlay = document.getElementById('adTapToPlayOverlay');
-        const timerText = document.getElementById('adTimerText');
         const timerPill = document.getElementById('adTimerPill');
         const skipCountdownText = document.getElementById('adSkipCountdownText');
         const skipBtn = document.getElementById('adSkipBtn');
-        const skipBtnText = document.getElementById('adSkipBtnText');
-        const closeBtn = document.getElementById('adCloseBtn');
         const clickOverlay = document.getElementById('adClickOverlay');
         const websiteLink = document.getElementById('adWebsiteLink');
         const muteToggleBtn = document.getElementById('adMuteToggleBtn');
@@ -5405,7 +5410,7 @@
         let completed = false;
         let countdownTimer = null;
         let safetyTimeout = null;
-        let countdown = 5;
+        let countdown = 10;
 
         function finishAndProceed(userClicked = false) {
           if (completed) return;
@@ -5439,19 +5444,13 @@
           }
         }
 
-        TermitoonStream.showToast('در حال آماده‌سازی پخش...');
-
-        fetchVastAdData().then(adData => {
-          if (!adData || !adData.videoUrl) {
-            finishAndProceed();
-            return;
-          }
-
-          const targetClick = adData.clickThrough || '#';
+        function startAdPlayback(adData) {
+          if (completed) return;
+          const targetClick = (adData && adData.clickThrough) || FALLBACK_VAST_AD.clickThrough || '#';
           if (clickOverlay) clickOverlay.href = targetClick;
           if (websiteLink) websiteLink.href = targetClick;
 
-          video.src = adData.videoUrl;
+          video.src = (adData && adData.videoUrl) || FALLBACK_VAST_AD.videoUrl;
           video.currentTime = 0;
           video.muted = true;
 
@@ -5481,7 +5480,6 @@
             skipBtn.href = handoffUrl || '#';
           }
           if (skipCountdownText) skipCountdownText.textContent = countdown + ' ثانیه';
-          if (timerText) timerText.textContent = countdown + ' ثانیه';
 
           function enableSkipButton() {
             if (timerPill) timerPill.classList.add('hidden');
@@ -5489,7 +5487,6 @@
               skipBtn.classList.remove('hidden');
               skipBtn.href = handoffUrl || '#';
             }
-            if (timerText) timerText.textContent = 'آماده رد کردن';
           }
 
           if (skipBtn) {
@@ -5498,17 +5495,9 @@
             };
           }
 
-          if (closeBtn) {
-            closeBtn.onclick = (e) => {
-              e.stopPropagation();
-              finishAndProceed(true);
-            };
-          }
-
           countdownTimer = setInterval(() => {
             countdown--;
             if (countdown > 0) {
-              if (timerText) timerText.textContent = countdown + ' ثانیه';
               if (skipCountdownText) skipCountdownText.textContent = countdown + ' ثانیه';
             } else {
               clearInterval(countdownTimer);
@@ -5519,7 +5508,7 @@
 
           let impressionSent = false;
           video.onplay = () => {
-            if (!impressionSent && adData.impressions) {
+            if (!impressionSent && adData && adData.impressions) {
               impressionSent = true;
               adData.impressions.forEach(u => {
                 try {
@@ -5546,7 +5535,15 @@
           };
 
           video.onerror = () => {
-            finishAndProceed();
+            if (video.src !== FALLBACK_VAST_AD.videoUrl) {
+              video.src = FALLBACK_VAST_AD.videoUrl;
+              video.load();
+              video.play().catch(() => {
+                if (tapToPlayOverlay) tapToPlayOverlay.classList.remove('hidden');
+              });
+            } else {
+              finishAndProceed();
+            }
           };
 
           if (tapToPlayOverlay) {
@@ -5580,8 +5577,15 @@
               });
             });
           }
+        }
+
+        TermitoonStream.showToast('در حال آماده‌سازی پخش...');
+
+        fetchVastAdData().then(adData => {
+          const ad = (adData && adData.videoUrl) ? adData : FALLBACK_VAST_AD;
+          startAdPlayback(ad);
         }).catch(() => {
-          finishAndProceed();
+          startAdPlayback(FALLBACK_VAST_AD);
         });
       }
     };
@@ -8206,7 +8210,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=9.6').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=9.7').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
