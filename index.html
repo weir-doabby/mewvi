@@ -2796,39 +2796,13 @@
         const isInApp = /telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua);
         if (!isInApp) return;
 
-        // Keep user inside in-app browser smoothly so they can browse, search and see cards freely
-
-        // Cache pending item in localStorage so standalone PWA can open it on launch
+        // Cache pending item in localStorage so standalone PWA can open it on launch if installed
         const params = new URLSearchParams(window.location.search);
         const hashSlug = window.location.hash.startsWith('#item/') ? decodeURIComponent(window.location.hash.replace('#item/', '')) : null;
         const watchSlug = params.get('item') || params.get('watch') || params.get('series') || params.get('movie') || hashSlug;
         if (watchSlug) {
           try { localStorage.setItem('pending_pwa_item', watchSlug); } catch(e) {}
         }
-
-        if (sessionStorage.getItem('mewvi_inapp_dismissed')) return;
-
-        const banner = document.createElement('div');
-        banner.id = 'inAppBrowserBanner';
-        banner.className = 'w-full bg-gradient-to-r from-amber-900/95 via-amber-800/95 to-amber-950/95 border-b border-amber-500/40 text-white px-4 py-3 text-xs z-50 flex items-center justify-between gap-3 shadow-lg';
-        banner.innerHTML = `
-          <div class="flex items-center gap-2.5 flex-1">
-            <span class="text-base flex-none"></span>
-            <div class="leading-relaxed text-[11px] sm:text-xs">
-              <span class="font-bold text-amber-200">توجه برای کاربران اینستاگرام و پیام‌رسان‌ها:</span>
-              جهت پخش مستقیم در VLC، دانلود فایل‌ها و لود کامل ویدیوها و آگهی‌ها: روی سه‌نقطه (<span class="font-mono font-bold">...</span>) بالای صفحه بزنید و <span class="text-amber-200 font-semibold underline">Open in Safari / Chrome</span> را انتخاب کنید.
-            </div>
-          </div>
-          <div class="flex items-center gap-2 flex-none">
-            <button onclick="if(navigator.clipboard){navigator.clipboard.writeText(window.location.href); TermitoonStream && TermitoonStream.showToast('لینک کپی شد');}" class="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-medium transition cursor-pointer">
-              کپی لینک
-            </button>
-            <button onclick="document.getElementById('inAppBrowserBanner').remove(); sessionStorage.setItem('mewvi_inapp_dismissed', '1');" class="p-1 rounded-lg hover:bg-white/10 text-white/70 hover:text-white transition cursor-pointer" aria-label="بستن">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-          </div>
-        `;
-        document.body.prepend(banner);
       } catch(e) {}
     }
 
@@ -8283,7 +8257,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=9.8').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=10.1').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
