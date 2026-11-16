@@ -5258,7 +5258,6 @@
           title: item.title_fa || item.title_en,
           handoffUrl: vlcHandoff,
           onComplete: () => {
-            copyTextToClipboard(mediaUrl, 'لینک پخش در حافظه کپی شد');
             TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
             openVlcDirect(mediaUrl, item.title_fa || item.title_en);
           }
@@ -5669,22 +5668,21 @@
       });
     };
 
-    // Direct VLC Launcher (iOS Scheme + Android Intent + Silent Clipboard Copy)
+    // Direct VLC Launcher (iOS Scheme + Android Intent)
     function openVlcDirect(mediaUrl, title = '') {
       if (!mediaUrl) return;
       const cleanUrl = String(mediaUrl).trim();
-      copyTextToClipboard(cleanUrl, 'لینک پخش در حافظه کپی شد');
 
       const ua = navigator.userAgent || '';
       const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       const isAndroid = /Android/i.test(ua);
-      const isInApp = /telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua);
 
-      if (isInApp) {
-        TermitoonStream.showToast('لینک پخش کپی شد. به دلیل محدودیت اینستاگرام، از ۳ نقطه بالا Open in Safari / Chrome را بزنید.');
-      } else {
-        TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
+      if (!isIOS && !isAndroid) {
+        desktopCopyStreamLink();
+        return;
       }
+
+      TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
 
       if (isIOS) {
         const vlcUrl = 'vlc-x-callback://x-callback-url/stream?url=' + encodeURIComponent(cleanUrl);
@@ -8334,7 +8332,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=10.3').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=10.4').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });

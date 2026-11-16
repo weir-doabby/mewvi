@@ -3,7 +3,7 @@
  * Caches app shell, fonts, icons, and instant home showcase for blazing performance.
  */
 
-const CACHE_NAME = 'mewvi-pwa-v10.3';
+const CACHE_NAME = 'mewvi-pwa-v10.4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
