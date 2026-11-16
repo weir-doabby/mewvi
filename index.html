@@ -1844,7 +1844,15 @@
     <div class="relative w-full max-w-3xl aspect-video rounded-2xl sm:rounded-3xl overflow-hidden bg-black shadow-2xl border border-white/15 flex items-center justify-center">
       
       <!-- Video Element -->
-      <video id="adVideoPlayer" class="w-full h-full object-contain bg-black" playsinline webkit-playsinline></video>
+      <video id="adVideoPlayer" class="w-full h-full object-contain bg-black" playsinline webkit-playsinline muted></video>
+      
+      <!-- Center Tap-to-Play Indicator (Shown when in-app browser blocks autoplay) -->
+      <div id="adTapToPlayOverlay" class="absolute inset-0 z-15 hidden flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px] cursor-pointer select-none">
+        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white text-black flex items-center justify-center shadow-2xl active:scale-95 transition pl-1">
+          <svg class="w-7 h-7 sm:w-8 sm:h-8 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <span class="mt-2.5 px-3 py-1 rounded-full bg-black/80 border border-white/10 text-white text-xs font-medium">برای شروع آگهی لمس کنید</span>
+      </div>
       
       <!-- Invisible Click-Through Overlay (Middle Area Only) -->
       <a id="adClickOverlay" href="#" target="_blank" rel="noopener noreferrer" class="absolute inset-x-0 top-14 bottom-16 z-10 cursor-pointer" title="مشاهده وب‌سایت حامی"></a>
@@ -2815,12 +2823,12 @@
           <div class="flex items-center gap-2.5 flex-1">
             <span class="text-base flex-none"></span>
             <div class="leading-relaxed text-[11px] sm:text-xs">
-              <span class="font-bold text-amber-200">مشاهده در اپلیکیشن صفحه اصلی (PWA):</span>
-              شما این صفحه را درون پیام‌رسان باز کرده‌اید. برای باز شدن مستقیم در اپلیکیشن نصب‌شده، روی منوی سه‌نقطه (<span class="font-mono font-bold">...</span>) گوشه تصویر بزنید و <span class="text-amber-200 font-semibold underline">Open in Safari / Chrome</span> را انتخاب کنید.
+              <span class="font-bold text-amber-200">توجه برای کاربران اینستاگرام و پیام‌رسان‌ها:</span>
+              جهت پخش مستقیم در VLC، دانلود فایل‌ها و لود کامل ویدیوها و آگهی‌ها: روی سه‌نقطه (<span class="font-mono font-bold">...</span>) بالای صفحه بزنید و <span class="text-amber-200 font-semibold underline">Open in Safari / Chrome</span> را انتخاب کنید.
             </div>
           </div>
           <div class="flex items-center gap-2 flex-none">
-            <button onclick="if(navigator.clipboard){navigator.clipboard.writeText(window.location.href); TermitoonStream && TermitoonStream.showToast('لینک کپی شد!');}" class="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-medium transition cursor-pointer">
+            <button onclick="if(navigator.clipboard){navigator.clipboard.writeText(window.location.href); TermitoonStream && TermitoonStream.showToast('لینک کپی شد');}" class="px-2.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-[11px] font-medium transition cursor-pointer">
               کپی لینک
             </button>
             <button onclick="document.getElementById('inAppBrowserBanner').remove(); sessionStorage.setItem('mewvi_inapp_dismissed', '1');" class="p-1 rounded-lg hover:bg-white/10 text-white/70 hover:text-white transition cursor-pointer" aria-label="بستن">
@@ -5304,7 +5312,7 @@
       }
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        const timeoutId = setTimeout(() => controller.abort(), 7000);
         const res = await fetch(HILLTOP_VAST_TAG, {
           cache: 'no-store',
           signal: controller.signal,
@@ -5375,6 +5383,7 @@
 
         const modal = document.getElementById('videoAdModal');
         const video = document.getElementById('adVideoPlayer');
+        const tapToPlayOverlay = document.getElementById('adTapToPlayOverlay');
         const timerText = document.getElementById('adTimerText');
         const timerPill = document.getElementById('adTimerPill');
         const skipCountdownText = document.getElementById('adSkipCountdownText');
@@ -5417,6 +5426,10 @@
             video.removeAttribute('src');
             video.load();
           } catch(e) {}
+
+          if (tapToPlayOverlay) {
+            tapToPlayOverlay.classList.add('hidden');
+          }
 
           modal.classList.add('hidden');
           setTimeout(preloadNextVastAd, 3000);
@@ -5536,19 +5549,35 @@
             finishAndProceed();
           };
 
+          if (tapToPlayOverlay) {
+            tapToPlayOverlay.classList.add('hidden');
+            tapToPlayOverlay.onclick = (e) => {
+              e.stopPropagation();
+              video.play().then(() => {
+                if (tapToPlayOverlay) tapToPlayOverlay.classList.add('hidden');
+              }).catch(() => {});
+            };
+          }
+
           safetyTimeout = setTimeout(() => {
-            if (video.paused && video.currentTime === 0) {
-              finishAndProceed();
+            if (!completed) {
+              enableSkipButton();
             }
-          }, 5000);
+          }, 15000);
 
           modal.classList.remove('hidden');
           const playPromise = video.play();
           if (playPromise !== undefined) {
-            playPromise.catch(() => {
+            playPromise.then(() => {
+              if (tapToPlayOverlay) tapToPlayOverlay.classList.add('hidden');
+            }).catch(() => {
               video.muted = true;
               updateMuteUI();
-              video.play().catch(() => finishAndProceed());
+              video.play().then(() => {
+                if (tapToPlayOverlay) tapToPlayOverlay.classList.add('hidden');
+              }).catch(() => {
+                if (tapToPlayOverlay) tapToPlayOverlay.classList.remove('hidden');
+              });
             });
           }
         }).catch(() => {
@@ -5594,11 +5623,17 @@
       if (!mediaUrl) return;
       const cleanUrl = String(mediaUrl).trim();
       copyTextToClipboard(cleanUrl, 'لینک پخش در حافظه کپی شد');
-      TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
 
       const ua = navigator.userAgent || '';
       const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
       const isAndroid = /Android/i.test(ua);
+      const isInApp = /telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua);
+
+      if (isInApp) {
+        TermitoonStream.showToast('لینک پخش کپی شد. به دلیل محدودیت اینستاگرام، از ۳ نقطه بالا Open in Safari / Chrome را بزنید.');
+      } else {
+        TermitoonStream.showToast('در حال انتقال به VLC Media Player...');
+      }
 
       if (isIOS) {
         const vlcUrl = 'vlc-x-callback://x-callback-url/stream?url=' + encodeURIComponent(cleanUrl);
@@ -5640,6 +5675,11 @@
       const maxTouchPoints = navigator.maxTouchPoints || 0;
       const isIOS = /iPad|iPhone|iPod/.test(ua) || (platform === 'MacIntel' && maxTouchPoints > 1) || (/Macintosh/.test(ua) && maxTouchPoints > 1);
       const isAndroid = /Android/i.test(ua);
+      const isInApp = /telegram|instagram|fban|fbav|whatsapp|snapchat|line|twitter|micromessenger/i.test(ua);
+
+      if (isInApp) {
+        TermitoonStream.showToast('لینک دانلود کپی شد. به دلیل مسدود بودن دانلود در اینستاگرام، از ۳ نقطه بالا Open in Safari / Chrome را انتخاب نمایید.');
+      }
 
       if (isIOS) {
         const docSchemeUrl = cleanUrl.startsWith('https://')
@@ -8166,7 +8206,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=9.5').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=9.6').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });
