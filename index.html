@@ -4,6 +4,16 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
   <title>Mewvi | تماشای آنلاین فیلم و انیمیشن رایگان با کیفیت HD</title>
+  <meta name="description" content="تماشای آنلاین و دانلود رایگان برترین فیلم‌ها، سریال‌ها و انیمیشن‌های روز دنیا با کیفیت عالی، دوبله اختصاصی و زیرنویس چسبیده در Mewvi.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://mewvi.mewvi.workers.dev/">
+  <meta property="og:site_name" content="Mewvi">
+  <meta property="og:title" content="Mewvi | تماشای آنلاین فیلم و انیمیشن رایگان با کیفیت HD">
+  <meta property="og:description" content="تماشای آنلاین و دانلود رایگان برترین فیلم‌ها، سریال‌ها و انیمیشن‌های روز دنیا با کیفیت عالی در Mewvi.">
+  <meta property="og:image" content="https://mewvi.mewvi.workers.dev/icon-512.png">
+  <meta property="og:url" content="https://mewvi.mewvi.workers.dev/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="google-site-verification" content="dTTbLPl6qmm_iXlYBQS5LnYrZpK50uvQnG4p6T-MDxw">
   
   <!-- PWA & Mobile Web App Meta -->
@@ -5079,6 +5089,103 @@
       }
     }
 
+    // Dynamic SEO Metadata & Schema.org JSON-LD Generator
+    function updateSeoMeta(item, episode = null) {
+      const defaultTitle = 'Mewvi | تماشای آنلاین فیلم و انیمیشن رایگان با کیفیت HD';
+      const defaultDesc = 'تماشای آنلاین و رایگان برترین فیلم‌ها، سریال‌ها و انیمیشن‌های روز دنیا با کیفیت عالی، دوبله اختصاصی و زیرنویس چسبیده در Mewvi.';
+      const baseUrl = 'https://mewvi.mewvi.workers.dev';
+
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.name = 'description';
+        document.head.appendChild(metaDesc);
+      }
+
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.rel = 'canonical';
+        document.head.appendChild(canonical);
+      }
+
+      if (!item) {
+        document.title = defaultTitle;
+        metaDesc.content = defaultDesc;
+        canonical.href = baseUrl + '/';
+        const schemaOld = document.getElementById('schemaOrgJsonLd');
+        if (schemaOld) schemaOld.remove();
+        return;
+      }
+
+      const isSeries = episode || isItemSeries(item);
+      const typeLabel = isSeries ? 'سریال' : 'فیلم';
+      const titleFa = item.title_fa || item.title_en || 'عنوان اثر';
+      const titleEn = (item.title_en && item.title_en !== titleFa) ? ` (${item.title_en})` : '';
+      const yearText = item.year ? ` ${item.year}` : '';
+
+      let pageTitle = `دانلود و تماشای آنلاین ${typeLabel} ${titleFa}${titleEn}${yearText} | Mewvi`;
+      if (episode) {
+        const epNum = episode.episode_number || episode.episode || '';
+        const sNum = episode.season_number || episode.season || '';
+        const epSuffix = (sNum && epNum) ? ` فصل ${sNum} قسمت ${epNum}` : (epNum ? ` قسمت ${epNum}` : '');
+        pageTitle = `دانلود و تماشای آنلاین ${typeLabel} ${titleFa}${epSuffix} | Mewvi`;
+      }
+      document.title = pageTitle;
+
+      const descText = item.story || item.plot || item.description || `دانلود و تماشای آنلاین ${typeLabel} ${titleFa}${titleEn} با بالاترین کیفیت HD و لینک مستقیم در Mewvi.`;
+      metaDesc.content = descText.length > 170 ? descText.slice(0, 167) + '...' : descText;
+
+      const itemUrl = `${baseUrl}/?item=${encodeURIComponent(item.slug)}`;
+      canonical.href = itemUrl;
+
+      // Open Graph Meta Tags
+      const ogData = {
+        'og:title': pageTitle,
+        'og:description': metaDesc.content,
+        'og:image': item.poster || item.backdrop || `${baseUrl}/icon-512.png`,
+        'og:url': itemUrl,
+        'og:type': isSeries ? 'video.tv_show' : 'video.movie'
+      };
+      for (const [prop, val] of Object.entries(ogData)) {
+        let el = document.querySelector(`meta[property="${prop}"]`);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute('property', prop);
+          document.head.appendChild(el);
+        }
+        el.content = val;
+      }
+
+      // Schema.org JSON-LD Structured Data
+      let schemaScript = document.getElementById('schemaOrgJsonLd');
+      if (!schemaScript) {
+        schemaScript = document.createElement('script');
+        schemaScript.id = 'schemaOrgJsonLd';
+        schemaScript.type = 'application/ld+json';
+        document.head.appendChild(schemaScript);
+      }
+      const schemaData = {
+        '@context': 'https://schema.org',
+        '@type': isSeries ? 'TVSeries' : 'Movie',
+        'name': titleFa,
+        'alternateName': item.title_en || undefined,
+        'image': item.poster || item.backdrop || undefined,
+        'description': descText,
+        'dateCreated': item.year ? String(item.year) : undefined,
+        'url': itemUrl
+      };
+      if (item.imdb_rating || item.rating) {
+        schemaData.aggregateRating = {
+          '@type': 'AggregateRating',
+          'ratingValue': String(item.imdb_rating || item.rating),
+          'bestRating': '10',
+          'worstRating': '1'
+        };
+      }
+      schemaScript.textContent = JSON.stringify(schemaData);
+    }
+
     // =========================================================================
     // VIEW 3: DETAIL VIEW (VERTICAL 2:3 CINEMA CARD - ZARDFILM STYLE)
     // =========================================================================
@@ -5091,6 +5198,7 @@
 
       currentActiveItem = item;
       currentSelectedEpisode = episode;
+      updateSeoMeta(item, episode);
 
       // Record to Watch History (up to 50 items)
       recordWatchHistory(item, episode);
@@ -6777,6 +6885,7 @@
       window.scrollTo({ top: 0, behavior: 'instant' });
 
       currentActiveItem = item;
+      updateSeoMeta(item);
       updateDetailBookmarkBtn();
       seriesHeaderTitle.textContent = item.title_fa || item.title_en;
 
@@ -7098,6 +7207,10 @@
       hideAllViews();
       homeView.classList.remove('hidden');
       restoreViewScroll('home');
+      try {
+        if (window.location.search) history.pushState(null, '', window.location.pathname);
+      } catch(e) {}
+      updateSeoMeta(null);
     };
 
     window.goBackFromDetail = function() {
@@ -7256,6 +7369,7 @@
       } else if (!window.location.search && (!window.location.hash || window.location.hash === '#')) {
         hideAllViews();
         homeView.classList.remove('hidden');
+        updateSeoMeta(null);
       }
     });
 
@@ -8333,7 +8447,7 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js?v=10.5').then((reg) => {
+        navigator.serviceWorker.register('sw.js?v=10.6').then((reg) => {
           console.log('Mewvi PWA registered:', reg.scope);
         }).catch(() => {});
       });

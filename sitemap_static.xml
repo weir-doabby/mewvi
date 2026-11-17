@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mewvi.mewvi.workers.dev/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://mewvi.mewvi.workers.dev/#collection=top250</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mewvi.mewvi.workers.dev/#collection=animation_hits</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mewvi.mewvi.workers.dev/#collection=marvel</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mewvi.mewvi.workers.dev/#collection=top_series</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mewvi.mewvi.workers.dev/#collection=dubbed</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mewvi.mewvi.workers.dev/#collection=latest_2026</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mewvi.mewvi.workers.dev/#actors</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+</urlset>
